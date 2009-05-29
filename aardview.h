@@ -17,6 +17,7 @@
 
 #include <QtGui>
 #include "imagewidget.h"
+#include "settingsdialog.h"
 
 class AardView: public QMainWindow {
   Q_OBJECT
@@ -33,6 +34,7 @@ class AardView: public QMainWindow {
   QAction *aboutAct;
   QAction *aboutQtAct;
   QAction *exitAct;
+  QAction *settingsAct;
   QAction *restoreAct;
   QAction *minimizeAct;
   QAction *maximizeAct;
@@ -41,12 +43,17 @@ class AardView: public QMainWindow {
   void createDocks();
 
   QDirModel *model;
-  QTreeView *tree;
-  QListView *list;
+  QSortFilterProxyModel *tnViewModel;
+  QSortFilterProxyModel *dirViewModel;
+  QTreeView *dirView;
+  QListView *tnView;
   ImageWidget *widget;
+  SettingsDialog *settingsDialog;
 
   private slots:
   void dirIndexChanged();
+  void thumbIndexChanged();
+  void showSettings();
 };
 
 #endif

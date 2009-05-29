@@ -1,6 +1,9 @@
-
+CONFIG += uitools
 HEADERS = aardview.h \
-	imagewidget.h 
+	imagewidget.h \
+	settingsdialog.h
 SOURCES = aardview.cpp \
 	imagewidget.cpp \
-	main.cpp
+	main.cpp \
+	settingsdialog.cpp
+FORMS = settingsdialog.ui

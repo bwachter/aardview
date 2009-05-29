@@ -6,12 +6,31 @@
 AardView::AardView(){
   widget=new ImageWidget(this);
   model = new QDirModel();
+  dirViewModel = new QSortFilterProxyModel();
+  tnViewModel = new QSortFilterProxyModel();
+
+  settings.beginGroup("main");
+  bool initialized=settings.value("initialized").toBool();
+  settings.endGroup();
+
+  if (!initialized){
+    settings.setValue("initialized", true);
+    settings.beginGroup("dirview");
+    settings.setValue("showOnlyDirs", true);
+    settings.setValue("fileMask", "*.jpeg *.jpg *.png");
+    settings.endGroup();
+    settings.beginGroup("tnview");
+    settings.setValue("showOnlyFiles", true);
+    settings.endGroup();
+    // do something on first start
+  }
 
   setCentralWidget(widget);
   
   createActions();
   createMenus();
   createDocks();
+  settingsDialog=new SettingsDialog;
 }
 
 void AardView::createActions(){
@@ -28,6 +47,9 @@ void AardView::createActions(){
   exitAct->setStatusTip(tr("Exit Aardbei"));
   connect(exitAct, SIGNAL(triggered()), qApp, SLOT(quit()));
 
+  settingsAct = new QAction(tr("Settings"), this);
+  connect(settingsAct, SIGNAL(triggered()), this, SLOT(showSettings()));
+
   // context menus
   minimizeAct = new QAction(tr("Mi&nimize"), this);
   connect(minimizeAct, SIGNAL(triggered()), this, SLOT(hide()));
@@ -41,6 +63,7 @@ void AardView::createActions(){
 
 void AardView::createMenus(){
   fileMenu = menuBar()->addMenu(tr("&File"));
+  fileMenu->addAction(settingsAct);
   fileMenu->addAction(exitAct);
 
   viewMenu = menuBar()->addMenu(tr("&View"));
@@ -51,48 +74,72 @@ void AardView::createMenus(){
 }
 
 void AardView::createDocks(){
+  // create the dock items...
   QDockWidget *dock = new QDockWidget(tr("Directory tree"), this);
   dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-  tree = new QTreeView(dock);
-  dock->setWidget(tree);
+  dirView = new QTreeView(dock);
+  dock->setWidget(dirView);
   addDockWidget(Qt::LeftDockWidgetArea, dock);
   viewMenu->addAction(dock->toggleViewAction());
 
-  
   dock = new QDockWidget(tr("Thumbnail view"), this);
   dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-  list = new QListView(dock);
-  dock->setWidget(list);
+  tnView = new QListView(dock);
+  dock->setWidget(tnView);
   addDockWidget(Qt::LeftDockWidgetArea, dock);
   viewMenu->addAction(dock->toggleViewAction());
 
-  tree->setModel(model);
-  tree->setRootIndex(model->index(QDir::rootPath()));
-  tree->setCurrentIndex(model->index(QDir::currentPath()));
-  list->setModel(model);  
-  list->setRootIndex(model->index(QDir::rootPath()));
-  list->setCurrentIndex(model->index(QDir::currentPath()));
+  // and set the model
+  dirViewModel->setSourceModel(model);
+  dirView->setModel(dirViewModel);
+  dirView->setRootIndex(dirViewModel->mapFromSource(
+                          model->index(QDir::rootPath())));
+  dirView->setCurrentIndex(dirViewModel->mapFromSource(
+                             model->index(QDir::currentPath())));
 
-  connect(tree->selectionModel(),
+  tnViewModel->setSourceModel(model);
+  tnViewModel->setFilterRole(QDir::Files);
+  tnView->setModel(tnViewModel);  
+  tnView->setRootIndex(tnViewModel->mapFromSource(
+                         model->index(QDir::currentPath())));
+
+  //if (settings.value("tnView/showOnlyFiles", true).toBool)
+  //QDirModel *md=(QDirModel*)tnView->model();
+  //md->setFilter(QDir::Files);
+
+  connect(dirView->selectionModel(),
           SIGNAL(selectionChanged(const QItemSelection &,
                                   const QItemSelection &)),
           this, SLOT(dirIndexChanged()));
+  connect(tnView->selectionModel(),
+          SIGNAL(selectionChanged(const QItemSelection &,
+                                  const QItemSelection &)),
+          this, SLOT(thumbIndexChanged()));
 }
 
 void AardView::dirIndexChanged(){
-  qDebug("Selected new item");
-  int row = tree->selectionModel()->currentIndex().row();
-  int column = tree->selectionModel()->currentIndex().column();
-  //QAbstractItemModel *am = tree->model();
-  //QDirModel *am = tree->model();
-  //QVariant data = am->data(tree->selectionModel()->currentIndex());
-  QModelIndex idx = tree->selectionModel()->currentIndex();
-  //qDebug() << "String value of item = " << data.toString();
+  QModelIndex idx = dirViewModel->mapToSource(
+    dirView->selectionModel()->currentIndex());
   qDebug() << "Path" << model->filePath(idx);
   if (model->isDir(idx)){
     qDebug() << "Selected item is a directory";
-    list->setRootIndex(tree->selectionModel()->currentIndex());
+    tnView->setRootIndex(tnViewModel->mapFromSource(idx));
   } else {
     widget->load(model->filePath(idx));
   }
+}
+
+void AardView::thumbIndexChanged(){
+  QModelIndex idx = tnViewModel->mapToSource(
+    tnView->selectionModel()->currentIndex());
+  qDebug() << "Path" << model->filePath(idx);
+  if (model->isDir(idx)){
+    qDebug() << "Selected item is a directory";
+  } else {
+    widget->load(model->filePath(idx));
+  }
+}
+
+void AardView::showSettings(){
+  settingsDialog->show();
 }
