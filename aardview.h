@@ -51,6 +51,7 @@ class AardView: public QMainWindow {
   SettingsDialog *settingsDialog;
 
   private slots:
+  void about();
   void dirIndexChanged();
   void thumbIndexChanged();
   void showSettings();
