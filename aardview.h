@@ -42,9 +42,10 @@ class AardView: public QMainWindow {
   void createMenus();
   void createDocks();
 
-  QDirModel *model;
-  QSortFilterProxyModel *tnViewModel;
-  QSortFilterProxyModel *dirViewModel;
+  QDirModel *dirViewModel;
+  QDirModel *tnViewModel;
+  QSortFilterProxyModel *tnViewModelProxy;
+  QSortFilterProxyModel *dirViewModelProxy;
   QTreeView *dirView;
   QListView *tnView;
   ImageWidget *widget;
