@@ -1,0 +1,10 @@
+aardview
+*.o
+moc_*.cpp
+qrc_*.cpp
+Makefile*
+debug/
+release/
+vc80.pdb
+*.qm
+*.db
