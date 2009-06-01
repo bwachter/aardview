@@ -55,13 +55,22 @@ void ImageWidget::displayImage(){
     return;
   }
   bool keepAspectRatio=true;
-  // FIXME add shrinkOnly
-  if (fitToWindow){
+  int p = settings.value("viewer/padding").toInt();
+  QSize viewSize=this->size();
+  QSize pixmapSize=displayedPixmap.size();
+
+  // only scale if shrinkOnly is set to false _or_
+  // shrinkonly is true and at least one dimension of the 
+  // image is larger than the view area
+  if (fitToWindow &&
+      (!settings.value("viewer/shrinkOnly").toBool() ||
+      (settings.value("viewer/shrinkOnly").toBool() && 
+       (pixmapSize.height() >= viewSize.height() ||
+        pixmapSize.width() >= viewSize.width())))) {
     // fit the image to the window, keeping the aspect ratio
     if (keepAspectRatio){
-      int p = settings.value("viewer/padding").toInt();
       imageContainer->setPixmap(
-        displayedPixmap.scaled(this->size() - QSize::QSize(p, p),
+        displayedPixmap.scaled(viewSize - QSize::QSize(p, p),
                                Qt::KeepAspectRatio,
                                transformation));
     } else {
