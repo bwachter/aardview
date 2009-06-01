@@ -13,6 +13,7 @@ RESOURCES = aardview.qrc
 TARGET = aardview
 TEMPLATE = app
 LANGUAGE = C++
+TRANSLATIONS = aardview_de.ts
 
 win32 {
 RC_FILE = win32.rc

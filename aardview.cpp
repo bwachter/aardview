@@ -212,8 +212,8 @@ void AardView::toggleMenuBar(){
 }
 
 void AardView::about(){
-  QString supportedWriteFormats = "Writing:";
-  QString supportedReadFormats = "Reading:";
+  QString supportedWriteFormats;
+  QString supportedReadFormats;
   for (int i = 0; i < QImageReader::supportedImageFormats().count(); ++i){
     supportedReadFormats += " " +
       QString(QImageReader::supportedImageFormats().at(i)).toLower();
@@ -227,8 +227,8 @@ void AardView::about(){
                      tr("<h1>About Aardview</h1><br />"
                         "FIXME<br />"
                         "<h2>Supported formats</h2>"
-                        "%12<br />"
-                        "%13<br />"
+                        "Reading: %12<br />"
+                        "Writing: %13<br />"
                         "<h2>Build information</h2>"
                         "Licensed to: %1<br />"
                         "Licensed products: %2<br />"
