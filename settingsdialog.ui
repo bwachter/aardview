@@ -5,12 +5,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>478</width>
+    <width>553</width>
     <height>378</height>
    </rect>
   </property>
   <property name="windowTitle" >
-   <string>Dialog</string>
+   <string>Preferences</string>
   </property>
   <property name="autoFillBackground" >
    <bool>true</bool>
@@ -27,164 +27,161 @@
         <bool>false</bool>
        </property>
        <property name="currentIndex" >
-        <number>0</number>
+        <number>3</number>
        </property>
        <widget class="QWidget" name="tab_4" >
         <attribute name="title" >
          <string>Main</string>
         </attribute>
-        <layout class="QVBoxLayout" name="verticalLayout_10" >
+        <layout class="QHBoxLayout" name="horizontalLayout_6" >
          <item>
-          <layout class="QVBoxLayout" name="verticalLayout_8" >
-           <item>
-            <widget class="QCheckBox" name="mainInitialized" >
-             <property name="text" >
-              <string>Restore default settings on next start</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="mainFocusFollowsMouse" >
-             <property name="text" >
-              <string>Use 'focus follows mouse' between widgets</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <layout class="QGridLayout" name="gridLayout" >
-             <item row="0" column="0" >
-              <widget class="QLabel" name="label_3" >
-               <property name="text" >
-                <string>Picture editor:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1" >
-              <widget class="QLineEdit" name="mainExternalEditor" />
-             </item>
-            </layout>
-           </item>
-           <item>
-            <spacer name="verticalSpacer_4" >
-             <property name="orientation" >
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0" >
-              <size>
-               <width>20</width>
-               <height>40</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
+          <widget class="QGroupBox" name="groupBox_4" >
+           <property name="title" >
+            <string>Main settings</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_8" >
+            <item>
+             <widget class="QCheckBox" name="mainInitialized" >
+              <property name="text" >
+               <string>Restore default settings on next start</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="mainFocusFollowsMouse" >
+              <property name="text" >
+               <string>Use 'focus follows mouse' between widgets</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QGridLayout" name="gridLayout" >
+              <item row="0" column="1" >
+               <widget class="QLineEdit" name="mainExternalEditor" />
+              </item>
+              <item row="0" column="0" >
+               <widget class="QLabel" name="label_3" >
+                <property name="text" >
+                 <string>Picture editor:</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <spacer name="verticalSpacer_4" >
+              <property name="orientation" >
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0" >
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tab_5" >
+        <attribute name="title" >
+         <string>Directory browser</string>
+        </attribute>
+        <layout class="QHBoxLayout" name="horizontalLayout_5" >
+         <item>
+          <widget class="QGroupBox" name="groupBox" >
+           <property name="title" >
+            <string>Directory view</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_4" >
+            <item>
+             <widget class="QCheckBox" name="dirShowOnlyDirs" >
+              <property name="text" >
+               <string>Show only directories</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="verticalSpacer" >
+              <property name="orientation" >
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0" >
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </widget>
          </item>
         </layout>
        </widget>
        <widget class="QWidget" name="tab" >
         <attribute name="title" >
-         <string>Listboxes</string>
+         <string>Thumbnail viewer</string>
         </attribute>
         <layout class="QHBoxLayout" name="horizontalLayout_3" >
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_2" >
-           <item>
-            <widget class="QGroupBox" name="groupBox" >
-             <property name="title" >
-              <string>Directory view</string>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_4" >
-              <item>
-               <layout class="QVBoxLayout" name="verticalLayout_3" >
-                <item>
-                 <widget class="QCheckBox" name="dirShowOnlyDirs" >
-                  <property name="text" >
-                   <string>Show only directories</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label" >
-                  <property name="text" >
-                   <string>Selection mask:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <spacer name="verticalSpacer" >
-                  <property name="orientation" >
-                   <enum>Qt::Vertical</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0" >
-                   <size>
-                    <width>20</width>
-                    <height>40</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-               </layout>
+          <widget class="QGroupBox" name="groupBox_2" >
+           <property name="title" >
+            <string>Thumbnail view</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_6" >
+            <item>
+             <widget class="QCheckBox" name="tnShowOnlyFiles" >
+              <property name="enabled" >
+               <bool>true</bool>
+              </property>
+              <property name="text" >
+               <string>Show only files</string>
+              </property>
+              <property name="checked" >
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="tnCaseInsensitiveMatching" >
+              <property name="text" >
+               <string>Use case-insensitive matching</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QGridLayout" name="gridLayout_2" >
+              <item row="0" column="0" >
+               <widget class="QLabel" name="label_2" >
+                <property name="text" >
+                 <string>Selection mask:</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1" >
+               <widget class="QLineEdit" name="tnFileMask" />
               </item>
              </layout>
-            </widget>
-           </item>
-           <item>
-            <widget class="QGroupBox" name="groupBox_2" >
-             <property name="title" >
-              <string>Thumbnail view</string>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_6" >
-              <item>
-               <layout class="QVBoxLayout" name="verticalLayout_5" >
-                <item>
-                 <widget class="QCheckBox" name="tnShowOnlyFiles" >
-                  <property name="enabled" >
-                   <bool>true</bool>
-                  </property>
-                  <property name="text" >
-                   <string>Show only files</string>
-                  </property>
-                  <property name="checked" >
-                   <bool>false</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QCheckBox" name="tnCaseInsensitiveMatching" >
-                  <property name="text" >
-                   <string>Use case-insensitive matching</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_2" >
-                  <property name="text" >
-                   <string>Selection mask:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="tnFileMask" />
-                </item>
-                <item>
-                 <spacer name="verticalSpacer_2" >
-                  <property name="orientation" >
-                   <enum>Qt::Vertical</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0" >
-                   <size>
-                    <width>20</width>
-                    <height>40</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-               </layout>
-              </item>
-             </layout>
-            </widget>
-           </item>
-          </layout>
+            </item>
+            <item>
+             <spacer name="verticalSpacer_2" >
+              <property name="orientation" >
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0" >
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </widget>
          </item>
         </layout>
        </widget>
@@ -194,65 +191,56 @@
         </attribute>
         <layout class="QHBoxLayout" name="horizontalLayout_4" >
          <item>
-          <layout class="QVBoxLayout" name="verticalLayout_7" >
-           <item>
-            <widget class="QGroupBox" name="groupBox_3" >
-             <property name="title" >
-              <string>GroupBox</string>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_9" >
-              <item>
-               <widget class="QCheckBox" name="viewerFitToWindow" >
-                <property name="text" >
-                 <string>Fit image to window per default</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="viewerShrinkOnly" >
-                <property name="text" >
-                 <string>Shrink images only when fitting to window</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="viewerResetFtwOnChange" >
-                <property name="text" >
-                 <string>Reset 'fit to window'-flag on change to next picture</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="viewerHideInfoArea" >
-                <property name="text" >
-                 <string>Hide information area</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <spacer name="verticalSpacer_3" >
-                <property name="orientation" >
-                 <enum>Qt::Vertical</enum>
-                </property>
-                <property name="sizeHint" stdset="0" >
-                 <size>
-                  <width>20</width>
-                  <height>40</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
-            </widget>
-           </item>
-          </layout>
+          <widget class="QGroupBox" name="groupBox_3" >
+           <property name="title" >
+            <string>Viewer settings</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_9" >
+            <item>
+             <widget class="QCheckBox" name="viewerFitToWindow" >
+              <property name="text" >
+               <string>Fit image to window per default</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="viewerShrinkOnly" >
+              <property name="text" >
+               <string>Shrink images only when fitting to window</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="viewerResetFtwOnChange" >
+              <property name="text" >
+               <string>Reset 'fit to window'-flag on change to next picture</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="viewerHideInfoArea" >
+              <property name="text" >
+               <string>Hide information area</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="verticalSpacer_3" >
+              <property name="orientation" >
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0" >
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </widget>
          </item>
         </layout>
-       </widget>
-       <widget class="QWidget" name="tab_2" >
-        <attribute name="title" >
-         <string>Thumbnails</string>
-        </attribute>
        </widget>
       </widget>
      </item>
