@@ -16,14 +16,23 @@ AardView::AardView(){
 
   if (!initialized){
     qDebug() << "Setting initial settings...";
-    settings.setValue("main/initialized", true);
-    settings.setValue("main/hideInfoArea", true);
+    settings.beginGroup("main");
+    settings.setValue("initialized", true);
+    settings.setValue("externalEditor", "/usr/bin/gimp");
+    settings.endGroup();
     settings.beginGroup("dirview");
     settings.setValue("showOnlyDirs", true);
     settings.endGroup();
     settings.beginGroup("tnview");
     settings.setValue("showOnlyFiles", true);
+    settings.setValue("caseInsensitiveMatching", true);
+    settings.setValue("filterFiles", false);
     settings.setValue("fileMask", "*.(bmp|gif|jpg|jpeg|png|pbm|pgm|ppm|tif|tiff|xbm|xpm)");
+    settings.endGroup();
+    settings.beginGroup("viewer");
+    settings.setValue("hideInfoArea", true);
+    settings.setValue("resetFtwOnChange", true);
+    settings.setValue("fitToWindow", true);
     settings.endGroup();
     // do something on first start
   }
@@ -121,7 +130,8 @@ void AardView::createDocks(){
   tnView->setModel(tnViewModelProxy);  
   tnViewModel->setDirectory(QDir::currentPath());
 
-  if (settings.value("tnView/fileMask").toString() != ""){
+  if (settings.value("tnView/fileMask").toString() != "" && 
+      settings.value("tnView/filterFiles").toBool()){
     qDebug() << "Setting filter: " << settings.value("tnView/fileMask").toString();
     tnViewModelProxy->setFilterRegExp(settings.value("tnView/fileMask").toString());
     tnViewModelProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);

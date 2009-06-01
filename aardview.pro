@@ -9,3 +9,11 @@ SOURCES = aardview.cpp \
 	settingsdialog.cpp \
 	tnviewmodel.cpp
 FORMS = settingsdialog.ui
+RESOURCES = aardview.qrc
+TARGET = aardview
+TEMPLATE = app
+LANGUAGE = C++
+
+win32 {
+RC_FILE = win32.rc
+}
