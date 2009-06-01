@@ -6,7 +6,6 @@
 AardView::AardView(){
   widget=new ImageWidget();
   dirViewModel = new QDirModel();
-  //tnViewModel = new QDirModel();
   tnViewModel = new TnViewModel(QDir::currentPath());
   dirViewModelProxy = new QSortFilterProxyModel();
   tnViewModelProxy = new QSortFilterProxyModel();
@@ -21,11 +20,10 @@ AardView::AardView(){
     settings.setValue("main/hideInfoArea", true);
     settings.beginGroup("dirview");
     settings.setValue("showOnlyDirs", true);
-    settings.setValue("fileMask", "*.jpeg *.jpg *.png");
     settings.endGroup();
     settings.beginGroup("tnview");
     settings.setValue("showOnlyFiles", true);
-    settings.setValue("fileMask", "*.jpeg *.jpg *.png");
+    settings.setValue("fileMask", "*.(bmp|gif|jpg|jpeg|png|pbm|pgm|ppm|tif|tiff|xbm|xpm)");
     settings.endGroup();
     // do something on first start
   }
@@ -53,7 +51,8 @@ void AardView::createActions(){
   exitAct->setStatusTip(tr("Exit Aardview"));
   connect(exitAct, SIGNAL(triggered()), qApp, SLOT(quit()));
 
-  editAct = new QAction(tr("Edit"), this);
+  editAct = new QAction(tr("&Edit"), this);
+  editAct->setShortcut(tr("Ctrl-E"));
   editAct->setStatusTip(tr("Edit in external editor"));
   connect(editAct, SIGNAL(triggered()), this, SLOT(openEditor()));
 
@@ -78,6 +77,8 @@ void AardView::createMenus(){
   fileMenu->addAction(exitAct);
 
   viewMenu = menuBar()->addMenu(tr("&View"));
+  viewMenu->addAction(tr("Show/hide menu bar"), this, 
+                      SLOT(toggleMenuBar()), QKeySequence(tr("Ctrl+M")));
 
   helpMenu = menuBar()->addMenu(tr("&Help"));
   helpMenu->addAction(aboutAct);
@@ -191,10 +192,34 @@ void AardView::showSettings(){
   settingsDialog->show();
 }
 
+void AardView::toggleMenuBar(){
+  if (menuBarVisible){
+    menuBar()->hide();
+    menuBarVisible=false;
+  } else {
+    menuBar()->show();
+    menuBarVisible=true;
+  }
+}
+
 void AardView::about(){
+  QString supportedWriteFormats = "Writing:";
+  QString supportedReadFormats = "Reading:";
+  for (int i = 0; i < QImageReader::supportedImageFormats().count(); ++i){
+    supportedReadFormats += " " +
+      QString(QImageReader::supportedImageFormats().at(i)).toLower();
+  }
+  for (int i = 0; i < QImageWriter::supportedImageFormats().count(); ++i){
+    supportedWriteFormats += " " +
+      QString(QImageWriter::supportedImageFormats().at(i)).toLower();
+  }
+
   QMessageBox::about(this, tr("About Menu"),
                      tr("<h1>About Aardview</h1><br />"
                         "FIXME<br />"
+                        "<h2>Supported formats</h2>"
+                        "%12<br />"
+                        "%13<br />"
                         "<h2>Build information</h2>"
                         "Licensed to: %1<br />"
                         "Licensed products: %2<br />"
@@ -220,5 +245,7 @@ void AardView::about(){
                      .arg(QLibraryInfo::location(QLibraryInfo::DataPath))
                      .arg(QLibraryInfo::location(QLibraryInfo::TranslationsPath))
                      .arg(QLibraryInfo::location(QLibraryInfo::SettingsPath))
+                     .arg(supportedReadFormats)
+                     .arg(supportedWriteFormats)
     );
 }

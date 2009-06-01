@@ -28,6 +28,7 @@ class AardView: public QMainWindow {
   QString getSelectedFilename();
   
   private:
+  bool menuBarVisible;
   QSettings settings;
   QMenu *fileMenu;
   QMenu *editMenu;
@@ -37,6 +38,7 @@ class AardView: public QMainWindow {
   QAction *aboutQtAct;
   QAction *exitAct;
   QAction *editAct;
+  QAction *menuAct;
   QAction *settingsAct;
   QAction *restoreAct;
   QAction *minimizeAct;
@@ -44,7 +46,6 @@ class AardView: public QMainWindow {
   void createActions();
   void createMenus();
   void createDocks();
-
 
   QDirModel *dirViewModel;
   TnViewModel *tnViewModel;
@@ -62,6 +63,7 @@ class AardView: public QMainWindow {
   void thumbIndexChanged();
   void showSettings();
   void openEditor();
+  void toggleMenuBar();
 };
 
 #endif
