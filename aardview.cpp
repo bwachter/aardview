@@ -4,15 +4,7 @@
 #include "imagewidget.h"
 
 AardView::AardView(){
-  widget=new ImageWidget();
-  dirViewModel = new QDirModel();
-  tnViewModel = new TnViewModel(QDir::currentPath());
-  dirViewModelProxy = new QSortFilterProxyModel();
-  tnViewModelProxy = new QSortFilterProxyModel();
-
-  settings.beginGroup("main");
-  bool initialized=settings.value("initialized").toBool();
-  settings.endGroup();
+  bool initialized=settings.value("main/initialized").toBool();
 
   if (!initialized){
     qDebug() << "Setting initial settings...";
@@ -26,16 +18,23 @@ AardView::AardView(){
     settings.beginGroup("tnview");
     settings.setValue("showOnlyFiles", true);
     settings.setValue("caseInsensitiveMatching", true);
-    settings.setValue("filterFiles", false);
-    settings.setValue("fileMask", "*.(bmp|gif|jpg|jpeg|png|pbm|pgm|ppm|tif|tiff|xbm|xpm)");
+    settings.setValue("filterFiles", true);
+    settings.setValue("fileMask", ".*(bmp|gif|jpg|jpeg|png|pbm|pgm|ppm|tif|tiff|xbm|xpm)");
     settings.endGroup();
     settings.beginGroup("viewer");
     settings.setValue("hideInfoArea", true);
     settings.setValue("resetFtwOnChange", true);
     settings.setValue("fitToWindow", true);
+    settings.setValue("padding", 5);
     settings.endGroup();
     // do something on first start
   }
+
+  widget=new ImageWidget();
+  dirViewModel = new QDirModel();
+  tnViewModel = new TnViewModel(QDir::currentPath());
+  dirViewModelProxy = new QSortFilterProxyModel();
+  tnViewModelProxy = new QSortFilterProxyModel();
 
   setCentralWidget(widget);
   

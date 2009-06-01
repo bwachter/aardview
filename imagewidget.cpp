@@ -3,7 +3,6 @@
 ImageWidget::ImageWidget(): QWidget(){
   QVBoxLayout *layout = new QVBoxLayout;
   imageContainer = new QLabel;
-  imageContainer->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
 
   imageArea = new QScrollArea;
   imageArea->installEventFilter(this);
@@ -18,43 +17,49 @@ ImageWidget::ImageWidget(): QWidget(){
   layout->addWidget(infoArea);
   setLayout(layout);
 
-  if (settings.value("main/hideInfoArea").toBool())
+  if (settings.value("viewer/hideInfoArea").toBool())
     infoArea->hide();
+  if (settings.value("viewer/resetFtwOnChange").toBool())
+    fitToWindow=settings.value("viewer/fitToWindow").toBool();
 
   imageArea->setWidget(imageContainer);
-/*
-  //load image from resource
-  load("");
-  imageContainer->setPixmap(QPixmap::fromImage(originalImage));
-*/
+
+  load(":/images/aardview.png");
 }
 
 void ImageWidget::load(QString pathname){
   originalImage.load(pathname);
-  imageContainer->setPixmap(QPixmap::fromImage(originalImage));
-  adjustSize();
+  if (settings.value("viewer/resetFtwOnChange").toBool())
+    fitToWindow=settings.value("viewer/fitToWindow").toBool();
+  //if (settings.value("viewer/resetScalingOnChange").toBool())
+  // FIXME, add scaling
+  displayedPixmap=QPixmap::fromImage(originalImage);
+  displayImage();
 }
 
-void ImageWidget::adjustSize(){
-  imageContainer->setScaledContents(scaledImage);
+void ImageWidget::displayImage(){
+  bool keepAspectRatio=true;
+  if (fitToWindow){
+    if (keepAspectRatio){
+      int p = settings.value("viewer/padding").toInt();
+      imageContainer->setPixmap(
+        displayedPixmap.scaled(this->size() - QSize::QSize(p, p),
+                               Qt::KeepAspectRatio,
+                               Qt::SmoothTransformation));
+    } else {
+      imageContainer->setPixmap(QPixmap::fromImage(originalImage));
+    }
+  } else {
+    imageContainer->setPixmap(displayedPixmap);
+  }
+  imageContainer->setScaledContents(false);
   imageContainer->adjustSize();
 }
 
-void ImageWidget::toggleFullscreen(){
-  if (scaledImage){
-    // enable image scaling
-    scaledImage=false;
-    imageContainer->setScaledContents(true);
-  } else {
-    scaledImage=true;
-    imageContainer->setScaledContents(false);
-  }
-}
-
-void ImageWidget::toggleScaled(){
-  if (scaledImage) scaledImage=false;
-  else scaledImage=true;
-  adjustSize();
+void ImageWidget::toggleFtw(){
+  if (fitToWindow) fitToWindow=false;
+  else fitToWindow=true;
+  displayImage();
 }
 
 bool ImageWidget::eventFilter(QObject *obj, QEvent *event){
@@ -63,7 +68,7 @@ bool ImageWidget::eventFilter(QObject *obj, QEvent *event){
       QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
       switch(keyEvent->key()){
         case Qt::Key_Z:
-          toggleScaled();
+          toggleFtw();
           break;
         default:
           return QWidget::eventFilter(obj, event);

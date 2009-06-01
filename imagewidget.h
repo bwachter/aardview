@@ -17,18 +17,19 @@ class ImageWidget: public QWidget {
 
   private:
   bool scaledImage;
+  bool fitToWindow;
   QLabel* imageContainer;
   QImage displayedImage;
   QImage originalImage;
+  QPixmap displayedPixmap;
   QScrollArea* imageArea;
   QScrollArea* infoArea;
   QSettings settings;
+  void displayImage();
 
   public slots:
   void load(QString pathname);
-  void toggleScaled();
-  void toggleFullscreen();
-  void adjustSize();
+  void toggleFtw();
 
   signals:
 
