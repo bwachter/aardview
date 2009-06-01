@@ -24,6 +24,7 @@ SettingsDialog::SettingsDialog(): QDialog(){
   ui.viewerResetFtwOnChange->setChecked(settings.value("resetFtwOnChange").toBool());
   ui.viewerFitToWindow->setChecked(settings.value("fitToWindow").toBool());
   ui.viewerShrinkOnly->setChecked(settings.value("shrinkOnly").toBool());
+  ui.viewerSmoothTransformation->setChecked(settings.value("smoothTransformation").toBool());
   settings.endGroup();
 }
 
@@ -51,6 +52,7 @@ void SettingsDialog::accept(){
   settings.setValue("resetFtwOnChange", ui.viewerResetFtwOnChange->isChecked());
   settings.setValue("fitToWindow", ui.viewerFitToWindow->isChecked());
   settings.setValue("shrinkOnly", ui.viewerShrinkOnly->isChecked());
+  settings.setValue("smoothTransformation", ui.viewerSmoothTransformation->isChecked());
   settings.endGroup();
 
   this->hide();

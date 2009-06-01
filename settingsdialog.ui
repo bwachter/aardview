@@ -211,6 +211,13 @@
              </widget>
             </item>
             <item>
+             <widget class="QCheckBox" name="viewerSmoothTransformation" >
+              <property name="text" >
+               <string>Use smooth transformation (slower)</string>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="QCheckBox" name="viewerResetFtwOnChange" >
               <property name="text" >
                <string>Reset 'fit to window'-flag on change to next picture</string>

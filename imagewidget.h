@@ -28,6 +28,7 @@ class ImageWidget: public QWidget {
   QScrollArea* infoArea;
   QSettings settings;
   QString imageFileName;
+  Qt::TransformationMode transformation;
   void displayImage();
   void scale(double factor);
 #ifndef QT_NO_PRINTER

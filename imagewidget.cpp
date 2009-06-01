@@ -22,6 +22,8 @@ ImageWidget::ImageWidget(): QWidget(){
     infoArea->hide();
   if (settings.value("viewer/resetFtwOnChange").toBool())
     fitToWindow=settings.value("viewer/fitToWindow").toBool();
+  if (settings.value("viewer/smoothTransformation").toBool())
+    transformation=Qt::SmoothTransformation;
 
   imageArea->setWidget(imageContainer);
 
@@ -61,7 +63,7 @@ void ImageWidget::displayImage(){
       imageContainer->setPixmap(
         displayedPixmap.scaled(this->size() - QSize::QSize(p, p),
                                Qt::KeepAspectRatio,
-                               Qt::SmoothTransformation));
+                               transformation));
     } else {
       // fit the image to the window, ignoring the aspect ratio
       imageContainer->setPixmap(QPixmap::fromImage(originalImage));
@@ -70,7 +72,7 @@ void ImageWidget::displayImage(){
     imageContainer->setPixmap(
       displayedPixmap.scaled(scaleFactor * displayedPixmap.size(),
       Qt::KeepAspectRatio,
-      Qt::SmoothTransformation));
+      transformation));
   } else {
     // display the picture in its original size
     imageContainer->setPixmap(displayedPixmap);
