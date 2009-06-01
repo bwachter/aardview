@@ -61,12 +61,12 @@ void AardView::createActions(){
   exitAct->setStatusTip(tr("Exit Aardview"));
   connect(exitAct, SIGNAL(triggered()), qApp, SLOT(quit()));
 
-  editAct = new QAction(tr("&Edit"), this);
+  editAct = new QAction(tr("&Edit current image"), this);
   editAct->setShortcut(tr("Ctrl+E"));
-  editAct->setStatusTip(tr("Edit in external editor"));
+  editAct->setStatusTip(tr("Edit current image in external editor"));
   connect(editAct, SIGNAL(triggered()), this, SLOT(openEditor()));
 
-  settingsAct = new QAction(tr("Settings"), this);
+  settingsAct = new QAction(tr("P&references"), this);
   connect(settingsAct, SIGNAL(triggered()), this, SLOT(showSettings()));
 
   // context menus
@@ -83,13 +83,24 @@ void AardView::createActions(){
 void AardView::createMenus(){
   fileMenu = menuBar()->addMenu(tr("&File"));
   fileMenu->addAction(settingsAct);
-  fileMenu->addAction(editAct);
+  fileMenu->addSeparator();
   fileMenu->addAction(exitAct);
 
-  viewMenu = menuBar()->addMenu(tr("&View"));
-  viewMenu->addAction(tr("Show/hide menu bar"), this, 
-                      SLOT(toggleMenuBar()), QKeySequence(tr("Ctrl+M")));
+  editMenu = menuBar()->addMenu(tr("&Edit"));
+  editMenu->addAction(editAct);
 
+  viewMenu = menuBar()->addMenu(tr("&View"));
+  viewMenu->addAction(tr("Zoom in"), widget,
+                      SLOT(zoomIn()), QKeySequence(tr("Ctrl++")));
+  viewMenu->addAction(tr("Zoom out"), widget,
+                      SLOT(zoomOut()), QKeySequence(tr("Ctrl+-")));
+  viewMenu->addAction(tr("Toggle 'fit to window'"), widget,
+                      SLOT(toggleFtw()), QKeySequence(tr("Ctrl+Z")));
+  viewMenu->addSeparator();
+  viewMenu->addAction(tr("Toggle menu bar"), this, 
+                      SLOT(toggleMenuBar()), QKeySequence(tr("Ctrl+M")));
+  viewMenu->addSeparator();
+  
   helpMenu = menuBar()->addMenu(tr("&Help"));
   helpMenu->addAction(aboutAct);
   helpMenu->addAction(aboutQtAct);

@@ -2,9 +2,8 @@
 - fill information box
 - add command line
 - add simple image editing (rotate, ...)
-- add external editor
 - add saving of changes to images
-- add past to change directory
+- add paste to change directory
 - add tag function for tag box
 - add SVG viewer
 - add a way to re-enable the menubar when hidden
