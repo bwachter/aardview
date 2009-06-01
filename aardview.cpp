@@ -141,6 +141,11 @@ void AardView::createDocks(){
   dock->hide();
 
   // and set the model
+  if (settings.value("dirView/showOnlyDirs", true).toBool())
+    dirViewModel->setFilter(QDir::Dirs|QDir::NoDotAndDotDot);
+  if (settings.value("tnView/showOnlyFiles", true).toBool())
+    tnViewModel->setFilter(QDir::Files);
+
   dirViewModelProxy->setSourceModel(dirViewModel);
   dirView->setModel(dirViewModelProxy);
   dirView->setRootIndex(dirViewModelProxy->mapFromSource(
@@ -160,12 +165,6 @@ void AardView::createDocks(){
       tnViewModelProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
   }
 
-  if (settings.value("tnView/showOnlyFiles", true).toBool())
-    tnViewModel->setFilter(QDir::Files);
-
-  if (settings.value("dirView/showOnlyDirs", true).toBool())
-    dirViewModel->setFilter(QDir::Dirs|QDir::NoDotAndDotDot);
-    
   connect(dirView->selectionModel(),
           SIGNAL(selectionChanged(const QItemSelection &,
                                   const QItemSelection &)),
