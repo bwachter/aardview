@@ -18,6 +18,7 @@ class ImageWidget: public QWidget {
   private:
   bool scaledImage;
   bool fitToWindow;
+  double scaleFactor;
   QLabel* imageContainer;
   QImage displayedImage;
   QImage originalImage;
@@ -26,10 +27,15 @@ class ImageWidget: public QWidget {
   QScrollArea* infoArea;
   QSettings settings;
   void displayImage();
+  void scale(double factor);
 
   public slots:
   void load(QString pathname);
   void toggleFtw();
+  void normalSize();
+  void rotate();
+  void zoomIn();
+  void zoomOut();
 
   signals:
 

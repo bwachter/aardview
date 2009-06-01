@@ -17,6 +17,7 @@ ImageWidget::ImageWidget(): QWidget(){
   layout->addWidget(infoArea);
   setLayout(layout);
 
+  scaleFactor=1.0;
   if (settings.value("viewer/hideInfoArea").toBool())
     infoArea->hide();
   if (settings.value("viewer/resetFtwOnChange").toBool())
@@ -40,6 +41,7 @@ void ImageWidget::load(QString pathname){
 void ImageWidget::displayImage(){
   bool keepAspectRatio=true;
   if (fitToWindow){
+    // fit the image to the window, keeping the aspect ratio
     if (keepAspectRatio){
       int p = settings.value("viewer/padding").toInt();
       imageContainer->setPixmap(
@@ -47,13 +49,25 @@ void ImageWidget::displayImage(){
                                Qt::KeepAspectRatio,
                                Qt::SmoothTransformation));
     } else {
+      // fit the image to the window, ignoring the aspect ratio
       imageContainer->setPixmap(QPixmap::fromImage(originalImage));
     }
+  } else if (scaleFactor != 1.0) {
+    imageContainer->setPixmap(
+      displayedPixmap.scaled(scaleFactor * displayedPixmap.size(),
+      Qt::KeepAspectRatio,
+      Qt::SmoothTransformation));
   } else {
+    // display the picture in its original size
     imageContainer->setPixmap(displayedPixmap);
   }
   imageContainer->setScaledContents(false);
   imageContainer->adjustSize();
+}
+
+void ImageWidget::normalSize(){ scale(0); }
+
+void ImageWidget::rotate(){
 }
 
 void ImageWidget::toggleFtw(){
@@ -62,13 +76,36 @@ void ImageWidget::toggleFtw(){
   displayImage();
 }
 
+void ImageWidget::scale(double factor){
+  fitToWindow=false;
+  scaleFactor*=factor;
+  if (scaleFactor==0) scaleFactor++;
+  displayImage();
+}
+  
+void ImageWidget::zoomIn(){ scale(1.25); }
+
+void ImageWidget::zoomOut(){ scale(0.8); }
+
 bool ImageWidget::eventFilter(QObject *obj, QEvent *event){
   if (obj == imageArea){
     if (event->type() == QEvent::KeyPress){
       QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
       switch(keyEvent->key()){
+        case Qt::Key_N:
+          normalSize();
+          break;
+        case Qt::Key_R:
+          rotate();
+          break;
         case Qt::Key_Z:
           toggleFtw();
+          break;
+        case Qt::Key_Minus:
+          zoomOut();
+          break;
+        case Qt::Key_Plus:
+          zoomIn();
           break;
         default:
           return QWidget::eventFilter(obj, event);
