@@ -18,6 +18,7 @@
 #include <QtGui>
 #include "imagewidget.h"
 #include "settingsdialog.h"
+#include "tnviewmodel.h"
 
 class AardView: public QMainWindow {
   Q_OBJECT
@@ -43,7 +44,7 @@ class AardView: public QMainWindow {
   void createDocks();
 
   QDirModel *dirViewModel;
-  QDirModel *tnViewModel;
+  TnViewModel *tnViewModel;
   QSortFilterProxyModel *tnViewModelProxy;
   QSortFilterProxyModel *dirViewModelProxy;
   QTreeView *dirView;
