@@ -92,6 +92,9 @@ bool ImageWidget::eventFilter(QObject *obj, QEvent *event){
     if (event->type() == QEvent::KeyPress){
       QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
       switch(keyEvent->key()){
+        case Qt::Key_B:
+          // prev picture
+          break;
         case Qt::Key_N:
           normalSize();
           break;
@@ -100,6 +103,9 @@ bool ImageWidget::eventFilter(QObject *obj, QEvent *event){
           break;
         case Qt::Key_Z:
           toggleFtw();
+          break;
+        case Qt::Key_Space:
+          // next picture
           break;
         case Qt::Key_Minus:
           zoomOut();

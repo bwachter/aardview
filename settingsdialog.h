@@ -17,10 +17,14 @@ class SettingsDialog: public QDialog {
   SettingsDialog();
 
   private:
+  QSettings settings;
   Ui::SettingsDialog ui;
   
   public slots:
   
+  private slots:
+  void accept();
+
   signals:
 
 };

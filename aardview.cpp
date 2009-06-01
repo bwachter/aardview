@@ -133,7 +133,8 @@ void AardView::createDocks(){
       settings.value("tnView/filterFiles").toBool()){
     qDebug() << "Setting filter: " << settings.value("tnView/fileMask").toString();
     tnViewModelProxy->setFilterRegExp(settings.value("tnView/fileMask").toString());
-    tnViewModelProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
+    if (settings.value("tnview/caseInsensitiveMatching").toBool())
+      tnViewModelProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
   }
 
   if (settings.value("tnView/showOnlyFiles", true).toBool())
