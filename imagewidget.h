@@ -14,6 +14,7 @@ class ImageWidget: public QWidget {
 
   public:
   ImageWidget();
+  QString currentFilename();
 
   private:
   bool scaledImage;
@@ -26,6 +27,7 @@ class ImageWidget: public QWidget {
   QScrollArea* imageArea;
   QScrollArea* infoArea;
   QSettings settings;
+  QString imageFileName;
   void displayImage();
   void scale(double factor);
 #ifndef QT_NO_PRINTER
@@ -36,6 +38,7 @@ class ImageWidget: public QWidget {
   void load(QString pathname);
   void toggleFtw();
   void normalSize();
+  void open();
   void print();
   void rotate();
   void zoomIn();

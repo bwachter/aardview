@@ -30,15 +30,28 @@ ImageWidget::ImageWidget(): QWidget(){
 
 void ImageWidget::load(QString pathname){
   originalImage.load(pathname);
+  if (originalImage.isNull()){
+    qDebug() << "Unable to load image: " << pathname;
+    // FIXME, set pixmap to a valid pixmap or one from resource, configurable
+    displayedPixmap = 0;
+  } else {
+    imageFileName=pathname;
+    displayedPixmap=QPixmap::fromImage(originalImage);
+  }
+
   if (settings.value("viewer/resetFtwOnChange").toBool())
     fitToWindow=settings.value("viewer/fitToWindow").toBool();
   //if (settings.value("viewer/resetScalingOnChange").toBool())
   // FIXME, add scaling
-  displayedPixmap=QPixmap::fromImage(originalImage);
+
   displayImage();
 }
 
 void ImageWidget::displayImage(){
+  if (displayedPixmap.isNull()){
+    qDebug() << "Skipping display stuff due to the lack of a pixmap";
+    return;
+  }
   bool keepAspectRatio=true;
   // FIXME add shrinkOnly
   if (fitToWindow){
@@ -66,6 +79,8 @@ void ImageWidget::displayImage(){
   imageContainer->adjustSize();
 }
 
+QString ImageWidget::currentFilename(){ return imageFileName; }
+
 void ImageWidget::normalSize(){ scale(0); }
 
 void ImageWidget::rotate(){
@@ -75,6 +90,15 @@ void ImageWidget::toggleFtw(){
   if (fitToWindow) fitToWindow=false;
   else fitToWindow=true;
   displayImage();
+}
+
+void ImageWidget::open(){
+  QString fileName = 
+    QFileDialog::getOpenFileName(this,
+                                 tr("Open File"), QDir::currentPath());
+  if (!fileName.isEmpty()) {
+    load(fileName);
+  }
 }
 
 void ImageWidget::print(){

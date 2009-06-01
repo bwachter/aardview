@@ -1,5 +1,5 @@
 CONFIG += uitools
-#CONFIG += debug
+CONFIG += debug
 HEADERS = aardview.h \
 	imagewidget.h \
 	settingsdialog.h \

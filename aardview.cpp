@@ -82,6 +82,9 @@ void AardView::createActions(){
 
 void AardView::createMenus(){
   fileMenu = menuBar()->addMenu(tr("&File"));
+  fileMenu->addAction(tr("Open"), widget,
+                      SLOT(open()), QKeySequence(tr("Ctrl+O")));
+  fileMenu->addSeparator();
   fileMenu->addAction(settingsAct);
 #ifndef QT_NO_PRINTER
   fileMenu->addSeparator();
@@ -210,7 +213,7 @@ void AardView::openEditor(){
   if (program !=""){
     
     QStringList arguments;
-    arguments << getSelectedFilename();
+    arguments << widget->currentFilename();
     QProcess *myProcess = new QProcess(this);
     myProcess->start(program, arguments);
   }
