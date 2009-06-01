@@ -60,7 +60,7 @@ void AardView::createActions(){
   connect(exitAct, SIGNAL(triggered()), qApp, SLOT(quit()));
 
   editAct = new QAction(tr("&Edit"), this);
-  editAct->setShortcut(tr("Ctrl-E"));
+  editAct->setShortcut(tr("Ctrl+E"));
   editAct->setStatusTip(tr("Edit in external editor"));
   connect(editAct, SIGNAL(triggered()), this, SLOT(openEditor()));
 
