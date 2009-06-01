@@ -40,9 +40,13 @@ class ImageWidget: public QWidget {
   void normalSize();
   void open();
   void print();
+  void printPreview();
   void rotate();
   void zoomIn();
   void zoomOut();
+
+  private slots:
+  void paintToPrinter(QPrinter *printer);
 
   signals:
 

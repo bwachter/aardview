@@ -104,15 +104,30 @@ void ImageWidget::open(){
 void ImageWidget::print(){
 #ifndef QT_NO_PRINTER
   QPrintDialog dialog(&printer, this);
-  if (dialog.exec()) {
-    QPainter painter(&printer);
-    QRect rect = painter.viewport();
-    QSize size = displayedPixmap.size();
-    size.scale(rect.size(), Qt::KeepAspectRatio);
-    painter.setViewport(rect.x(), rect.y(), size.width(), size.height());
-    painter.setWindow(displayedPixmap.rect());
-    painter.drawPixmap(0, 0, displayedPixmap);
+  if (dialog.exec()) { 
+    paintToPrinter(&printer);
   }
+#endif
+}
+
+void ImageWidget::printPreview(){
+#ifndef QT_NO_PRINTER
+  QPrintPreviewDialog dialog(&printer, this);
+  connect(&dialog, SIGNAL(paintRequested(QPrinter *)), 
+          this, SLOT(paintToPrinter(QPrinter *)));
+  dialog.exec();
+#endif
+}
+
+void ImageWidget::paintToPrinter(QPrinter *printer){
+#ifndef QT_NO_PRINTER
+  QPainter painter(printer);
+  QRect rect = painter.viewport();
+  QSize size = displayedPixmap.size();
+  size.scale(rect.size(), Qt::KeepAspectRatio);
+  painter.setViewport(rect.x(), rect.y(), size.width(), size.height());
+  painter.setWindow(displayedPixmap.rect());
+  painter.drawPixmap(0, 0, displayedPixmap);
 #endif
 }
 

@@ -90,6 +90,8 @@ void AardView::createMenus(){
   fileMenu->addSeparator();
   fileMenu->addAction(tr("Print"), widget,
                       SLOT(print()), QKeySequence(tr("Ctrl+P")));
+  fileMenu->addAction(tr("Print Preview"), widget,
+                      SLOT(printPreview()));
 #endif
   fileMenu->addSeparator();
   fileMenu->addAction(exitAct);
