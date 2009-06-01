@@ -20,6 +20,40 @@
 #include "settingsdialog.h"
 #include "tnviewmodel.h"
 
+class AListView: public QListView {
+  Q_OBJECT
+    
+    public:
+  AListView(QWidget* parent=0): QListView(parent) {}
+
+  private:
+  QSettings settings;
+
+  protected:
+  void enterEvent(QEvent *e){
+    if (settings.value("main/focusFollowsMouse").toBool())
+      this->setFocus();
+    QListView::enterEvent(e);
+  }
+};
+
+class ATreeView: public QTreeView {
+  Q_OBJECT
+    
+    public:
+  ATreeView(QWidget* parent=0): QTreeView(parent) {}
+
+  private:
+  QSettings settings;
+
+  protected:
+  void enterEvent(QEvent *e){
+    if (settings.value("main/focusFollowsMouse").toBool())
+      this->setFocus();
+    QTreeView::enterEvent(e);
+  }
+};
+
 class AardView: public QMainWindow {
   Q_OBJECT
 
@@ -51,9 +85,9 @@ class AardView: public QMainWindow {
   TnViewModel *tnViewModel;
   QSortFilterProxyModel *tnViewModelProxy;
   QSortFilterProxyModel *dirViewModelProxy;
-  QTreeView *dirView;
-  QListView *tnView;
-  QListView *tagView;
+  ATreeView *dirView;
+  AListView *tnView;
+  AListView *tagView;
   ImageWidget *widget;
   SettingsDialog *settingsDialog;
 

@@ -29,6 +29,44 @@
        <property name="currentIndex" >
         <number>0</number>
        </property>
+       <widget class="QWidget" name="tab_4" >
+        <attribute name="title" >
+         <string>Main</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_10" >
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_8" >
+           <item>
+            <widget class="QCheckBox" name="mainInitialized" >
+             <property name="text" >
+              <string>Restore default settings on next start</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="mainFocusFollowsMouse" >
+             <property name="text" >
+              <string>Use 'focus follows mouse' between widgets</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_4" >
+             <property name="orientation" >
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0" >
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
        <widget class="QWidget" name="tab" >
         <attribute name="title" >
          <string>Listboxes</string>
@@ -153,6 +191,13 @@
                <widget class="QCheckBox" name="viewerFitToWindow" >
                 <property name="text" >
                  <string>Fit image to window per default</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="viewerShrinkOnly" >
+                <property name="text" >
+                 <string>Shrink images only when fitting to window</string>
                 </property>
                </widget>
               </item>

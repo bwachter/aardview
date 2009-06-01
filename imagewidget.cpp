@@ -40,6 +40,7 @@ void ImageWidget::load(QString pathname){
 
 void ImageWidget::displayImage(){
   bool keepAspectRatio=true;
+  // FIXME add shrinkOnly
   if (fitToWindow){
     // fit the image to the window, keeping the aspect ratio
     if (keepAspectRatio){
@@ -86,6 +87,12 @@ void ImageWidget::scale(double factor){
 void ImageWidget::zoomIn(){ scale(1.25); }
 
 void ImageWidget::zoomOut(){ scale(0.8); }
+
+void ImageWidget::enterEvent(QEvent *e){
+  if (settings.value("main/focusFollowsMouse").toBool())
+    imageArea->setFocus();
+  QWidget::enterEvent(e);
+}
 
 bool ImageWidget::eventFilter(QObject *obj, QEvent *event){
   if (obj == imageArea){

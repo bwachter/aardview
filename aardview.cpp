@@ -9,6 +9,7 @@ AardView::AardView(){
   if (!initialized){
     qDebug() << "Setting initial settings...";
     settings.beginGroup("main");
+    settings.setValue("focusFollowsMouse", false);
     settings.setValue("initialized", true);
     settings.setValue("externalEditor", "/usr/bin/gimp");
     settings.endGroup();
@@ -19,12 +20,13 @@ AardView::AardView(){
     settings.setValue("showOnlyFiles", true);
     settings.setValue("caseInsensitiveMatching", true);
     settings.setValue("filterFiles", true);
-    settings.setValue("fileMask", ".*(bmp|gif|jpg|jpeg|png|pbm|pgm|ppm|tif|tiff|xbm|xpm)");
+    settings.setValue("fileMask", ".*(bmp|gif|jpg|jpeg|png|pbm|pgm|ppm|svg|tif|tiff|xbm|xpm)");
     settings.endGroup();
     settings.beginGroup("viewer");
     settings.setValue("hideInfoArea", true);
     settings.setValue("resetFtwOnChange", true);
     settings.setValue("fitToWindow", true);
+    settings.setValue("shrinkOnly", true);
     settings.setValue("padding", 5);
     settings.endGroup();
     // do something on first start
@@ -97,21 +99,21 @@ void AardView::createDocks(){
   // create the dock items...
   QDockWidget *dock = new QDockWidget(tr("Directory tree"), this);
   dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-  dirView = new QTreeView(dock);
+  dirView = new ATreeView(dock);
   dock->setWidget(dirView);
   addDockWidget(Qt::LeftDockWidgetArea, dock);
   viewMenu->addAction(dock->toggleViewAction());
 
   dock = new QDockWidget(tr("Thumbnail view"), this);
   dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-  tnView = new QListView(dock);
+  tnView = new AListView(dock);
   dock->setWidget(tnView);
   addDockWidget(Qt::LeftDockWidgetArea, dock);
   viewMenu->addAction(dock->toggleViewAction());
 
   dock = new QDockWidget(tr("Tagged items"), this);
   dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-  tagView = new QListView(dock);
+  tagView = new AListView(dock);
   dock->setWidget(tagView);
   addDockWidget(Qt::RightDockWidgetArea, dock);
   viewMenu->addAction(dock->toggleViewAction());

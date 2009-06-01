@@ -41,6 +41,7 @@ class ImageWidget: public QWidget {
 
   protected:
   bool eventFilter(QObject *obj, QEvent *ev);
+  void enterEvent(QEvent *e);
 };
 
 
