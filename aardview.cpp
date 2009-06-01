@@ -83,6 +83,11 @@ void AardView::createActions(){
 void AardView::createMenus(){
   fileMenu = menuBar()->addMenu(tr("&File"));
   fileMenu->addAction(settingsAct);
+#ifndef QT_NO_PRINTER
+  fileMenu->addSeparator();
+  fileMenu->addAction(tr("Print"), widget,
+                      SLOT(print()), QKeySequence(tr("Ctrl+P")));
+#endif
   fileMenu->addSeparator();
   fileMenu->addAction(exitAct);
 

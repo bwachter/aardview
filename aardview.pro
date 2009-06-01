@@ -1,4 +1,5 @@
 CONFIG += uitools
+#CONFIG += debug
 HEADERS = aardview.h \
 	imagewidget.h \
 	settingsdialog.h \
@@ -15,6 +16,5 @@ TEMPLATE = app
 LANGUAGE = C++
 TRANSLATIONS = aardview_de.ts
 
-win32 {
-RC_FILE = win32.rc
-}
+win32:debug { CONFIG += console }
+win32 { RC_FILE = win32.rc }

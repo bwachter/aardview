@@ -28,11 +28,15 @@ class ImageWidget: public QWidget {
   QSettings settings;
   void displayImage();
   void scale(double factor);
+#ifndef QT_NO_PRINTER
+  QPrinter printer;
+#endif
 
   public slots:
   void load(QString pathname);
   void toggleFtw();
   void normalSize();
+  void print();
   void rotate();
   void zoomIn();
   void zoomOut();

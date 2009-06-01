@@ -77,6 +77,21 @@ void ImageWidget::toggleFtw(){
   displayImage();
 }
 
+void ImageWidget::print(){
+#ifndef QT_NO_PRINTER
+  QPrintDialog dialog(&printer, this);
+  if (dialog.exec()) {
+    QPainter painter(&printer);
+    QRect rect = painter.viewport();
+    QSize size = displayedPixmap.size();
+    size.scale(rect.size(), Qt::KeepAspectRatio);
+    painter.setViewport(rect.x(), rect.y(), size.width(), size.height());
+    painter.setWindow(displayedPixmap.rect());
+    painter.drawPixmap(0, 0, displayedPixmap);
+  }
+#endif
+}
+
 void ImageWidget::scale(double factor){
   fitToWindow=false;
   scaleFactor*=factor;
