@@ -19,6 +19,9 @@ class TnViewModel: public QAbstractListModel {
   QVariant headerData(int section, Qt::Orientation orientation,
                       int role = Qt::DisplayRole) const;
   void setDirectory(QString directoryName);
+  void setFilter (QDir::Filters filters);
+  QString filePath(const QModelIndex & index) const;
+  bool isDir(const QModelIndex & index) const;
 
   private:
     QStringList directoryItems;

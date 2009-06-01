@@ -49,6 +49,7 @@ class AardView: public QMainWindow {
   QSortFilterProxyModel *dirViewModelProxy;
   QTreeView *dirView;
   QListView *tnView;
+  QListView *tagView;
   ImageWidget *widget;
   SettingsDialog *settingsDialog;
 

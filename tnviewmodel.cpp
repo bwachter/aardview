@@ -34,8 +34,26 @@ QVariant TnViewModel::headerData(int section, Qt::Orientation orientation,
     return QString("Row %1").arg(section);
 }
 
+QString TnViewModel::filePath(const QModelIndex & index) const{
+  if (!index.isValid() || index.row() >= directoryItems.size()) 
+    return QString();
+  return directory.filePath(directoryItems.at(index.row()));
+}
+
+bool TnViewModel::isDir(const QModelIndex & index) const {
+  if (!index.isValid() || index.row() >= directoryItems.size())
+    return false;
+  QFileInfo info=QFileInfo(directoryItems.at(index.row()));
+  return info.isDir();
+}
+
 void TnViewModel::setDirectory(QString directoryName){
   directory.setPath(directoryName);
   directoryItems = directory.entryList();
+  reset();
+}
+
+void TnViewModel::setFilter(QDir::Filters filters){
+  directory.setFilter(filters);
   reset();
 }

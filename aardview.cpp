@@ -97,11 +97,11 @@ void AardView::createDocks(){
 
   dock = new QDockWidget(tr("Tagged items"), this);
   dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-  //tnView = new QListView(dock);
-  //dock->setWidget(tnView);
+  tagView = new QListView(dock);
+  dock->setWidget(tagView);
   addDockWidget(Qt::RightDockWidgetArea, dock);
   viewMenu->addAction(dock->toggleViewAction());
-  dock->toggleViewAction();
+  dock->hide();
 
   // and set the model
   dirViewModelProxy->setSourceModel(dirViewModel);
@@ -113,29 +113,20 @@ void AardView::createDocks(){
 
   tnViewModelProxy->setSourceModel(tnViewModel);
   tnView->setModel(tnViewModelProxy);  
-  /* FIXME
-  tnView->setRootIndex(tnViewModelProxy->mapFromSource(
-                         tnViewModel->index(QDir::currentPath())));
-  */
+  tnViewModel->setDirectory(QDir::currentPath());
 
-/*
   if (settings.value("tnView/fileMask").toString() != ""){
     qDebug() << "Setting filter: " << settings.value("tnView/fileMask").toString();
     tnViewModelProxy->setFilterRegExp(settings.value("tnView/fileMask").toString());
-    tnViewModelProxy->setFilterKeyColumn(settings.value("tnView/column").toInt());
+    tnViewModelProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
   }
-*/
-/*
+
   if (settings.value("tnView/showOnlyFiles", true).toBool())
     tnViewModel->setFilter(QDir::Files);
-*/
 
   if (settings.value("dirView/showOnlyDirs", true).toBool())
     dirViewModel->setFilter(QDir::Dirs|QDir::NoDotAndDotDot);
     
-  //QDirModel *md=(QDirModel*)tnView->model();
-  //md->setFilter(QDir::Files);
-
   connect(dirView->selectionModel(),
           SIGNAL(selectionChanged(const QItemSelection &,
                                   const QItemSelection &)),
@@ -153,10 +144,6 @@ void AardView::dirIndexChanged(){
   if (dirViewModel->isDir(idx)){
     qDebug() << "Selected item is a directory";
     tnViewModel->setDirectory(dirViewModel->filePath(idx));
-/*
-    tnView->setRootIndex(tnViewModelProxy->mapFromSource(
-                           tnViewModel->index(dirViewModel->filePath(idx))));
-*/
   } else {
     widget->load(dirViewModel->filePath(idx));
   }
@@ -165,14 +152,12 @@ void AardView::dirIndexChanged(){
 void AardView::thumbIndexChanged(){
   QModelIndex idx = tnViewModelProxy->mapToSource(
     tnView->selectionModel()->currentIndex());
-  //qDebug() << "Path" << tnViewModel->filePath(idx);
-/*
+  qDebug() << "Path" << tnViewModel->filePath(idx);
   if (tnViewModel->isDir(idx)){
     qDebug() << "Selected item is a directory";
   } else {
     widget->load(tnViewModel->filePath(idx));
   }
-*/
 }
 
 void AardView::showSettings(){
