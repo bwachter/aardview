@@ -50,8 +50,12 @@ void AardView::createActions(){
 
   exitAct = new QAction(tr("E&xit"), this);
   exitAct->setShortcut(tr("Ctrl+X"));
-  exitAct->setStatusTip(tr("Exit Aardbei"));
+  exitAct->setStatusTip(tr("Exit Aardview"));
   connect(exitAct, SIGNAL(triggered()), qApp, SLOT(quit()));
+
+  editAct = new QAction(tr("Edit"), this);
+  editAct->setStatusTip(tr("Edit in external editor"));
+  connect(editAct, SIGNAL(triggered()), this, SLOT(openEditor()));
 
   settingsAct = new QAction(tr("Settings"), this);
   connect(settingsAct, SIGNAL(triggered()), this, SLOT(showSettings()));
@@ -70,6 +74,7 @@ void AardView::createActions(){
 void AardView::createMenus(){
   fileMenu = menuBar()->addMenu(tr("&File"));
   fileMenu->addAction(settingsAct);
+  fileMenu->addAction(editAct);
   fileMenu->addAction(exitAct);
 
   viewMenu = menuBar()->addMenu(tr("&View"));
@@ -157,6 +162,28 @@ void AardView::thumbIndexChanged(){
     qDebug() << "Selected item is a directory";
   } else {
     widget->load(tnViewModel->filePath(idx));
+  }
+}
+
+
+QString AardView::getSelectedFilename(){
+  QModelIndex idx = tnViewModelProxy->mapToSource(
+    tnView->selectionModel()->currentIndex());
+  if (tnViewModel->isDir(idx)){
+    return QString();
+  } else {
+    return tnViewModel->filePath(idx);
+  }
+}
+
+void AardView::openEditor(){
+  QString program = settings.value("main/externalEditor").toString();
+  if (program !=""){
+    
+    QStringList arguments;
+    arguments << getSelectedFilename();
+    QProcess *myProcess = new QProcess(this);
+    myProcess->start(program, arguments);
   }
 }
 

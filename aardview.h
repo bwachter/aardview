@@ -25,6 +25,7 @@ class AardView: public QMainWindow {
 
   public:
   AardView();
+  QString getSelectedFilename();
   
   private:
   QSettings settings;
@@ -35,6 +36,7 @@ class AardView: public QMainWindow {
   QAction *aboutAct;
   QAction *aboutQtAct;
   QAction *exitAct;
+  QAction *editAct;
   QAction *settingsAct;
   QAction *restoreAct;
   QAction *minimizeAct;
@@ -42,6 +44,7 @@ class AardView: public QMainWindow {
   void createActions();
   void createMenus();
   void createDocks();
+
 
   QDirModel *dirViewModel;
   TnViewModel *tnViewModel;
@@ -58,6 +61,7 @@ class AardView: public QMainWindow {
   void dirIndexChanged();
   void thumbIndexChanged();
   void showSettings();
+  void openEditor();
 };
 
 #endif
