@@ -20,7 +20,7 @@ AardView::AardView(){
     settings.setValue("showOnlyFiles", true);
     settings.setValue("caseInsensitiveMatching", true);
     settings.setValue("filterFiles", true);
-    settings.setValue("fileMask", ".*(bmp|gif|jpg|jpeg|png|pbm|pgm|ppm|svg|tif|tiff|xbm|xpm)");
+    settings.setValue("fileMask", ".*(bmp|gif|jpg|jpeg|png|pbm|pgm|ppm|svg|tif|tiff|xbm|xpm)$");
     settings.endGroup();
     settings.beginGroup("viewer");
     settings.setValue("hideInfoArea", true);
@@ -45,6 +45,27 @@ AardView::AardView(){
   createDocks();
   settingsDialog=new SettingsDialog;
   createPopupMenu();
+  connect(settingsDialog, SIGNAL(configurationChanged()),
+          this, SLOT(reconfigure()));
+  connect(settingsDialog, SIGNAL(configurationChanged()),
+          widget, SLOT(reconfigure()));
+}
+
+void AardView::reconfigure(){
+  qDebug() << "Checking configuration settings (main)";
+  if (settings.value("dirView/showOnlyDirs", true).toBool())
+    dirViewModel->setFilter(QDir::Dirs|QDir::NoDotAndDotDot);
+  if (settings.value("tnView/showOnlyFiles", true).toBool())
+    tnViewModel->setFilter(QDir::Files);
+  if (settings.value("tnView/fileMask").toString() != "" && 
+      settings.value("tnView/filterFiles").toBool()){
+    qDebug() << "Setting filter: " << settings.value("tnView/fileMask").toString();
+    tnViewModelProxy->setFilterRegExp(settings.value("tnView/fileMask").toString());
+    if (settings.value("tnview/caseInsensitiveMatching").toBool())
+      tnViewModelProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
+  } else {
+    tnViewModelProxy->setFilterRegExp("");
+  }
 }
 
 void AardView::createActions(){
@@ -84,8 +105,6 @@ void AardView::createMenus(){
   fileMenu = menuBar()->addMenu(tr("&File"));
   fileMenu->addAction(tr("Open"), widget,
                       SLOT(open()), QKeySequence(tr("Ctrl+O")));
-  fileMenu->addSeparator();
-  fileMenu->addAction(settingsAct);
 #ifndef QT_NO_PRINTER
   fileMenu->addSeparator();
   fileMenu->addAction(tr("Print"), widget,
@@ -98,6 +117,8 @@ void AardView::createMenus(){
 
   editMenu = menuBar()->addMenu(tr("&Edit"));
   editMenu->addAction(editAct);
+  editMenu->addSeparator();
+  editMenu->addAction(settingsAct);
 
   viewMenu = menuBar()->addMenu(tr("&View"));
   viewMenu->addAction(tr("Zoom in"), widget,
@@ -141,10 +162,7 @@ void AardView::createDocks(){
   dock->hide();
 
   // and set the model
-  if (settings.value("dirView/showOnlyDirs", true).toBool())
-    dirViewModel->setFilter(QDir::Dirs|QDir::NoDotAndDotDot);
-  if (settings.value("tnView/showOnlyFiles", true).toBool())
-    tnViewModel->setFilter(QDir::Files);
+  reconfigure();  
 
   dirViewModelProxy->setSourceModel(dirViewModel);
   dirView->setModel(dirViewModelProxy);
@@ -156,14 +174,6 @@ void AardView::createDocks(){
   tnViewModelProxy->setSourceModel(tnViewModel);
   tnView->setModel(tnViewModelProxy);  
   tnViewModel->setDirectory(QDir::currentPath());
-
-  if (settings.value("tnView/fileMask").toString() != "" && 
-      settings.value("tnView/filterFiles").toBool()){
-    qDebug() << "Setting filter: " << settings.value("tnView/fileMask").toString();
-    tnViewModelProxy->setFilterRegExp(settings.value("tnView/fileMask").toString());
-    if (settings.value("tnview/caseInsensitiveMatching").toBool())
-      tnViewModelProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
-  }
 
   connect(dirView->selectionModel(),
           SIGNAL(selectionChanged(const QItemSelection &,

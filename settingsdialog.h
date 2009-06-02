@@ -26,7 +26,7 @@ class SettingsDialog: public QDialog {
   void accept();
 
   signals:
-
+  void configurationChanged();
 };
 
 

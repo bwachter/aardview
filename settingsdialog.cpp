@@ -14,6 +14,7 @@ SettingsDialog::SettingsDialog(): QDialog(){
   settings.endGroup();
 
   settings.beginGroup("tnview");
+  ui.tnFilterFiles->setChecked(settings.value("filterFiles").toBool());
   ui.tnFileMask->setText(settings.value("fileMask").toString());
   ui.tnShowOnlyFiles->setChecked(settings.value("showOnlyFiles").toBool());
   ui.tnCaseInsensitiveMatching->setChecked(settings.value("caseInsensitiveMatching").toBool());
@@ -42,6 +43,7 @@ void SettingsDialog::accept(){
   settings.endGroup();
 
   settings.beginGroup("tnview");
+  settings.setValue("filterFiles", ui.tnFilterFiles->isChecked());
   settings.setValue("fileMask", ui.tnFileMask->text());
   settings.setValue("showOnlyFiles", ui.tnShowOnlyFiles->isChecked());
   settings.setValue("caseInsensitiveMatching", ui.tnCaseInsensitiveMatching->isChecked());
@@ -56,4 +58,5 @@ void SettingsDialog::accept(){
   settings.endGroup();
 
   this->hide();
+  emit configurationChanged();
 }

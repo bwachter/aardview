@@ -147,6 +147,13 @@
              </widget>
             </item>
             <item>
+             <widget class="QCheckBox" name="tnFilterFiles" >
+              <property name="text" >
+               <string>Filter files</string>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="QCheckBox" name="tnCaseInsensitiveMatching" >
               <property name="text" >
                <string>Use case-insensitive matching</string>

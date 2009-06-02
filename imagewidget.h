@@ -42,6 +42,7 @@ class ImageWidget: public QWidget {
   void open();
   void print();
   void printPreview();
+  void reconfigure();
   void rotate();
   void zoomIn();
   void zoomOut();

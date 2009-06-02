@@ -18,16 +18,21 @@ ImageWidget::ImageWidget(): QWidget(){
   setLayout(layout);
 
   scaleFactor=1.0;
-  if (settings.value("viewer/hideInfoArea").toBool())
-    infoArea->hide();
-  if (settings.value("viewer/resetFtwOnChange").toBool())
-    fitToWindow=settings.value("viewer/fitToWindow").toBool();
-  if (settings.value("viewer/smoothTransformation").toBool())
-    transformation=Qt::SmoothTransformation;
+
+  reconfigure();
 
   imageArea->setWidget(imageContainer);
 
   load(":/images/aardview.png");
+}
+
+void ImageWidget::reconfigure(){
+  qDebug() << "Checking configuration settings (viewer)";
+  infoArea->setVisible(!settings.value("viewer/hideInfoArea").toBool());
+  if (settings.value("viewer/resetFtwOnChange").toBool())
+    fitToWindow=settings.value("viewer/fitToWindow").toBool();
+  if (settings.value("viewer/smoothTransformation").toBool())
+    transformation=Qt::SmoothTransformation;
 }
 
 void ImageWidget::load(QString pathname){

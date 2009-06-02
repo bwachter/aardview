@@ -91,6 +91,9 @@ class AardView: public QMainWindow {
   ImageWidget *widget;
   SettingsDialog *settingsDialog;
 
+  public slots:
+  void reconfigure();
+
   private slots:
   void about();
   void dirIndexChanged();
