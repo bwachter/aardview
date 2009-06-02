@@ -1,0 +1,14 @@
+Source: aardview
+Section: x11
+Priority: optional
+Maintainer: Bernd Wachter <bwachter@lart.info>
+Build-Depends: debhelper (>> 3.0.0), qt4-qmake, libqt4-dev
+Standards-Version: 3.5.2
+
+Package: aardview
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: Image viewer for X
+ Aardview is a simple image viewer based on Qt
+ .
+ It's mainly optimized for keyboard input.

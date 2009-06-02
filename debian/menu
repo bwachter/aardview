@@ -1,0 +1,2 @@
+?package(aardview):needs=X11 section=XShells\
+  title="aardview" command="/usr/bin/aardview"
