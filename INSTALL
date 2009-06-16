@@ -1,0 +1,24 @@
+
+Prerequisites
+=============
+
+To compile aardview you need Qt (http://www.qtsoftware.com/products/)
+version 4.3 or newer. On an average Linux distribution you'll need to
+install packages for qmake, uic, and headers. For debian, that would be
+at least qt4-qmake and libqt4-dev
+
+
+Compiling
+=========
+
+Change to the aardview toplevel directory (i.e. the one with this file in)
+and execute qmake (qmake-qt4, in case default qmake on your system is from
+qt3). After that, just type make. 
+
+
+Install
+=======
+
+The binary (aardview/aardview) is currently self-contained, just copy it to
+wherever you like. An install routine will be provided once there are external
+dependencies.
