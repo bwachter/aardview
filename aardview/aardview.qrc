@@ -1,5 +1,5 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
-	<file>images/aardview.png</file>
+	<file>../images/aardview.png</file>
 </qresource>
 </RCC>
