@@ -7,6 +7,7 @@ TnViewModel::TnViewModel(QString directoryName, QObject *parent):
 }
 
 int TnViewModel::rowCount(const QModelIndex &parent) const {
+  (void) parent;
   return directoryItems.count();
 }
 
