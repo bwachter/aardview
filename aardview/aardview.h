@@ -101,6 +101,9 @@ class AardView: public QMainWindow {
   void showSettings();
   void openEditor();
   void toggleMenuBar();
+
+  protected:
+  bool eventFilter(QObject *obj, QEvent *ev);
 };
 
 #endif

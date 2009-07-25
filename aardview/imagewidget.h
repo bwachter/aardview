@@ -53,7 +53,6 @@ class ImageWidget: public QWidget {
   signals:
 
   protected:
-  bool eventFilter(QObject *obj, QEvent *ev);
   void enterEvent(QEvent *e);
 };
 

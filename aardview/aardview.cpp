@@ -33,6 +33,7 @@ AardView::AardView(){
   }
 
   widget=new ImageWidget();
+  widget->installEventFilter(this);
   dirViewModel = new QDirModel();
   tnViewModel = new TnViewModel(QDir::currentPath());
   dirViewModelProxy = new QSortFilterProxyModel();
@@ -290,4 +291,42 @@ void AardView::about(){
                      .arg(supportedReadFormats)
                      .arg(supportedWriteFormats)
     );
+}
+
+bool AardView::eventFilter(QObject *obj, QEvent *event){
+  // most likely we don't neet the widget check anymore
+  if (obj == widget){
+    if (event->type() == QEvent::KeyPress){
+      QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
+      switch(keyEvent->key()){
+        case Qt::Key_B:
+          // prev picture
+          break;
+        case Qt::Key_N:
+          widget->normalSize();
+          break;
+        case Qt::Key_R:
+          widget->rotate();
+          break;
+        case Qt::Key_Z:
+          widget->toggleFtw();
+          break;
+        case Qt::Key_Space:
+          // next picture
+          break;
+        case Qt::Key_Minus:
+          widget->zoomOut();
+          break;
+        case Qt::Key_Plus:
+          widget->zoomIn();
+          break;
+        default:
+          return QWidget::eventFilter(obj, event);
+      };
+      // if we got here we consumed the event
+      return true;
+    } 
+  }
+  // if we got here we don't care about the event
+  return QWidget::eventFilter(obj, event);
 }

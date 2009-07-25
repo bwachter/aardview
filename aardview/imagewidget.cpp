@@ -5,7 +5,6 @@ ImageWidget::ImageWidget(): QWidget(){
   imageContainer = new QLabel;
 
   imageArea = new QScrollArea;
-  imageArea->installEventFilter(this);
   infoArea = new QScrollArea;
   infoArea->setFocusPolicy(Qt::NoFocus);
 
@@ -162,42 +161,5 @@ void ImageWidget::enterEvent(QEvent *e){
   if (settings.value("main/focusFollowsMouse").toBool())
     imageArea->setFocus();
   QWidget::enterEvent(e);
-}
-
-bool ImageWidget::eventFilter(QObject *obj, QEvent *event){
-  if (obj == imageArea){
-    if (event->type() == QEvent::KeyPress){
-      QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
-      switch(keyEvent->key()){
-        case Qt::Key_B:
-          // prev picture
-          break;
-        case Qt::Key_N:
-          normalSize();
-          break;
-        case Qt::Key_R:
-          rotate();
-          break;
-        case Qt::Key_Z:
-          toggleFtw();
-          break;
-        case Qt::Key_Space:
-          // next picture
-          break;
-        case Qt::Key_Minus:
-          zoomOut();
-          break;
-        case Qt::Key_Plus:
-          zoomIn();
-          break;
-        default:
-          return QWidget::eventFilter(obj, event);
-      };
-      // if we got here we consumed the event
-      return true;
-    } 
-  }
-  // if we got here we don't care about the event
-  return QWidget::eventFilter(obj, event);
 }
 
