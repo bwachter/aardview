@@ -193,6 +193,7 @@ void AardView::dirIndexChanged(){
   if (dirViewModel->isDir(idx)){
     qDebug() << "Selected item is a directory";
     tnViewModel->setDirectory(dirViewModel->filePath(idx));
+    tnView->scrollToTop();
   } else {
     widget->load(dirViewModel->filePath(idx));
   }
