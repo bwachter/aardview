@@ -238,8 +238,10 @@ void AardView::showSettings(){
 
 void AardView::toggleMenuBar(){
   if (menuBarVisible){
+    //menuBar()->setFixedHeight(2);
     menuBar()->hide();
     menuBarVisible=false;
+    this->adjustSize();
   } else {
     menuBar()->show();
     menuBarVisible=true;
@@ -294,14 +296,29 @@ void AardView::about(){
     );
 }
 
+void AardView::contextMenuEvent(QContextMenuEvent *event){
+  QMenu menu(this);
+  menu.addMenu(fileMenu);
+  menu.addMenu(editMenu);
+  menu.addMenu(viewMenu);
+  menu.addMenu(helpMenu);
+  menu.exec(event->globalPos());
+}
+
 bool AardView::eventFilter(QObject *obj, QEvent *event){
-  // most likely we don't neet the widget check anymore
+  // most likely we don't neet the widget check anymore, though it might 
+  // come in handy later to bind the default keys only to some widget.
+  // for now we don't need the keys without modifier on any widget other
+  // than the image widget
   if (obj == widget){
     if (event->type() == QEvent::KeyPress){
       QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
       switch(keyEvent->key()){
         case Qt::Key_B:
           // prev picture
+          break;
+        case Qt::Key_M:
+          this->toggleMenuBar();
           break;
         case Qt::Key_N:
           widget->normalSize();

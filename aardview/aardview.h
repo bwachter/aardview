@@ -103,6 +103,7 @@ class AardView: public QMainWindow {
   void toggleMenuBar();
 
   protected:
+  void contextMenuEvent(QContextMenuEvent *event);
   bool eventFilter(QObject *obj, QEvent *ev);
 };
 
