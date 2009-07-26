@@ -101,6 +101,7 @@ class AardView: public QMainWindow {
   void showSettings();
   void openEditor();
   void toggleMenuBar();
+  void handlePaste();
 
   protected:
   void contextMenuEvent(QContextMenuEvent *event);

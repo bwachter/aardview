@@ -221,6 +221,29 @@ QString AardView::getSelectedFilename(){
   }
 }
 
+void AardView::handlePaste(){
+  qDebug() << "Paste handler not yet implemented";
+  QDir dir;
+  QClipboard *clipboard = QApplication::clipboard();
+
+  if (clipboard->supportsSelection()){
+    qDebug() << "Running X11, checking selection buffer";
+    qDebug() << "Selection contains " << clipboard->text(QClipboard::Selection);
+    dir.setPath(clipboard->text(QClipboard::Selection));
+  } 
+  // TODO check if this works on windows as expected
+  if (!clipboard->supportsSelection() || !dir.exists()) {
+    qDebug() << "Clipboard contains " << clipboard->text();
+    dir.setPath(clipboard->text());
+  }
+
+  if (dir.exists()){
+    qDebug() << "Changing to " << dir.absolutePath();
+    dirView->setCurrentIndex(dirViewModelProxy->mapFromSource(
+                               dirViewModel->index(dir.absolutePath())));
+  }
+}
+
 void AardView::openEditor(){
   QString program = settings.value("main/externalEditor").toString();
   if (program !=""){
@@ -306,6 +329,17 @@ void AardView::contextMenuEvent(QContextMenuEvent *event){
 }
 
 bool AardView::eventFilter(QObject *obj, QEvent *event){
+  if (event->type() == QEvent::MouseButtonPress){
+    QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
+    switch(mouseEvent->button()){
+      case Qt::MidButton:
+        this->handlePaste();
+        break;
+      default:
+        return QWidget::eventFilter(obj, event);
+    }
+  }
+
   // most likely we don't neet the widget check anymore, though it might 
   // come in handy later to bind the default keys only to some widget.
   // for now we don't need the keys without modifier on any widget other
@@ -313,34 +347,38 @@ bool AardView::eventFilter(QObject *obj, QEvent *event){
   if (obj == widget){
     if (event->type() == QEvent::KeyPress){
       QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
-      switch(keyEvent->key()){
-        case Qt::Key_B:
-          // prev picture
-          break;
-        case Qt::Key_M:
-          this->toggleMenuBar();
-          break;
-        case Qt::Key_N:
-          widget->normalSize();
-          break;
-        case Qt::Key_R:
-          widget->rotate();
-          break;
-        case Qt::Key_Z:
-          widget->toggleFtw();
-          break;
-        case Qt::Key_Space:
-          // next picture
-          break;
-        case Qt::Key_Minus:
-          widget->zoomOut();
-          break;
-        case Qt::Key_Plus:
-          widget->zoomIn();
-          break;
-        default:
-          return QWidget::eventFilter(obj, event);
-      };
+      if (keyEvent->matches(QKeySequence::Paste)) {
+        this->handlePaste();
+      } else {
+        switch(keyEvent->key()){
+          case Qt::Key_B:
+            // prev picture
+            break;
+          case Qt::Key_M:
+            this->toggleMenuBar();
+            break;
+          case Qt::Key_N:
+            widget->normalSize();
+            break;
+          case Qt::Key_R:
+            widget->rotate();
+            break;
+          case Qt::Key_Z:
+            widget->toggleFtw();
+            break;
+          case Qt::Key_Space:
+            // next picture
+            break;
+          case Qt::Key_Minus:
+            widget->zoomOut();
+            break;
+          case Qt::Key_Plus:
+            widget->zoomIn();
+            break;
+          default:
+            return QWidget::eventFilter(obj, event);
+        };
+      }
       // if we got here we consumed the event
       return true;
     } 
