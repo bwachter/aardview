@@ -173,6 +173,14 @@ void AardView::createDocks(){
   dirView->setCurrentIndex(dirViewModelProxy->mapFromSource(
                              dirViewModel->index(QDir::currentPath())));
 
+  // TODO maybe make this configurable
+  // size
+  dirView->hideColumn(1);
+  // type
+  dirView->hideColumn(2);
+  // last modified
+  dirView->hideColumn(3);
+
   tnViewModelProxy->setSourceModel(tnViewModel);
   tnView->setModel(tnViewModelProxy);  
   tnViewModel->setDirectory(QDir::currentPath());
