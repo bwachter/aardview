@@ -9,3 +9,6 @@ release/
 vc80.pdb
 *.qm
 *.db
+build-stamp
+debian/aardview.*
+debian/files

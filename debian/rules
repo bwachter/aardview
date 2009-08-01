@@ -35,10 +35,7 @@ install: build
 	dh_testroot
 	dh_clean -k
 	dh_installdirs
-	$(MAKE) install DESTDIR=$(CURDIR)/debian/aardview
-	install -d $(CURDIR)/debian/aardview/usr/bin/
-	install -m 755 aardview $(CURDIR)/debian/aardview/usr/bin/
-
+	$(MAKE) install INSTALL_ROOT=$(CURDIR)/debian/aardview
 
 # Build architecture-independent files here.
 binary-indep: build install
