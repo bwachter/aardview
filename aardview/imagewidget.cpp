@@ -3,12 +3,14 @@
 ImageWidget::ImageWidget(): QWidget(){
   QVBoxLayout *layout = new QVBoxLayout;
   imageContainer = new QLabel;
+  infoContainer = new QLabel;
 
   imageArea = new QScrollArea;
   infoArea = new QScrollArea;
   infoArea->setFocusPolicy(Qt::NoFocus);
 
   imageArea->setWidgetResizable(true);
+  infoArea->setWidgetResizable(true);
 
   layout->setContentsMargins(0, 0, 0, 0);
   layout->setSpacing(0);
@@ -21,7 +23,10 @@ ImageWidget::ImageWidget(): QWidget(){
   reconfigure();
 
   imageArea->setWidget(imageContainer);
+  // TODO maybe move this to a dock, too?
+  infoArea->setWidget(infoContainer);
 
+  updateInformation();
   load(":/images/aardview.png");
 }
 
@@ -151,6 +156,10 @@ void ImageWidget::scale(double factor){
   scaleFactor*=factor;
   if (scaleFactor==0) scaleFactor++;
   displayImage();
+}
+
+void ImageWidget::updateInformation(){
+  infoContainer->setText("<h3>Image information</h3>Sorry, not yet implemented");
 }
   
 void ImageWidget::zoomIn(){ scale(1.25); }
