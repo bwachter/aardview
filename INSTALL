@@ -7,6 +7,9 @@ version 4.3 or newer. On an average Linux distribution you'll need to
 install packages for qmake, uic, and headers. For debian, that would be
 at least qt4-qmake and libqt4-dev
 
+If you'd like to compile in exif support you need to install libexif
+(http://libexif.sourceforge.net), libexif-dev in debian.
+
 
 Compiling
 =========
@@ -14,6 +17,10 @@ Compiling
 Change to the aardview toplevel directory (i.e. the one with this file in)
 and execute qmake (qmake-qt4, in case default qmake on your system is from
 qt3). After that, just type make. 
+
+If you're using debian or a related distribution you can build a debian 
+package by changing into the aardview toplevel directory and typing 
+dpkg-buildpackage 
 
 
 Install
