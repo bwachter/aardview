@@ -93,6 +93,8 @@ class AardView: public QMainWindow {
 
   public slots:
   void reconfigure();
+  void selectNext();
+  void selectPrev();
 
   private slots:
   void about();

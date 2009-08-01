@@ -219,7 +219,6 @@ void AardView::thumbIndexChanged(){
   }
 }
 
-
 QString AardView::getSelectedFilename(){
   QModelIndex idx = tnViewModelProxy->mapToSource(
     tnView->selectionModel()->currentIndex());
@@ -263,6 +262,19 @@ void AardView::openEditor(){
     myProcess->start(program, arguments);
   }
 }
+
+void AardView::selectNext(){
+  QModelIndex idx = tnViewModelProxy->mapToSource(
+    tnView->selectionModel()->currentIndex());
+
+  tnView->setCurrentIndex(
+    tnViewModelProxy->mapFromSource(
+      tnViewModel->index(idx.row()+1, 0, QModelIndex())));
+  
+  qDebug() << "Row: " << idx.row();
+}
+
+void AardView::selectPrev(){}
 
 void AardView::showSettings(){
   settingsDialog->show();
@@ -345,7 +357,7 @@ bool AardView::eventFilter(QObject *obj, QEvent *event){
       } else {
         switch(keyEvent->key()){
           case Qt::Key_B:
-            // prev picture
+            this->selectPrev();
             break;
           case Qt::Key_M:
             this->toggleMenuBar();
@@ -360,7 +372,7 @@ bool AardView::eventFilter(QObject *obj, QEvent *event){
             widget->toggleFtw();
             break;
           case Qt::Key_Space:
-            // next picture
+            this->selectNext();
             break;
           case Qt::Key_Minus:
             widget->zoomOut();
