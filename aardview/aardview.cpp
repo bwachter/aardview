@@ -294,12 +294,17 @@ void AardView::about(){
 
   QMessageBox::about(this, tr("About Menu"),
                      tr("<h1>About Aardview</h1><br />"
-                        "A simple image viewer written by Bernd Wachter<br />"
-                        "Aardwork contributed by prism<br />"
+                        "A simple image viewer written by Bernd Wachter. You can visit the <a href=\"http://bwachter.lart.info/projects/aardview/\">project homepage</a> for more information.<br /><br />"
+                        "Aardwork has been contributed by prism.<br /><br />"
+                        "For bug reports and suggestions please <a href=\"https://mantis.lart.info\">visit my mantis installation</a>."
                         "<h3>Supported formats</h3>"
                         "Reading: %2<br />"
                         "Writing: %3<br />"
+#ifdef EXIF
+                        "<p align=\"right\">Build key: %1, EXIF</p>"
+#else
                         "<p align=\"right\">Build key: %1</p>"
+#endif
                        )
                      .arg(QLibraryInfo::buildKey())
                      .arg(supportedReadFormats)

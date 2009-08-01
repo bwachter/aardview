@@ -17,6 +17,8 @@ LANGUAGE = C++
 TRANSLATIONS = aardview_de.ts
 PKGCONFIG += libexif
 OBJECTS_DIR = ../build
+MOC_DIR = ../build
+#UI_DIR = ../build
 
 system(pkg-config --exists libexif):DEFINES += EXIF
 
