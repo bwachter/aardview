@@ -4,6 +4,7 @@
 #include "imagewidget.h"
 
 AardView::AardView(){
+  this->setWindowIcon(QPixmap(":/images/aardview-icon.png"));
   bool initialized=settings.value("main/initialized").toBool();
 
   if (!initialized){
@@ -285,35 +286,14 @@ void AardView::about(){
 
   QMessageBox::about(this, tr("About Menu"),
                      tr("<h1>About Aardview</h1><br />"
-                        "FIXME<br />"
-                        "<h2>Supported formats</h2>"
-                        "Reading: %12<br />"
-                        "Writing: %13<br />"
-                        "<h2>Build information</h2>"
-                        "Licensed to: %1<br />"
-                        "Licensed products: %2<br />"
-                        "Build key: %3<br />"
-                        "<h3>Path names</h3>"
-                        "Documentation: %4<br />"
-                        "Headers: %5<br />"
-                        "Libraries: %6<br />"
-                        "Binaries: %7<br />"
-                        "Plugins: %8<br />"
-                        "Data: %9<br />"
-                        "Translations: %10<br />"
-                        "Settings: %11<br />"
+                        "A simple image viewer written by Bernd Wachter<br />"
+                        "Aardwork contributed by prism<br />"
+                        "<h3>Supported formats</h3>"
+                        "Reading: %2<br />"
+                        "Writing: %3<br />"
+                        "<p align=\"right\">Build key: %1</p>"
                        )
-                     .arg(QLibraryInfo::licensee())
-                     .arg(QLibraryInfo::licensedProducts())
                      .arg(QLibraryInfo::buildKey())
-                     .arg(QLibraryInfo::location(QLibraryInfo::DocumentationPath))
-                     .arg(QLibraryInfo::location(QLibraryInfo::HeadersPath))
-                     .arg(QLibraryInfo::location(QLibraryInfo::LibrariesPath))
-                     .arg(QLibraryInfo::location(QLibraryInfo::BinariesPath))
-                     .arg(QLibraryInfo::location(QLibraryInfo::PluginsPath))
-                     .arg(QLibraryInfo::location(QLibraryInfo::DataPath))
-                     .arg(QLibraryInfo::location(QLibraryInfo::TranslationsPath))
-                     .arg(QLibraryInfo::location(QLibraryInfo::SettingsPath))
                      .arg(supportedReadFormats)
                      .arg(supportedWriteFormats)
     );
