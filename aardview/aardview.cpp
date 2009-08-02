@@ -217,6 +217,8 @@ void AardView::thumbIndexChanged(){
   } else {
     widget->load(tnViewModel->filePath(idx));
   }
+  qDebug () << "Selected index: " << tnView->selectionModel()->currentIndex().row()
+            << "Proxy index: " << idx.row();
 }
 
 QString AardView::getSelectedFilename(){
@@ -264,17 +266,42 @@ void AardView::openEditor(){
 }
 
 void AardView::selectNext(){
-  QModelIndex idx = tnViewModelProxy->mapToSource(
-    tnView->selectionModel()->currentIndex());
+  // TODO
+  // configurable: overwrap as jump to top, or jump to next directory
+  int index;
 
-  tnView->setCurrentIndex(
-    tnViewModelProxy->mapFromSource(
-      tnViewModel->index(idx.row()+1, 0, QModelIndex())));
-  
-  qDebug() << "Row: " << idx.row();
+  QModelIndex idx = tnView->selectionModel()->currentIndex();
+
+  if (idx.row()+1 == tnViewModelProxy->rowCount())
+    index = 0;
+  else index = idx.row()+1;
+
+  tnView->setCurrentIndex(tnViewModelProxy->index(index, 0));
+
+  qDebug() << "Previous row: " << idx.row() 
+           << "Selected row: " << idx.row()+1
+           << "Index: " << index
+           << " Rowcount: " << tnViewModel->rowCount()
+           << " Proxyrowcount: " << tnViewModelProxy->rowCount();
 }
 
-void AardView::selectPrev(){}
+void AardView::selectPrev(){
+  int index;
+
+  QModelIndex idx = tnView->selectionModel()->currentIndex();
+
+  if (idx.row() <= 0)
+    index = tnViewModelProxy->rowCount()-1;
+  else index = idx.row()-1;
+
+  tnView->setCurrentIndex(tnViewModelProxy->index(index, 0));
+
+  qDebug() << "Previous row: " << idx.row() 
+           << "Selected row: " << idx.row()+1
+           << "Index: " << index
+           << " Rowcount: " << tnViewModel->rowCount()
+           << " Proxyrowcount: " << tnViewModelProxy->rowCount();
+}
 
 void AardView::showSettings(){
   settingsDialog->show();
