@@ -15,5 +15,6 @@ debian/files
 
 # clickonce wrapper
 cowrap.suo
+cowrap.csproj.user
 cowrap/cowrap/obj
 cowrap/cowrap/bin
