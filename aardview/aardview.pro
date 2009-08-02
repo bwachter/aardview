@@ -1,4 +1,3 @@
-CONFIG += uitools
 #CONFIG += debug
 HEADERS = aardview.h \
 	imagewidget.h \
