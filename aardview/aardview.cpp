@@ -10,9 +10,10 @@ AardView::AardView(){
   if (!initialized){
     qDebug() << "Setting initial settings...";
     settings.beginGroup("main");
-    settings.setValue("focusFollowsMouse", false);
+    settings.setValue("focusFollowsMouse", true);
     settings.setValue("initialized", true);
     settings.setValue("externalEditor", "/usr/bin/gimp");
+    settings.setValue("showStatusbar", false);
     settings.endGroup();
     settings.beginGroup("dirview");
     settings.setValue("showOnlyDirs", true);
@@ -47,6 +48,8 @@ AardView::AardView(){
   createDocks();
   settingsDialog=new SettingsDialog;
   createPopupMenu();
+
+  statusBar();
   connect(settingsDialog, SIGNAL(configurationChanged()),
           this, SLOT(reconfigure()));
   connect(settingsDialog, SIGNAL(configurationChanged()),
@@ -55,6 +58,7 @@ AardView::AardView(){
 
 void AardView::reconfigure(){
   qDebug() << "Checking configuration settings (main)";
+  statusBar()->setVisible(settings.value("main/showStatusbar").toBool());
   if (settings.value("dirView/showOnlyDirs", true).toBool())
     dirViewModel->setFilter(QDir::Dirs|QDir::NoDotAndDotDot);
   if (settings.value("tnView/showOnlyFiles", true).toBool())
@@ -372,7 +376,7 @@ bool AardView::eventFilter(QObject *obj, QEvent *event){
     }
   }
 
-  // most likely we don't neet the widget check anymore, though it might 
+  // most likely we don't need the widget check anymore, though it might 
   // come in handy later to bind the default keys only to some widget.
   // for now we don't need the keys without modifier on any widget other
   // than the image widget

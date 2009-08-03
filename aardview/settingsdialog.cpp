@@ -6,6 +6,7 @@ SettingsDialog::SettingsDialog(): QDialog(){
   settings.beginGroup("main");
   ui.mainInitialized->setChecked(!settings.value("initialized").toBool());
   ui.mainFocusFollowsMouse->setChecked(settings.value("focusFollowsMouse").toBool());
+  ui.mainShowStatusbar->setChecked(settings.value("showStatusbar").toBool());
   ui.mainExternalEditor->setText(settings.value("externalEditor").toString());
   settings.endGroup();
 
@@ -35,6 +36,7 @@ void SettingsDialog::accept(){
   settings.beginGroup("main");
   settings.setValue("initialized", !ui.mainInitialized->isChecked());
   settings.setValue("focusFollowsMouse", ui.mainFocusFollowsMouse->isChecked());
+  settings.setValue("showStatusbar", ui.mainShowStatusbar->isChecked());
   settings.setValue("externalEditor", ui.mainExternalEditor->text());
   settings.endGroup();
 
