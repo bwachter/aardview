@@ -8,7 +8,8 @@ SOURCES = aardview.cpp \
 	main.cpp \
 	settingsdialog.cpp \
 	tnviewmodel.cpp
-FORMS = settingsdialog.ui
+FORMS = aardview.ui \
+      settingsdialog.ui
 RESOURCES = aardview.qrc
 TARGET = aardview
 TEMPLATE = app

@@ -16,6 +16,8 @@
 #include <QAction>
 
 #include <QtGui>
+
+#include "ui_aardview.h"
 #include "imagewidget.h"
 #include "settingsdialog.h"
 #include "tnviewmodel.h"
@@ -62,23 +64,9 @@ class AardView: public QMainWindow {
   QString getSelectedFilename();
   
   private:
+  Ui::AardView ui;
   bool menuBarVisible;
   QSettings settings;
-  QMenu *fileMenu;
-  QMenu *editMenu;
-  QMenu *helpMenu;
-  QMenu *viewMenu;
-  QAction *aboutAct;
-  QAction *aboutQtAct;
-  QAction *exitAct;
-  QAction *editAct;
-  QAction *menuAct;
-  QAction *settingsAct;
-  QAction *restoreAct;
-  QAction *minimizeAct;
-  QAction *maximizeAct;
-  void createActions();
-  void createMenus();
   void createDocks();
 
   QDirModel *dirViewModel;

@@ -4,8 +4,13 @@
 #include "imagewidget.h"
 
 AardView::AardView(){
+  ui.setupUi(this);
+
   this->setWindowIcon(QPixmap(":/images/aardview-icon.png"));
   bool initialized=settings.value("main/initialized").toBool();
+
+  connect(ui.actionExit, SIGNAL(triggered()), qApp, SLOT(quit()));
+  connect(ui.actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 
   if (!initialized){
     qDebug() << "Setting initial settings...";
@@ -34,6 +39,8 @@ AardView::AardView(){
     // do something on first start
   }
 
+// remove printer items if qt comes without printer support #ifndef QT_NO_PRINTER
+
   widget=new ImageWidget();
   widget->installEventFilter(this);
   dirViewModel = new QDirModel();
@@ -43,8 +50,6 @@ AardView::AardView(){
 
   setCentralWidget(widget);
   
-  createActions();
-  createMenus();
   createDocks();
   settingsDialog=new SettingsDialog;
   createPopupMenu();
@@ -74,98 +79,20 @@ void AardView::reconfigure(){
   }
 }
 
-void AardView::createActions(){
-  aboutAct = new QAction(tr("&About"), this);
-  aboutAct->setStatusTip(tr("Show the application's About box"));
-  connect(aboutAct, SIGNAL(triggered()), this, SLOT(about()));
-        
-  aboutQtAct = new QAction(tr("About &Qt"), this);
-  aboutQtAct->setStatusTip(tr("Show the Qt library's About box"));
-  connect(aboutQtAct, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
-
-  exitAct = new QAction(tr("E&xit"), this);
-  exitAct->setShortcut(tr("Ctrl+X"));
-  exitAct->setStatusTip(tr("Exit Aardview"));
-  connect(exitAct, SIGNAL(triggered()), qApp, SLOT(quit()));
-
-  editAct = new QAction(tr("&Edit current image"), this);
-  editAct->setShortcut(tr("Ctrl+E"));
-  editAct->setStatusTip(tr("Edit current image in external editor"));
-  connect(editAct, SIGNAL(triggered()), this, SLOT(openEditor()));
-
-  settingsAct = new QAction(tr("P&references"), this);
-  connect(settingsAct, SIGNAL(triggered()), this, SLOT(showSettings()));
-
-  // context menus
-  minimizeAct = new QAction(tr("Mi&nimize"), this);
-  connect(minimizeAct, SIGNAL(triggered()), this, SLOT(hide()));
-
-  maximizeAct = new QAction(tr("Ma&ximize"), this);
-  connect(maximizeAct, SIGNAL(triggered()), this, SLOT(showMaximized()));
-
-  restoreAct = new QAction(tr("&Restore"), this);
-  connect(restoreAct, SIGNAL(triggered()), this, SLOT(showNormal()));
-}
-
-void AardView::createMenus(){
-  fileMenu = menuBar()->addMenu(tr("&File"));
-  fileMenu->addAction(tr("Open"), widget,
-                      SLOT(open()), QKeySequence(tr("Ctrl+O")));
-#ifndef QT_NO_PRINTER
-  fileMenu->addSeparator();
-  fileMenu->addAction(tr("Print"), widget,
-                      SLOT(print()), QKeySequence(tr("Ctrl+P")));
-  fileMenu->addAction(tr("Print Preview"), widget,
-                      SLOT(printPreview()));
-#endif
-  fileMenu->addSeparator();
-  fileMenu->addAction(exitAct);
-
-  editMenu = menuBar()->addMenu(tr("&Edit"));
-  editMenu->addAction(editAct);
-  editMenu->addSeparator();
-  editMenu->addAction(settingsAct);
-
-  viewMenu = menuBar()->addMenu(tr("&View"));
-  viewMenu->addAction(tr("Zoom in"), widget,
-                      SLOT(zoomIn()), QKeySequence(tr("Ctrl++")));
-  viewMenu->addAction(tr("Zoom out"), widget,
-                      SLOT(zoomOut()), QKeySequence(tr("Ctrl+-")));
-  viewMenu->addAction(tr("Toggle 'fit to window'"), widget,
-                      SLOT(toggleFtw()), QKeySequence(tr("Ctrl+Z")));
-  viewMenu->addSeparator();
-  viewMenu->addAction(tr("Toggle menu bar"), this, 
-                      SLOT(toggleMenuBar()), QKeySequence(tr("Ctrl+M")));
-  viewMenu->addSeparator();
-  
-  helpMenu = menuBar()->addMenu(tr("&Help"));
-  helpMenu->addAction(aboutAct);
-  helpMenu->addAction(aboutQtAct);
-}
-
 void AardView::createDocks(){
   // create the dock items...
-  QDockWidget *dock = new QDockWidget(tr("Directory tree"), this);
-  dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-  dirView = new ATreeView(dock);
-  dock->setWidget(dirView);
-  addDockWidget(Qt::LeftDockWidgetArea, dock);
-  viewMenu->addAction(dock->toggleViewAction());
+  dirView = new ATreeView(ui.dockDirectoryTree);
+  ui.dockDirectoryTree->setWidget(dirView);
+  ui.menuView->addAction(ui.dockDirectoryTree->toggleViewAction());
 
-  dock = new QDockWidget(tr("Thumbnail view"), this);
-  dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-  tnView = new AListView(dock);
-  dock->setWidget(tnView);
-  addDockWidget(Qt::LeftDockWidgetArea, dock);
-  viewMenu->addAction(dock->toggleViewAction());
+  tnView = new AListView(ui.dockTreeView);
+  ui.dockTreeView->setWidget(tnView);
+  ui.menuView->addAction(ui.dockTreeView->toggleViewAction());
 
-  dock = new QDockWidget(tr("Tagged items"), this);
-  dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-  tagView = new AListView(dock);
-  dock->setWidget(tagView);
-  addDockWidget(Qt::RightDockWidgetArea, dock);
-  viewMenu->addAction(dock->toggleViewAction());
-  dock->hide();
+  tagView = new AListView(ui.dockTaggedItems);
+  ui.dockTaggedItems->setWidget(tagView);
+  ui.menuView->addAction(ui.dockTaggedItems->toggleViewAction());
+  ui.dockTaggedItems->hide();
 
   // and set the model
   reconfigure();  
@@ -236,7 +163,6 @@ QString AardView::getSelectedFilename(){
 }
 
 void AardView::handlePaste(){
-  qDebug() << "Paste handler not yet implemented";
   QDir dir;
   QClipboard *clipboard = QApplication::clipboard();
 
@@ -357,10 +283,10 @@ void AardView::about(){
 
 void AardView::contextMenuEvent(QContextMenuEvent *event){
   QMenu menu(this);
-  menu.addMenu(fileMenu);
-  menu.addMenu(editMenu);
-  menu.addMenu(viewMenu);
-  menu.addMenu(helpMenu);
+  menu.addMenu(ui.menuFile);
+  menu.addMenu(ui.menuEdit);
+  menu.addMenu(ui.menuView);
+  menu.addMenu(ui.menuHelp);
   menu.exec(event->globalPos());
 }
 
