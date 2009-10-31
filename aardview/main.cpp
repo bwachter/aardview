@@ -3,11 +3,6 @@
 #include "aardview.h"
 
 int main(int argc, char** argv){
-  if (argc != 1) 
-    qDebug() << "Aardview currently has no support for commandline arguments\n" 
-             << "Ignored " << argc << " arguments";
-    
-      
   //Q_INIT_RESOURCE();
   QApplication app(argc, argv);
   QCoreApplication::setOrganizationName("AardSoft");

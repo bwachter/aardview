@@ -39,12 +39,28 @@ AardView::AardView(){
     // do something on first start
   }
 
-// remove printer items if qt comes without printer support #ifndef QT_NO_PRINTER
+#ifdef QT_NO_PRINTER
+  // disable printer items if qt comes without printing support
+  ui.actionPrint->setEnabled(false);
+  ui.actionPrintPreview->setEnabled(false);
+#endif
+
+  QString initialPath=QDir::currentPath();
+  QStringList arguments=qApp->arguments();
+  if (arguments.count() >= 2){
+    QDir argDir=QDir(arguments.at(1));
+    if (argDir.exists())
+      initialPath=arguments.at(1);
+    else {
+      // FIXME, iterate through arguments and add them to the tag box
+    }
+  }
+
 
   widget=new ImageWidget();
   widget->installEventFilter(this);
   dirViewModel = new QDirModel();
-  tnViewModel = new TnViewModel(QDir::currentPath());
+  tnViewModel = new TnViewModel(initialPath);
   dirViewModelProxy = new QSortFilterProxyModel();
   tnViewModelProxy = new QSortFilterProxyModel();
 
@@ -63,11 +79,11 @@ AardView::AardView(){
   ui.dirView->setRootIndex(dirViewModelProxy->mapFromSource(
                           dirViewModel->index(QDir::rootPath())));
   ui.dirView->setCurrentIndex(dirViewModelProxy->mapFromSource(
-                             dirViewModel->index(QDir::currentPath())));
+                             dirViewModel->index(initialPath)));
 
   tnViewModelProxy->setSourceModel(tnViewModel);
   ui.tnView->setModel(tnViewModelProxy);  
-  tnViewModel->setDirectory(QDir::currentPath());
+  tnViewModel->setDirectory(initialPath);
 
   settingsDialog=new SettingsDialog;
 
