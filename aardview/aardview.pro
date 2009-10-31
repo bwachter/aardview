@@ -9,6 +9,7 @@ SOURCES = aardview.cpp \
 	settingsdialog.cpp \
 	tnviewmodel.cpp
 FORMS = aardview.ui \
+      imagewidget.ui \
       settingsdialog.ui
 RESOURCES = aardview.qrc
 TARGET = aardview

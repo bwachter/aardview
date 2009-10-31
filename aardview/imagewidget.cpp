@@ -1,30 +1,18 @@
 #include "imagewidget.h"
 
 ImageWidget::ImageWidget(): QWidget(){
-  QVBoxLayout *layout = new QVBoxLayout;
-  imageContainer = new QLabel;
-  infoContainer = new QLabel;
+  ui.setupUi(this);
 
-  imageArea = new QScrollArea;
-  infoArea = new QScrollArea;
-  infoArea->setFocusPolicy(Qt::NoFocus);
-
-  imageArea->setWidgetResizable(true);
-  infoArea->setWidgetResizable(true);
-
-  layout->setContentsMargins(0, 0, 0, 0);
-  layout->setSpacing(0);
-  layout->addWidget(imageArea);
-  layout->addWidget(infoArea);
-  setLayout(layout);
+  infoContainer=new QLabel;
+  imageContainer=new QLabel;
 
   scaleFactor=1.0;
 
   reconfigure();
 
-  imageArea->setWidget(imageContainer);
-  // TODO maybe move this to a dock, too?
-  infoArea->setWidget(infoContainer);
+  ui.imageArea->setWidget(imageContainer);
+  // TODO maybe move the infocontainer to a dock, too?
+  ui.infoArea->setWidget(infoContainer);
 
   updateInformation();
   load(":/images/aardview.png");
@@ -32,7 +20,7 @@ ImageWidget::ImageWidget(): QWidget(){
 
 void ImageWidget::reconfigure(){
   qDebug() << "Checking configuration settings (viewer)";
-  infoArea->setVisible(!settings.value("viewer/hideInfoArea").toBool());
+  ui.infoArea->setVisible(!settings.value("viewer/hideInfoArea").toBool());
   if (settings.value("viewer/resetFtwOnChange").toBool())
     fitToWindow=settings.value("viewer/fitToWindow").toBool();
   if (settings.value("viewer/smoothTransformation").toBool())
@@ -168,7 +156,7 @@ void ImageWidget::zoomOut(){ scale(0.8); }
 
 void ImageWidget::enterEvent(QEvent *e){
   if (settings.value("main/focusFollowsMouse").toBool())
-    imageArea->setFocus();
+    ui.imageArea->setFocus();
   QWidget::enterEvent(e);
 }
 

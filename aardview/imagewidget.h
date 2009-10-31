@@ -8,6 +8,7 @@
 #define _IMAGEWIDGET_H
 
 #include <QtGui>
+#include "ui_imagewidget.h"
 
 class ImageWidget: public QWidget {
   Q_OBJECT
@@ -17,16 +18,15 @@ class ImageWidget: public QWidget {
   QString currentFilename();
 
   private:
+  Ui::ImageWidget ui;
+  QLabel *imageContainer;
+  QLabel *infoContainer;
   bool scaledImage;
   bool fitToWindow;
   double scaleFactor;
-  QLabel* imageContainer;
-  QLabel* infoContainer;
   QImage displayedImage;
   QImage originalImage;
   QPixmap displayedPixmap;
-  QScrollArea* imageArea;
-  QScrollArea* infoArea;
   QSettings settings;
   QString imageFileName;
   Qt::TransformationMode transformation;
