@@ -3,24 +3,18 @@
 ImageWidget::ImageWidget(): QWidget(){
   ui.setupUi(this);
 
-  infoContainer=new QLabel;
-  imageContainer=new QLabel;
-
+  // FIXME, configure and add image name
+  ui.imageName->hide();
   scaleFactor=1.0;
 
   reconfigure();
 
-  ui.imageArea->setWidget(imageContainer);
-  // TODO maybe move the infocontainer to a dock, too?
-  ui.infoArea->setWidget(infoContainer);
-
-  updateInformation();
+  // FIXME, send signal when information update is required
   load(":/images/aardview.png");
 }
 
 void ImageWidget::reconfigure(){
   qDebug() << "Checking configuration settings (viewer)";
-  ui.infoArea->setVisible(!settings.value("viewer/hideInfoArea").toBool());
   if (settings.value("viewer/resetFtwOnChange").toBool())
     fitToWindow=settings.value("viewer/fitToWindow").toBool();
   if (settings.value("viewer/smoothTransformation").toBool())
@@ -66,25 +60,25 @@ void ImageWidget::displayImage(){
         pixmapSize.width() >= viewSize.width())))) {
     // fit the image to the window, keeping the aspect ratio
     if (keepAspectRatio){
-      imageContainer->setPixmap(
+      ui.imageContainer->setPixmap(
         displayedPixmap.scaled(viewSize - QSize::QSize(p, p),
                                Qt::KeepAspectRatio,
                                transformation));
     } else {
       // fit the image to the window, ignoring the aspect ratio
-      imageContainer->setPixmap(QPixmap::fromImage(originalImage));
+      ui.imageContainer->setPixmap(QPixmap::fromImage(originalImage));
     }
   } else if (scaleFactor != 1.0) {
-    imageContainer->setPixmap(
+    ui.imageContainer->setPixmap(
       displayedPixmap.scaled(scaleFactor * displayedPixmap.size(),
       Qt::KeepAspectRatio,
       transformation));
   } else {
     // display the picture in its original size
-    imageContainer->setPixmap(displayedPixmap);
+    ui.imageContainer->setPixmap(displayedPixmap);
   }
-  imageContainer->setScaledContents(false);
-  imageContainer->adjustSize();
+  ui.imageContainer->setScaledContents(false);
+  ui.imageContainer->adjustSize();
 }
 
 QString ImageWidget::currentFilename(){ return imageFileName; }
@@ -146,10 +140,6 @@ void ImageWidget::scale(double factor){
   displayImage();
 }
 
-void ImageWidget::updateInformation(){
-  infoContainer->setText("<h3>Image information</h3>Sorry, not yet implemented");
-}
-  
 void ImageWidget::zoomIn(){ scale(1.25); }
 
 void ImageWidget::zoomOut(){ scale(0.8); }

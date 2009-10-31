@@ -19,8 +19,6 @@ class ImageWidget: public QWidget {
 
   private:
   Ui::ImageWidget ui;
-  QLabel *imageContainer;
-  QLabel *infoContainer;
   bool scaledImage;
   bool fitToWindow;
   double scaleFactor;
@@ -47,7 +45,6 @@ class ImageWidget: public QWidget {
   void rotate();
   void zoomIn();
   void zoomOut();
-  void updateInformation();
 
   private slots:
   void paintToPrinter(QPrinter *printer);

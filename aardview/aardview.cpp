@@ -55,6 +55,7 @@ AardView::AardView(){
   ui.menuView->addAction(ui.dockTreeView->toggleViewAction());
   ui.menuView->addAction(ui.dockTaggedItems->toggleViewAction());
   ui.dockTaggedItems->hide();
+  ui.dockStatusInfo->hide();
 
   // set the model
   dirViewModelProxy->setSourceModel(dirViewModel);
@@ -69,9 +70,6 @@ AardView::AardView(){
   tnViewModel->setDirectory(QDir::currentPath());
 
   settingsDialog=new SettingsDialog;
-
-  createPopupMenu();
-  statusBar();
 
   // finally connect everything we didn't connect by designer already
   connect(ui.actionExit, SIGNAL(triggered()), qApp, SLOT(quit()));
