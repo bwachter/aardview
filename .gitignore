@@ -1,16 +1,13 @@
-aardview
-ui_*.h
-*.o
-moc_*.cpp
-qrc_*.cpp
 Makefile*
 debug/
 release/
 vc80.pdb
 *.qm
 *.db
+build/*
 build-stamp
 debian/aardview.*
+debian/aardview
 debian/files
 
 # clickonce wrapper

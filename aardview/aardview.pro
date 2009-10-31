@@ -21,7 +21,11 @@ TRANSLATIONS = aardview_de.ts
 PKGCONFIG += libexif
 OBJECTS_DIR = ../build
 MOC_DIR = ../build
-#UI_DIR = ../build
+UI_DIR = ../build
+UI_HEADERS_DIR = ../build
+UI_SOURCES_DIR = ../build
+RCC_DIR = ../build
+DESTDIR = ../build
 
 system(pkg-config --exists libexif):DEFINES += EXIF
 
