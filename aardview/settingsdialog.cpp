@@ -30,6 +30,7 @@ SettingsDialog::SettingsDialog(): QDialog(){
   ui.viewerFitToWindow->setChecked(settings.value("fitToWindow").toBool());
   ui.viewerShrinkOnly->setChecked(settings.value("shrinkOnly").toBool());
   ui.viewerSmoothTransformation->setChecked(settings.value("smoothTransformation").toBool());
+  ui.viewerLoadAction->setCurrentIndex(settings.value("loadAction").toInt());
   settings.endGroup();
 }
 
@@ -63,6 +64,7 @@ void SettingsDialog::accept(){
   settings.setValue("fitToWindow", ui.viewerFitToWindow->isChecked());
   settings.setValue("shrinkOnly", ui.viewerShrinkOnly->isChecked());
   settings.setValue("smoothTransformation", ui.viewerSmoothTransformation->isChecked());
+  settings.setValue("loadAction", ui.viewerLoadAction->currentIndex());
   settings.endGroup();
 
   this->hide();

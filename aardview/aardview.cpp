@@ -35,6 +35,7 @@ AardView::AardView(){
     settings.setValue("fitToWindow", true);
     settings.setValue("shrinkOnly", true);
     settings.setValue("padding", 5);
+    settings.setValue("loadAction", 0);
     settings.endGroup();
     // do something on first start
   }
@@ -45,33 +46,40 @@ AardView::AardView(){
   ui.actionPrintPreview->setEnabled(false);
 #endif
 
-  QString initialPath=QDir::currentPath();
-  QStringList arguments=qApp->arguments();
-  if (arguments.count() >= 2){
-    QDir argDir=QDir(arguments.at(1));
-    if (argDir.exists())
-      initialPath=arguments.at(1);
-    else {
-      // FIXME, iterate through arguments and add them to the tag box
-    }
-  }
-
-
   widget=new ImageWidget();
   widget->installEventFilter(this);
+  setCentralWidget(widget);
+
+  // hide currently unused docks
+  ui.dockTaggedItems->hide();
+  ui.dockStatusInfo->hide();
+
+  QString initialPath=QDir::currentPath();
+  QStringList arguments=qApp->arguments();
+  if (arguments.count() == 2){
+    QDir argDir=QDir(arguments.at(1));
+    if (argDir.exists())
+      // argument is a dir, jump to this directory
+      initialPath=arguments.at(1);
+    else {
+      // argument is a file, display the file
+      if (QFile::exists(arguments.at(1))){
+        ui.dockDirectoryTree->hide();
+        ui.dockTreeView->hide();
+        widget->load(arguments.at(1));
+      }
+    }
+  } // >2 FIXME, iterate through arguments and add them to the tag box
+
   dirViewModel = new QDirModel();
   tnViewModel = new TnViewModel(initialPath);
   dirViewModelProxy = new QSortFilterProxyModel();
   tnViewModelProxy = new QSortFilterProxyModel();
 
-  setCentralWidget(widget);
-
   // add toggle actions for docks
   ui.menuView->addAction(ui.dockDirectoryTree->toggleViewAction());
   ui.menuView->addAction(ui.dockTreeView->toggleViewAction());
   ui.menuView->addAction(ui.dockTaggedItems->toggleViewAction());
-  ui.dockTaggedItems->hide();
-  ui.dockStatusInfo->hide();
 
   // set the model
   dirViewModelProxy->setSourceModel(dirViewModel);
@@ -174,7 +182,7 @@ void AardView::handlePaste(){
     qDebug() << "Selection contains " << clipboard->text(QClipboard::Selection);
     dir.setPath(clipboard->text(QClipboard::Selection));
   } 
-  // TODO check if this works on windows as expected
+  // FIXME check if this works on windows as expected
   if (!clipboard->supportsSelection() || !dir.exists()) {
     qDebug() << "Clipboard contains " << clipboard->text();
     dir.setPath(clipboard->text());
@@ -199,8 +207,7 @@ void AardView::openEditor(){
 }
 
 void AardView::selectNext(){
-  // TODO
-  // configurable: overwrap as jump to top, or jump to next directory
+  // FIXME configurable: overwrap as jump to top, or jump to next directory
   int index;
 
   QModelIndex idx = ui.tnView->selectionModel()->currentIndex();

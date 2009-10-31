@@ -1,5 +1,12 @@
 #include "imagewidget.h"
 
+/*
+  The UI part of this class will end up in the mainwindow, while
+  the image rescaling logic will end up in a caching multithreaded
+  image loader. Though it would be possible to implement a simple,
+  non-threaded image loader it's just not worth the trouble for v0.1
+*/
+
 ImageWidget::ImageWidget(): QWidget(){
   ui.setupUi(this);
 
@@ -10,7 +17,9 @@ ImageWidget::ImageWidget(): QWidget(){
   reconfigure();
 
   // FIXME, send signal when information update is required
-  load(":/images/aardview.png");
+  // FIXME, move this to an enum; 0=default,1=last,2=nothing
+  if (settings.value("viewer/loadAction").toInt()==0)
+    load(":/images/aardview.png");
 }
 
 void ImageWidget::reconfigure(){
