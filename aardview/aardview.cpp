@@ -9,9 +9,6 @@ AardView::AardView(){
   this->setWindowIcon(QPixmap(":/images/aardview-icon.png"));
   bool initialized=settings.value("main/initialized").toBool();
 
-  connect(ui.actionExit, SIGNAL(triggered()), qApp, SLOT(quit()));
-  connect(ui.actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
-
   if (!initialized){
     qDebug() << "Setting initial settings...";
     settings.beginGroup("main");
@@ -49,16 +46,47 @@ AardView::AardView(){
   tnViewModelProxy = new QSortFilterProxyModel();
 
   setCentralWidget(widget);
-  
-  createDocks();
-  settingsDialog=new SettingsDialog;
-  createPopupMenu();
 
+  // add toggle actions for docks
+  ui.menuView->addAction(ui.dockDirectoryTree->toggleViewAction());
+  ui.menuView->addAction(ui.dockTreeView->toggleViewAction());
+  ui.menuView->addAction(ui.dockTaggedItems->toggleViewAction());
+  ui.dockTaggedItems->hide();
+
+  // set the model
+  dirViewModelProxy->setSourceModel(dirViewModel);
+  ui.dirView->setModel(dirViewModelProxy);
+  ui.dirView->setRootIndex(dirViewModelProxy->mapFromSource(
+                          dirViewModel->index(QDir::rootPath())));
+  ui.dirView->setCurrentIndex(dirViewModelProxy->mapFromSource(
+                             dirViewModel->index(QDir::currentPath())));
+
+  tnViewModelProxy->setSourceModel(tnViewModel);
+  ui.tnView->setModel(tnViewModelProxy);  
+  tnViewModel->setDirectory(QDir::currentPath());
+
+  settingsDialog=new SettingsDialog;
+
+  createPopupMenu();
   statusBar();
+
+  // finally connect everything we didn't connect by designer already
+  connect(ui.actionExit, SIGNAL(triggered()), qApp, SLOT(quit()));
+  connect(ui.actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
   connect(settingsDialog, SIGNAL(configurationChanged()),
           this, SLOT(reconfigure()));
   connect(settingsDialog, SIGNAL(configurationChanged()),
           widget, SLOT(reconfigure()));
+  connect(ui.dirView->selectionModel(),
+          SIGNAL(selectionChanged(const QItemSelection &,
+                                  const QItemSelection &)),
+          this, SLOT(dirIndexChanged()));
+  connect(ui.tnView->selectionModel(),
+          SIGNAL(selectionChanged(const QItemSelection &,
+                                  const QItemSelection &)),
+          this, SLOT(thumbIndexChanged()));
+
+  reconfigure();
 }
 
 void AardView::reconfigure(){
@@ -77,63 +105,24 @@ void AardView::reconfigure(){
   } else {
     tnViewModelProxy->setFilterRegExp("");
   }
-}
-
-void AardView::createDocks(){
-  // create the dock items...
-  dirView = new ATreeView(ui.dockDirectoryTree);
-  ui.dockDirectoryTree->setWidget(dirView);
-  ui.menuView->addAction(ui.dockDirectoryTree->toggleViewAction());
-
-  tnView = new AListView(ui.dockTreeView);
-  ui.dockTreeView->setWidget(tnView);
-  ui.menuView->addAction(ui.dockTreeView->toggleViewAction());
-
-  tagView = new AListView(ui.dockTaggedItems);
-  ui.dockTaggedItems->setWidget(tagView);
-  ui.menuView->addAction(ui.dockTaggedItems->toggleViewAction());
-  ui.dockTaggedItems->hide();
-
-  // and set the model
-  reconfigure();  
-
-  dirViewModelProxy->setSourceModel(dirViewModel);
-  dirView->setModel(dirViewModelProxy);
-  dirView->setRootIndex(dirViewModelProxy->mapFromSource(
-                          dirViewModel->index(QDir::rootPath())));
-  dirView->setCurrentIndex(dirViewModelProxy->mapFromSource(
-                             dirViewModel->index(QDir::currentPath())));
 
   // TODO maybe make this configurable
   // size
-  dirView->hideColumn(1);
+  ui.dirView->hideColumn(1);
   // type
-  dirView->hideColumn(2);
+  ui.dirView->hideColumn(2);
   // last modified
-  dirView->hideColumn(3);
-
-  tnViewModelProxy->setSourceModel(tnViewModel);
-  tnView->setModel(tnViewModelProxy);  
-  tnViewModel->setDirectory(QDir::currentPath());
-
-  connect(dirView->selectionModel(),
-          SIGNAL(selectionChanged(const QItemSelection &,
-                                  const QItemSelection &)),
-          this, SLOT(dirIndexChanged()));
-  connect(tnView->selectionModel(),
-          SIGNAL(selectionChanged(const QItemSelection &,
-                                  const QItemSelection &)),
-          this, SLOT(thumbIndexChanged()));
+  ui.dirView->hideColumn(3);
 }
 
 void AardView::dirIndexChanged(){
   QModelIndex idx = dirViewModelProxy->mapToSource(
-    dirView->selectionModel()->currentIndex());
+    ui.dirView->selectionModel()->currentIndex());
   qDebug() << "Path" << dirViewModel->filePath(idx);
   if (dirViewModel->isDir(idx)){
     qDebug() << "Selected item is a directory";
     tnViewModel->setDirectory(dirViewModel->filePath(idx));
-    tnView->scrollToTop();
+    ui.tnView->scrollToTop();
   } else {
     widget->load(dirViewModel->filePath(idx));
   }
@@ -141,20 +130,20 @@ void AardView::dirIndexChanged(){
 
 void AardView::thumbIndexChanged(){
   QModelIndex idx = tnViewModelProxy->mapToSource(
-    tnView->selectionModel()->currentIndex());
+    ui.tnView->selectionModel()->currentIndex());
   qDebug() << "Path" << tnViewModel->filePath(idx);
   if (tnViewModel->isDir(idx)){
     qDebug() << "Selected item is a directory";
   } else {
     widget->load(tnViewModel->filePath(idx));
   }
-  qDebug () << "Selected index: " << tnView->selectionModel()->currentIndex().row()
+  qDebug () << "Selected index: " << ui.tnView->selectionModel()->currentIndex().row()
             << "Proxy index: " << idx.row();
 }
 
 QString AardView::getSelectedFilename(){
   QModelIndex idx = tnViewModelProxy->mapToSource(
-    tnView->selectionModel()->currentIndex());
+    ui.tnView->selectionModel()->currentIndex());
   if (tnViewModel->isDir(idx)){
     return QString();
   } else {
@@ -179,7 +168,7 @@ void AardView::handlePaste(){
 
   if (dir.exists()){
     qDebug() << "Changing to " << dir.absolutePath();
-    dirView->setCurrentIndex(dirViewModelProxy->mapFromSource(
+    ui.dirView->setCurrentIndex(dirViewModelProxy->mapFromSource(
                                dirViewModel->index(dir.absolutePath())));
   }
 }
@@ -200,13 +189,13 @@ void AardView::selectNext(){
   // configurable: overwrap as jump to top, or jump to next directory
   int index;
 
-  QModelIndex idx = tnView->selectionModel()->currentIndex();
+  QModelIndex idx = ui.tnView->selectionModel()->currentIndex();
 
   if (idx.row()+1 == tnViewModelProxy->rowCount())
     index = 0;
   else index = idx.row()+1;
 
-  tnView->setCurrentIndex(tnViewModelProxy->index(index, 0));
+  ui.tnView->setCurrentIndex(tnViewModelProxy->index(index, 0));
 
   qDebug() << "Previous row: " << idx.row() 
            << "Selected row: " << idx.row()+1
@@ -218,13 +207,13 @@ void AardView::selectNext(){
 void AardView::selectPrev(){
   int index;
 
-  QModelIndex idx = tnView->selectionModel()->currentIndex();
+  QModelIndex idx = ui.tnView->selectionModel()->currentIndex();
 
   if (idx.row() <= 0)
     index = tnViewModelProxy->rowCount()-1;
   else index = idx.row()-1;
 
-  tnView->setCurrentIndex(tnViewModelProxy->index(index, 0));
+  ui.tnView->setCurrentIndex(tnViewModelProxy->index(index, 0));
 
   qDebug() << "Previous row: " << idx.row() 
            << "Selected row: " << idx.row()+1

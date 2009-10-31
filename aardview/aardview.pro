@@ -1,5 +1,7 @@
 #CONFIG += debug
 HEADERS = aardview.h \
+	alistview.h \
+	atreeview.h \
 	imagewidget.h \
 	settingsdialog.h \
 	tnviewmodel.h
