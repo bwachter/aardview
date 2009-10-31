@@ -12,6 +12,9 @@ SettingsDialog::SettingsDialog(): QDialog(){
 
   settings.beginGroup("dirview");
   ui.dirShowOnlyDirs->setChecked(settings.value("showOnlyDirs").toBool());
+  ui.dirShowSizeCol->setChecked(settings.value("showSizeCol").toBool());
+  ui.dirShowTypeCol->setChecked(settings.value("showTypeCol").toBool());
+  ui.dirShowLastModifiedCol->setChecked(settings.value("showLastModifiedCol").toBool());
   settings.endGroup();
 
   settings.beginGroup("tnview");
@@ -42,6 +45,9 @@ void SettingsDialog::accept(){
 
   settings.beginGroup("dirview");
   settings.setValue("showOnlyDirs", ui.dirShowOnlyDirs->isChecked());
+  settings.setValue("showSizeCol", ui.dirShowSizeCol->isChecked());
+  settings.setValue("showTypeCol", ui.dirShowTypeCol->isChecked());
+  settings.setValue("showLastModifiedCol", ui.dirShowLastModifiedCol->isChecked());
   settings.endGroup();
 
   settings.beginGroup("tnview");

@@ -19,6 +19,9 @@ AardView::AardView(){
     settings.endGroup();
     settings.beginGroup("dirview");
     settings.setValue("showOnlyDirs", true);
+    settings.setValue("showSizeCol", false);
+    settings.setValue("showTypeCol", false);
+    settings.setValue("showLastModifiedCol", false);
     settings.endGroup();
     settings.beginGroup("tnview");
     settings.setValue("showOnlyFiles", true);
@@ -92,27 +95,24 @@ AardView::AardView(){
 void AardView::reconfigure(){
   qDebug() << "Checking configuration settings (main)";
   statusBar()->setVisible(settings.value("main/showStatusbar").toBool());
-  if (settings.value("dirView/showOnlyDirs", true).toBool())
+  // dirview options
+  if (settings.value("dirview/showOnlyDirs", true).toBool())
     dirViewModel->setFilter(QDir::Dirs|QDir::NoDotAndDotDot);
-  if (settings.value("tnView/showOnlyFiles", true).toBool())
+  ui.dirView->setColumnHidden(1, !settings.value("dirview/showSizeCol", false).toBool());
+  ui.dirView->setColumnHidden(2, !settings.value("dirview/showTypeCol", false).toBool());
+  ui.dirView->setColumnHidden(3, !settings.value("dirview/showLastModifiedCol", false).toBool());
+  // tnview options
+  if (settings.value("tnview/showOnlyFiles", true).toBool())
     tnViewModel->setFilter(QDir::Files);
-  if (settings.value("tnView/fileMask").toString() != "" && 
-      settings.value("tnView/filterFiles").toBool()){
-    qDebug() << "Setting filter: " << settings.value("tnView/fileMask").toString();
-    tnViewModelProxy->setFilterRegExp(settings.value("tnView/fileMask").toString());
+  if (settings.value("tnview/fileMask").toString() != "" && 
+      settings.value("tnview/filterFiles").toBool()){
+    qDebug() << "Setting filter: " << settings.value("tnview/fileMask").toString();
+    tnViewModelProxy->setFilterRegExp(settings.value("tnview/fileMask").toString());
     if (settings.value("tnview/caseInsensitiveMatching").toBool())
       tnViewModelProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
   } else {
     tnViewModelProxy->setFilterRegExp("");
   }
-
-  // TODO maybe make this configurable
-  // size
-  ui.dirView->hideColumn(1);
-  // type
-  ui.dirView->hideColumn(2);
-  // last modified
-  ui.dirView->hideColumn(3);
 }
 
 void AardView::dirIndexChanged(){

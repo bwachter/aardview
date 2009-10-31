@@ -28,7 +28,7 @@
         <bool>false</bool>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>1</number>
        </property>
        <widget class="QWidget" name="tab_4">
         <attribute name="title">
@@ -109,6 +109,27 @@
              <widget class="QCheckBox" name="dirShowOnlyDirs">
               <property name="text">
                <string>Show only directories</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="dirShowSizeCol">
+              <property name="text">
+               <string>Show 'size' column</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="dirShowTypeCol">
+              <property name="text">
+               <string>Show 'type' column</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="dirShowLastModifiedCol">
+              <property name="text">
+               <string>Show 'last modified' column</string>
               </property>
              </widget>
             </item>

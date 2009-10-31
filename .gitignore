@@ -9,6 +9,7 @@ build-stamp
 debian/aardview.*
 debian/aardview
 debian/files
+.nfs*
 
 # clickonce wrapper
 cowrap.suo
