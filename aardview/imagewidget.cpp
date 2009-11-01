@@ -20,6 +20,8 @@ ImageWidget::ImageWidget(): QWidget(){
   // FIXME, move this to an enum; 0=default,1=last,2=nothing
   if (settings.value("viewer/loadAction").toInt()==0)
     load(":/images/aardview.png");
+  else if (settings.value("viewer/loadAction").toInt()==1)
+    load(settings.value("viewer/lastImage").toString());
 }
 
 void ImageWidget::reconfigure(){
@@ -37,6 +39,7 @@ void ImageWidget::load(QString pathname){
     // FIXME, set pixmap to a valid pixmap or one from resource, configurable
     displayedPixmap = 0;
   } else {
+    settings.setValue("viewer/lastImage", pathname);
     imageFileName=pathname;
     displayedPixmap=QPixmap::fromImage(originalImage);
   }
