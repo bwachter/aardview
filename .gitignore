@@ -2,6 +2,7 @@ Makefile*
 debug/
 release/
 vc80.pdb
+vc90.pdb
 *.qm
 *.db
 build/*
