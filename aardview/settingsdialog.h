@@ -1,4 +1,4 @@
-/* settingsdialog.h	-- Bernd Wachter <bwachter@lart.info>
+/* settingsdialog.h     -- Bernd Wachter <bwachter@lart.info>
  *
  * $Header$
  * $Log$
@@ -10,7 +10,7 @@
 #include <QtGui>
 #include "ui_settingsdialog.h"
 
-class SettingsDialog: public QDialog {
+class SettingsDialog: public QDialog, private Ui::SettingsDialog {
   Q_OBJECT
 
   public:
@@ -18,10 +18,9 @@ class SettingsDialog: public QDialog {
 
   private:
   QSettings settings;
-  Ui::SettingsDialog ui;
-  
+
   public slots:
-  
+
   private slots:
   void accept();
 
