@@ -1,8 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ui version="4.0">
+<ui version="4.0" >
  <class>ImageWidget</class>
- <widget class="QWidget" name="ImageWidget">
-  <property name="geometry">
+ <widget class="QWidget" name="ImageWidget" >
+  <property name="geometry" >
    <rect>
     <x>0</x>
     <y>0</y>
@@ -10,63 +9,63 @@
     <height>298</height>
    </rect>
   </property>
-  <property name="windowTitle">
+  <property name="windowTitle" >
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2">
-   <property name="spacing">
+  <layout class="QVBoxLayout" name="verticalLayout_2" >
+   <property name="spacing" >
     <number>0</number>
    </property>
-   <property name="margin">
+   <property name="margin" >
     <number>0</number>
    </property>
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout">
-     <property name="spacing">
+    <layout class="QVBoxLayout" name="verticalLayout" >
+     <property name="spacing" >
       <number>0</number>
      </property>
      <item>
-      <widget class="QScrollArea" name="imageArea">
-       <property name="widgetResizable">
+      <widget class="QScrollArea" name="imageArea" >
+       <property name="widgetResizable" >
         <bool>true</bool>
        </property>
-       <widget class="QWidget" name="scrollAreaWidgetContents">
-        <property name="geometry">
+       <widget class="QWidget" name="scrollAreaWidgetContents" >
+        <property name="geometry" >
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>293</width>
-          <height>294</height>
+          <width>291</width>
+          <height>292</height>
          </rect>
         </property>
-        <layout class="QVBoxLayout" name="verticalLayout_4">
-         <property name="spacing">
+        <layout class="QVBoxLayout" name="verticalLayout_4" >
+         <property name="spacing" >
           <number>0</number>
          </property>
-         <property name="margin">
+         <property name="margin" >
           <number>0</number>
          </property>
          <item>
-          <layout class="QVBoxLayout" name="verticalLayout_3">
+          <layout class="QVBoxLayout" name="verticalLayout_3" >
            <item>
-            <widget class="QLabel" name="imageName">
-             <property name="text">
+            <widget class="QLabel" name="imageName" >
+             <property name="text" >
               <string/>
              </property>
-             <property name="alignment">
+             <property name="alignment" >
               <set>Qt::AlignCenter</set>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="imageContainer">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <widget class="QLabel" name="imageContainer" >
+             <property name="sizePolicy" >
+              <sizepolicy vsizetype="Expanding" hsizetype="Expanding" >
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
-             <property name="text">
+             <property name="text" >
               <string/>
              </property>
             </widget>

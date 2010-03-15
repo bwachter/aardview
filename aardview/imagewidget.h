@@ -1,4 +1,4 @@
-/* imagewidget.h	-- Bernd Wachter <bwachter@lart.info>
+/* imagewidget.h        -- Bernd Wachter <bwachter@lart.info>
  *
  * $Header$
  * $Log$
@@ -10,15 +10,14 @@
 #include <QtGui>
 #include "ui_imagewidget.h"
 
-class ImageWidget: public QWidget {
+class ImageWidget: public QWidget, private Ui::ImageWidget {
   Q_OBJECT
 
   public:
-  ImageWidget();
+  ImageWidget(QWidget *parent=0);
   QString currentFilename();
 
   private:
-  Ui::ImageWidget ui;
   bool scaledImage;
   bool fitToWindow;
   double scaleFactor;
@@ -33,8 +32,10 @@ class ImageWidget: public QWidget {
 #ifndef QT_NO_PRINTER
   QPrinter printer;
 #endif
+  void repaint();
 
   public slots:
+  void loadInitialFile();
   void load(QString pathname);
   void toggleFtw();
   void normalSize();
@@ -53,6 +54,7 @@ class ImageWidget: public QWidget {
 
   protected:
   void enterEvent(QEvent *e);
+  void paintEvent(QPaintEvent *e);
 };
 
 

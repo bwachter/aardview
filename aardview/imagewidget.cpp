@@ -7,21 +7,21 @@
   non-threaded image loader it's just not worth the trouble for v0.1
 */
 
-ImageWidget::ImageWidget(): QWidget(){
-  ui.setupUi(this);
+ImageWidget::ImageWidget(QWidget *parent): QWidget(parent){
+  setupUi(this);
 
   // FIXME, configure and add image name
-  ui.imageName->hide();
+  imageName->hide();
   scaleFactor=1.0;
 
   reconfigure();
 
   // FIXME, send signal when information update is required
   // FIXME, move this to an enum; 0=default,1=last,2=nothing
-  if (settings.value("viewer/loadAction").toInt()==0)
-    load(":/images/aardview.png");
-  else if (settings.value("viewer/loadAction").toInt()==1)
-    load(settings.value("viewer/lastImage").toString());
+
+  // used to make sure the image get's loaded after UI has been
+  // set up, giving us correct widget sizes
+  QTimer::singleShot(0, this, SLOT(loadInitialFile()));
 }
 
 void ImageWidget::reconfigure(){
@@ -30,6 +30,15 @@ void ImageWidget::reconfigure(){
     fitToWindow=settings.value("viewer/fitToWindow").toBool();
   if (settings.value("viewer/smoothTransformation").toBool())
     transformation=Qt::SmoothTransformation;
+}
+
+void ImageWidget::loadInitialFile(){
+  if (imageFileName == ""){
+    if (settings.value("viewer/loadAction").toInt()==0)
+      load(":/images/aardview.png");
+    else if (settings.value("viewer/loadAction").toInt()==1)
+      load(settings.value("viewer/lastImage").toString());
+  }
 }
 
 void ImageWidget::load(QString pathname){
@@ -63,34 +72,33 @@ void ImageWidget::displayImage(){
   QSize pixmapSize=displayedPixmap.size();
 
   // only scale if shrinkOnly is set to false _or_
-  // shrinkonly is true and at least one dimension of the 
+  // shrinkonly is true and at least one dimension of the
   // image is larger than the view area
   if (fitToWindow &&
       (!settings.value("viewer/shrinkOnly").toBool() ||
-      (settings.value("viewer/shrinkOnly").toBool() && 
+      (settings.value("viewer/shrinkOnly").toBool() &&
        (pixmapSize.height() >= viewSize.height() ||
         pixmapSize.width() >= viewSize.width())))) {
     // fit the image to the window, keeping the aspect ratio
     if (keepAspectRatio){
-      ui.imageContainer->setPixmap(
+      imageContainer->setPixmap(
         displayedPixmap.scaled(viewSize - QSize::QSize(p, p),
                                Qt::KeepAspectRatio,
                                transformation));
     } else {
       // fit the image to the window, ignoring the aspect ratio
-      ui.imageContainer->setPixmap(QPixmap::fromImage(originalImage));
+      imageContainer->setPixmap(QPixmap::fromImage(originalImage));
     }
   } else if (scaleFactor != 1.0) {
-    ui.imageContainer->setPixmap(
+    imageContainer->setPixmap(
       displayedPixmap.scaled(scaleFactor * displayedPixmap.size(),
       Qt::KeepAspectRatio,
       transformation));
   } else {
     // display the picture in its original size
-    ui.imageContainer->setPixmap(displayedPixmap);
+    imageContainer->setPixmap(displayedPixmap);
   }
-  ui.imageContainer->setScaledContents(false);
-  ui.imageContainer->adjustSize();
+  imageContainer->setScaledContents(false);
 }
 
 QString ImageWidget::currentFilename(){ return imageFileName; }
@@ -107,7 +115,7 @@ void ImageWidget::toggleFtw(){
 }
 
 void ImageWidget::open(){
-  QString fileName = 
+  QString fileName =
     QFileDialog::getOpenFileName(this,
                                  tr("Open File"), QDir::currentPath());
   if (!fileName.isEmpty()) {
@@ -118,7 +126,7 @@ void ImageWidget::open(){
 void ImageWidget::print(){
 #ifndef QT_NO_PRINTER
   QPrintDialog dialog(&printer, this);
-  if (dialog.exec()) { 
+  if (dialog.exec()) {
     paintToPrinter(&printer);
   }
 #endif
@@ -127,7 +135,7 @@ void ImageWidget::print(){
 void ImageWidget::printPreview(){
 #ifndef QT_NO_PRINTER
   QPrintPreviewDialog dialog(&printer, this);
-  connect(&dialog, SIGNAL(paintRequested(QPrinter *)), 
+  connect(&dialog, SIGNAL(paintRequested(QPrinter *)),
           this, SLOT(paintToPrinter(QPrinter *)));
   dialog.exec();
 #endif
@@ -152,13 +160,21 @@ void ImageWidget::scale(double factor){
   displayImage();
 }
 
+void ImageWidget::repaint(){
+  displayImage();
+}
+
 void ImageWidget::zoomIn(){ scale(1.25); }
 
 void ImageWidget::zoomOut(){ scale(0.8); }
 
 void ImageWidget::enterEvent(QEvent *e){
   if (settings.value("main/focusFollowsMouse").toBool())
-    ui.imageArea->setFocus();
+    imageArea->setFocus();
   QWidget::enterEvent(e);
 }
 
+void ImageWidget::paintEvent(QPaintEvent *e){
+  repaint();
+  QWidget::paintEvent(e);
+}
