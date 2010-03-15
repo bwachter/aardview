@@ -1,4 +1,4 @@
-/* aardview.h	-- Bernd Wachter <bwachter@lart.info>
+/* aardview.h   -- Bernd Wachter <bwachter@lart.info>
  *
  * $Header$
  * $Log$
@@ -24,15 +24,15 @@
 #include "alistview.h"
 #include "atreeview.h"
 
-class AardView: public QMainWindow {
+class AardView: public QMainWindow, private Ui::AardView{
   Q_OBJECT
 
   public:
   AardView();
+  ~AardView();
   QString getSelectedFilename();
-  
+
   private:
-  Ui::AardView ui;
   bool menuBarVisible;
   QSettings settings;
 
@@ -40,7 +40,6 @@ class AardView: public QMainWindow {
   TnViewModel *tnViewModel;
   QSortFilterProxyModel *tnViewModelProxy;
   QSortFilterProxyModel *dirViewModelProxy;
-  ImageWidget *widget;
   SettingsDialog *settingsDialog;
 
   public slots:
@@ -56,6 +55,7 @@ class AardView: public QMainWindow {
   void openEditor();
   void toggleMenuBar();
   void handlePaste();
+  void handleArguments();
 
   protected:
   void contextMenuEvent(QContextMenuEvent *event);
