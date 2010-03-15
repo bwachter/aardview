@@ -64,6 +64,9 @@ AardView::AardView(){
   tnViewModelProxy = new QSortFilterProxyModel();
 
   // add toggle actions for docks
+  dockDirectoryTree->toggleViewAction()->setShortcut(QKeySequence(tr("Ctrl+D")));
+  dockTreeView->toggleViewAction()->setShortcut(QKeySequence(tr("Ctrl+T")));
+
   menuView->addAction(dockDirectoryTree->toggleViewAction());
   menuView->addAction(dockTreeView->toggleViewAction());
   menuView->addAction(dockTaggedItems->toggleViewAction());
@@ -277,7 +280,6 @@ void AardView::toggleMenuBar(){
     //menuBar()->setFixedHeight(2);
     menuBar()->hide();
     menuBarVisible=false;
-    this->adjustSize();
   } else {
     menuBar()->show();
     menuBarVisible=true;

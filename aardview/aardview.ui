@@ -264,6 +264,9 @@
    <property name="shortcut" >
     <string>Ctrl+Z</string>
    </property>
+   <property name="shortcutContext" >
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
   </action>
   <action name="actionToggleMenuBar" >
    <property name="text" >
@@ -271,6 +274,9 @@
    </property>
    <property name="shortcut" >
     <string>Ctrl+M</string>
+   </property>
+   <property name="shortcutContext" >
+    <enum>Qt::ApplicationShortcut</enum>
    </property>
   </action>
   <action name="actionMinimize" >
@@ -305,6 +311,15 @@
    <extends>QWidget</extends>
    <header>imagewidget.h</header>
    <container>1</container>
+   <slots>
+    <slot>open()</slot>
+    <slot>print()</slot>
+    <slot>printPreview()</slot>
+    <slot>toggleFtw()</slot>
+    <slot>zoomIn()</slot>
+    <slot>zoomOut()</slot>
+    <slot>rotate()</slot>
+   </slots>
   </customwidget>
  </customwidgets>
  <resources/>
@@ -405,11 +420,124 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionOpen</sender>
+   <signal>triggered()</signal>
+   <receiver>widget</receiver>
+   <slot>open()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>182</x>
+     <y>190</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>182</x>
+     <y>172</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionPrint</sender>
+   <signal>triggered()</signal>
+   <receiver>widget</receiver>
+   <slot>print()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>182</x>
+     <y>190</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>182</x>
+     <y>172</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionPrintPreview</sender>
+   <signal>triggered()</signal>
+   <receiver>widget</receiver>
+   <slot>printPreview()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>182</x>
+     <y>190</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>182</x>
+     <y>172</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionZoomIn</sender>
+   <signal>triggered()</signal>
+   <receiver>widget</receiver>
+   <slot>zoomIn()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>182</x>
+     <y>190</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>182</x>
+     <y>172</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionZoomOut</sender>
+   <signal>triggered()</signal>
+   <receiver>widget</receiver>
+   <slot>zoomOut()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>182</x>
+     <y>190</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>182</x>
+     <y>172</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionToggleMenuBar</sender>
+   <signal>triggered()</signal>
+   <receiver>AardView</receiver>
+   <slot>toggleMenuBar()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>182</x>
+     <y>190</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>182</x>
+     <y>190</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionToggleFitToWindow</sender>
+   <signal>triggered()</signal>
+   <receiver>widget</receiver>
+   <slot>toggleFtw()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>182</x>
+     <y>190</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>182</x>
+     <y>172</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>about()</slot>
   <slot>aboutQt()</slot>
   <slot>openEditor()</slot>
   <slot>showSettings()</slot>
+  <slot>toggleMenuBar()</slot>
  </slots>
 </ui>
