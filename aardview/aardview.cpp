@@ -105,6 +105,12 @@ AardView::AardView(){
                settings.value("main/initialY").toInt());
   reconfigure();
 
+#ifdef QT46
+  grabGesture(Qt::TapAndHoldGesture);
+  grabGesture(Qt::PanGesture);
+  grabGesture(Qt::SwipeGesture);
+#endif
+
   // using a timer we make sure this get's called once the UI
   // is already set up, avoiding annoying resize problems
   QTimer::singleShot(0, this, SLOT(handleArguments()));
@@ -317,6 +323,26 @@ void AardView::about(){
                      .arg(supportedWriteFormats)
     );
 }
+
+bool AardView::event(QEvent *event){
+#ifdef QT46
+  if (event->type() == QEvent::Gesture)
+    return gestureEvent(static_cast<QGestureEvent*>(event));
+#endif
+  return QWidget::event(event);
+}
+
+#ifdef QT46
+bool AardView::gestureEvent(QGestureEvent *event){
+  if (event->gesture(Qt::TapAndHoldGesture)){
+  //if (event->gesture(Qt::SwipeGesture)){
+    qDebug() << "Tap'n'hold";
+  } else if (event->gesture(Qt::PanGesture)){
+    qDebug() << "Pan gesture";
+  }
+  return true;
+}
+#endif
 
 void AardView::contextMenuEvent(QContextMenuEvent *event){
   QMenu menu(this);

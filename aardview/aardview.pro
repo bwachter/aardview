@@ -1,15 +1,15 @@
 #CONFIG += debug
 HEADERS = aardview.h \
-	alistview.h \
-	atreeview.h \
-	imagewidget.h \
-	settingsdialog.h \
-	tnviewmodel.h
+        alistview.h \
+        atreeview.h \
+        imagewidget.h \
+        settingsdialog.h \
+        tnviewmodel.h
 SOURCES = aardview.cpp \
-	imagewidget.cpp \
-	main.cpp \
-	settingsdialog.cpp \
-	tnviewmodel.cpp
+        imagewidget.cpp \
+        main.cpp \
+        settingsdialog.cpp \
+        tnviewmodel.cpp
 FORMS = aardview.ui \
       imagewidget.ui \
       settingsdialog.ui
@@ -35,12 +35,18 @@ contains(DEFINES, EXIF){
   LIBS += $$system(pkg-config --libs libexif)
 }
 
-unix { 
+contains(QT_VERSION, ^4\.6\..*) {
+  message("Found Qt $${QT_VERSION}, enabling Qt 4.6 features")
+  DEFINES += QT46
+}
+
+unix {
      target.path = /usr/bin
      INSTALLS += target
+     CONFIG += static
 }
 win32:debug { CONFIG += console }
-win32 { 
-      RC_FILE = win32.rc 
+win32 {
+      RC_FILE = win32.rc
       CONFIG += embed_manifest_exe
 }
