@@ -59,6 +59,8 @@ void ImageWidget::load(QString pathname){
   // FIXME, add scaling
 
   displayImage();
+  imageArea->verticalScrollBar()->setValue(0);
+  imageArea->horizontalScrollBar()->setValue(0);
 }
 
 void ImageWidget::displayImage(){
@@ -70,6 +72,7 @@ void ImageWidget::displayImage(){
   int p = settings.value("viewer/padding").toInt();
   QSize viewSize=this->size();
   QSize pixmapSize=displayedPixmap.size();
+  QSize paddingSize(p, p);
 
   // only scale if shrinkOnly is set to false _or_
   // shrinkonly is true and at least one dimension of the
@@ -82,7 +85,7 @@ void ImageWidget::displayImage(){
     // fit the image to the window, keeping the aspect ratio
     if (keepAspectRatio){
       imageContainer->setPixmap(
-        displayedPixmap.scaled(viewSize - QSize::QSize(p, p),
+        displayedPixmap.scaled(viewSize - paddingSize,
                                Qt::KeepAspectRatio,
                                transformation));
     } else {
