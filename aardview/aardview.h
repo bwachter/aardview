@@ -15,6 +15,7 @@
 #include <QSettings>
 #include <QAction>
 #include <QDirModel>
+#include <QGestureEvent>
 
 #include <QtGui>
 
@@ -61,9 +62,7 @@ class AardView: public QMainWindow, private Ui::AardView{
 
   protected:
     bool event(QEvent *event);
-#ifdef QT46
     bool gestureEvent(QGestureEvent *event);
-#endif
     void contextMenuEvent(QContextMenuEvent *event);
     bool eventFilter(QObject *obj, QEvent *ev);
 };

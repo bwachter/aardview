@@ -37,11 +37,6 @@ contains(DEFINES, EXIF){
   LIBS += $$system(pkg-config --libs libexif)
 }
 
-contains(QT_VERSION, ^4\.6\..*) {
-  message("Found Qt $${QT_VERSION}, enabling Qt 4.6 features")
-  DEFINES += QT46
-}
-
 unix {
      target.path = /usr/bin
      INSTALLS += target
