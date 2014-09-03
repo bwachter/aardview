@@ -26,6 +26,7 @@ UI_HEADERS_DIR = ../build
 UI_SOURCES_DIR = ../build
 RCC_DIR = ../build
 DESTDIR = ../build
+QT += widgets printsupport
 
 system(pkg-config --exists libexif):DEFINES += EXIF
 

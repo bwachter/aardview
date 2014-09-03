@@ -1,6 +1,6 @@
 TEMPLATE = subdirs
 SUBDIRS = aardview
 
-contains(QT_VERSION, ^4\.[0-3]\..*) {
-  error("Can't build with Qt version $${QT_VERSION}. Use at least Qt 4.4.")
+lessThan(QT_MAJOR_VERSION, 5){
+  error("Can't build with Qt version $${QT_VERSION}. Use at least Qt 5.0.")
 }

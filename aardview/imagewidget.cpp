@@ -1,3 +1,11 @@
+#include <QScrollBar>
+#include <QFileDialog>
+
+#ifndef QT_NO_PRINTER
+#include <QPrintDialog>
+#include <QPrintPreviewDialog>
+#endif
+
 #include "imagewidget.h"
 
 /*
@@ -46,7 +54,7 @@ void ImageWidget::load(QString pathname){
   if (originalImage.isNull()){
     qDebug() << "Unable to load image: " << pathname;
     // FIXME, set pixmap to a valid pixmap or one from resource, configurable
-    displayedPixmap = 0;
+    displayedPixmap = QPixmap();
   } else {
     settings.setValue("viewer/lastImage", pathname);
     imageFileName=pathname;

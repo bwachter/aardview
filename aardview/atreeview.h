@@ -1,4 +1,4 @@
-/* atreeview.h	-- Bernd Wachter <bwachter@lart.info>
+/* atreeview.h  -- Bernd Wachter <bwachter@lart.info>
  *
  * $Header$
  * $Log$
@@ -9,10 +9,11 @@
 
 #include <QtGui>
 #include <QWidget>
+#include <QTreeView>
 
 class ATreeView: public QTreeView {
   Q_OBJECT
-    
+
     public:
   ATreeView(QWidget* parent=0): QTreeView(parent) {}
 

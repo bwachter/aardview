@@ -14,6 +14,7 @@
 #include <QMenuBar>
 #include <QSettings>
 #include <QAction>
+#include <QDirModel>
 
 #include <QtGui>
 

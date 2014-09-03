@@ -1,6 +1,6 @@
 #include "tnviewmodel.h"
 
-TnViewModel::TnViewModel(QString directoryName, QObject *parent): 
+TnViewModel::TnViewModel(QString directoryName, QObject *parent):
   QAbstractListModel(parent) {
   directory = QDir(directoryName);
   directoryItems = directory.entryList();
@@ -28,7 +28,7 @@ QVariant TnViewModel::headerData(int section, Qt::Orientation orientation,
                                      int role) const {
   if (role != Qt::DisplayRole)
     return QVariant();
-  
+
   if (orientation == Qt::Horizontal)
     return QString("Column %1").arg(section);
   else
@@ -36,7 +36,7 @@ QVariant TnViewModel::headerData(int section, Qt::Orientation orientation,
 }
 
 QString TnViewModel::filePath(const QModelIndex & index) const{
-  if (!index.isValid() || index.row() >= directoryItems.size()) 
+  if (!index.isValid() || index.row() >= directoryItems.size())
     return QString();
   return directory.filePath(directoryItems.at(index.row()));
 }
@@ -49,12 +49,14 @@ bool TnViewModel::isDir(const QModelIndex & index) const {
 }
 
 void TnViewModel::setDirectory(QString directoryName){
+  beginResetModel();
   directory.setPath(directoryName);
   directoryItems = directory.entryList();
-  reset();
+  endResetModel();
 }
 
 void TnViewModel::setFilter(QDir::Filters filters){
+  beginResetModel();
   directory.setFilter(filters);
-  reset();
+  endResetModel();
 }

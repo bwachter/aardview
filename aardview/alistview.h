@@ -1,4 +1,4 @@
-/* alistview.h	-- Bernd Wachter <bwachter@lart.info>
+/* alistview.h  -- Bernd Wachter <bwachter@lart.info>
  *
  * $Header$
  * $Log$
@@ -9,10 +9,11 @@
 
 #include <QtGui>
 #include <QWidget>
+#include <QListView>
 
 class AListView: public QListView {
   Q_OBJECT
-    
+
     public:
   AListView(QWidget* parent=0): QListView(parent) {}
 

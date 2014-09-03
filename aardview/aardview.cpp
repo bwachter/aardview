@@ -1,4 +1,5 @@
 #include <QtGui>
+#include <QMessageBox>
 
 #include "aardview.h"
 #include "imagewidget.h"
@@ -147,8 +148,12 @@ void AardView::reconfigure(){
   qDebug() << "Checking configuration settings (main)";
   QMainWindow::statusBar()->setVisible(settings.value("main/showStatusbar").toBool());
   // dirview options
+
+  /** @TODO this probably needs to go through the proxy, with recent Qt this crashes
   if (settings.value("dirview/showOnlyDirs", true).toBool())
     dirViewModel->setFilter(QDir::Dirs|QDir::NoDotAndDotDot);
+  */
+
   dirView->setColumnHidden(1, !settings.value("dirview/showSizeCol", false).toBool());
   dirView->setColumnHidden(2, !settings.value("dirview/showTypeCol", false).toBool());
   dirView->setColumnHidden(3, !settings.value("dirview/showLastModifiedCol", false).toBool());
@@ -221,9 +226,13 @@ void AardView::handlePaste(){
   }
 
   if (dir.exists()){
-    qDebug() << "Changing to " << dir.absolutePath();
-    dirView->setCurrentIndex(dirViewModelProxy->mapFromSource(
-                               dirViewModel->index(dir.absolutePath())));
+    QModelIndex idx = dirViewModel->index(dir.absolutePath());
+    if (idx.isValid()){
+      qDebug() << "Changing to " << dir.absolutePath();
+      dirView->setCurrentIndex(dirViewModelProxy->mapFromSource(idx));
+    } else {
+      qDebug() << "Index is not valid for: " << dir.absolutePath();
+    }
   } else if (QFile::exists(selection)){
     widget->load(selection);
   }
@@ -318,7 +327,6 @@ void AardView::about(){
                         "<p align=\"right\">Build key: %1</p>"
 #endif
                        )
-                     .arg(QLibraryInfo::buildKey())
                      .arg(supportedReadFormats)
                      .arg(supportedWriteFormats)
     );

@@ -8,6 +8,11 @@
 #define _IMAGEWIDGET_H
 
 #include <QtGui>
+
+#ifndef QT_NO_PRINTER
+#include <QPrinter>
+#endif
+
 #include "ui_imagewidget.h"
 
 class ImageWidget: public QWidget, private Ui::ImageWidget {
