@@ -2,6 +2,7 @@
 HEADERS = aardview.h \
         alistview.h \
         atreeview.h \
+        adirmodel.h \
         imagewidget.h \
         settingsdialog.h \
         tnviewmodel.h

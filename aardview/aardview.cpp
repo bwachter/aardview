@@ -59,7 +59,7 @@ AardView::AardView(){
 
   QString initialPath=QDir::currentPath();
 
-  dirViewModel = new QDirModel();
+  dirViewModel = new ADirModel();
   tnViewModel = new TnViewModel(initialPath);
   dirViewModelProxy = new QSortFilterProxyModel();
   tnViewModelProxy = new QSortFilterProxyModel();
@@ -149,10 +149,9 @@ void AardView::reconfigure(){
   QMainWindow::statusBar()->setVisible(settings.value("main/showStatusbar").toBool());
   // dirview options
 
-  /** @TODO this probably needs to go through the proxy, with recent Qt this crashes
+  /** @TODO this probably needs to go through the proxy, with recent Qt this crashes */
   if (settings.value("dirview/showOnlyDirs", true).toBool())
-    dirViewModel->setFilter(QDir::Dirs|QDir::NoDotAndDotDot);
-  */
+    dirViewModel->setFilter(QDir::Dirs|QDir::NoDotAndDotDot|QDir::AllDirs);
 
   dirView->setColumnHidden(1, !settings.value("dirview/showSizeCol", false).toBool());
   dirView->setColumnHidden(2, !settings.value("dirview/showTypeCol", false).toBool());

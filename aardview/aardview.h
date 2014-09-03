@@ -24,6 +24,7 @@
 #include "tnviewmodel.h"
 #include "alistview.h"
 #include "atreeview.h"
+#include "adirmodel.h"
 
 class AardView: public QMainWindow, private Ui::AardView{
   Q_OBJECT
@@ -37,7 +38,7 @@ class AardView: public QMainWindow, private Ui::AardView{
   bool menuBarVisible;
   QSettings settings;
 
-  QDirModel *dirViewModel;
+  ADirModel *dirViewModel;
   TnViewModel *tnViewModel;
   QSortFilterProxyModel *tnViewModelProxy;
   QSortFilterProxyModel *dirViewModelProxy;
