@@ -316,12 +316,10 @@ void AardView::about(){
                         "Aardwork has been contributed by prism.<br /><br />"
                         "For bug reports and suggestions please <a href=\"https://mantis.lart.info\">visit my mantis installation</a>."
                         "<h3>Supported formats</h3>"
-                        "Reading: %2<br />"
-                        "Writing: %3<br />"
+                        "Reading: %1<br />"
+                        "Writing: %2<br />"
 #ifdef EXIF
-                        "<p align=\"right\">Build key: %1, EXIF</p>"
-#else
-                        "<p align=\"right\">Build key: %1</p>"
+                        "<p align=\"right\">Extra features: EXIF</p>"
 #endif
                        )
                      .arg(supportedReadFormats)
