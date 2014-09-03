@@ -12,20 +12,20 @@
 #include <QListView>
 
 class AListView: public QListView {
-  Q_OBJECT
+    Q_OBJECT
 
-    public:
-  AListView(QWidget* parent=0): QListView(parent) {}
+  public:
+    AListView(QWidget* parent=0): QListView(parent) {}
 
   private:
-  QSettings settings;
+    QSettings settings;
 
   protected:
-  void enterEvent(QEvent *e){
-    if (settings.value("main/focusFollowsMouse").toBool())
-      this->setFocus();
-    QListView::enterEvent(e);
-  }
+    void enterEvent(QEvent *e){
+      if (settings.value("main/focusFollowsMouse").toBool())
+        this->setFocus();
+      QListView::enterEvent(e);
+    }
 };
 
 #endif

@@ -16,50 +16,50 @@
 #include "ui_imagewidget.h"
 
 class ImageWidget: public QWidget, private Ui::ImageWidget {
-  Q_OBJECT
+    Q_OBJECT
 
   public:
-  ImageWidget(QWidget *parent=0);
-  QString currentFilename();
+    ImageWidget(QWidget *parent=0);
+    QString currentFilename();
 
   private:
-  bool scaledImage;
-  bool fitToWindow;
-  double scaleFactor;
-  QImage displayedImage;
-  QImage originalImage;
-  QPixmap displayedPixmap;
-  QSettings settings;
-  QString imageFileName;
-  Qt::TransformationMode transformation;
-  void displayImage();
-  void scale(double factor);
+    bool scaledImage;
+    bool fitToWindow;
+    double scaleFactor;
+    QImage displayedImage;
+    QImage originalImage;
+    QPixmap displayedPixmap;
+    QSettings settings;
+    QString imageFileName;
+    Qt::TransformationMode transformation;
+    void displayImage();
+    void scale(double factor);
 #ifndef QT_NO_PRINTER
-  QPrinter printer;
+    QPrinter printer;
 #endif
-  void repaint();
+    void repaint();
 
   public slots:
-  void loadInitialFile();
-  void load(QString pathname);
-  void toggleFtw();
-  void normalSize();
-  void open();
-  void print();
-  void printPreview();
-  void reconfigure();
-  void rotate();
-  void zoomIn();
-  void zoomOut();
+    void loadInitialFile();
+    void load(QString pathname);
+    void toggleFtw();
+    void normalSize();
+    void open();
+    void print();
+    void printPreview();
+    void reconfigure();
+    void rotate();
+    void zoomIn();
+    void zoomOut();
 
   private slots:
-  void paintToPrinter(QPrinter *printer);
+    void paintToPrinter(QPrinter *printer);
 
   signals:
 
   protected:
-  void enterEvent(QEvent *e);
-  void paintEvent(QPaintEvent *e);
+    void enterEvent(QEvent *e);
+    void paintEvent(QPaintEvent *e);
 };
 
 

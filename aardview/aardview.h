@@ -27,45 +27,45 @@
 #include "adirmodel.h"
 
 class AardView: public QMainWindow, private Ui::AardView{
-  Q_OBJECT
+    Q_OBJECT
 
   public:
-  AardView();
-  ~AardView();
-  QString getSelectedFilename();
+    AardView();
+    ~AardView();
+    QString getSelectedFilename();
 
   private:
-  bool menuBarVisible;
-  QSettings settings;
+    bool menuBarVisible;
+    QSettings settings;
 
-  ADirModel *dirViewModel;
-  TnViewModel *tnViewModel;
-  QSortFilterProxyModel *tnViewModelProxy;
-  QSortFilterProxyModel *dirViewModelProxy;
-  SettingsDialog *settingsDialog;
+    ADirModel *dirViewModel;
+    TnViewModel *tnViewModel;
+    QSortFilterProxyModel *tnViewModelProxy;
+    QSortFilterProxyModel *dirViewModelProxy;
+    SettingsDialog *settingsDialog;
 
   public slots:
-  void reconfigure();
-  void selectNext();
-  void selectPrev();
+    void reconfigure();
+    void selectNext();
+    void selectPrev();
 
   private slots:
-  void about();
-  void dirIndexChanged();
-  void thumbIndexChanged();
-  void showSettings();
-  void openEditor();
-  void toggleMenuBar();
-  void handlePaste();
-  void handleArguments();
+    void about();
+    void dirIndexChanged();
+    void thumbIndexChanged();
+    void showSettings();
+    void openEditor();
+    void toggleMenuBar();
+    void handlePaste();
+    void handleArguments();
 
   protected:
-  bool event(QEvent *event);
+    bool event(QEvent *event);
 #ifdef QT46
-  bool gestureEvent(QGestureEvent *event);
+    bool gestureEvent(QGestureEvent *event);
 #endif
-  void contextMenuEvent(QContextMenuEvent *event);
-  bool eventFilter(QObject *obj, QEvent *ev);
+    void contextMenuEvent(QContextMenuEvent *event);
+    bool eventFilter(QObject *obj, QEvent *ev);
 };
 
 #endif

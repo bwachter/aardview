@@ -11,21 +11,21 @@
 #include "ui_settingsdialog.h"
 
 class SettingsDialog: public QDialog, private Ui::SettingsDialog {
-  Q_OBJECT
+    Q_OBJECT
 
   public:
-  SettingsDialog();
+    SettingsDialog();
 
   private:
-  QSettings settings;
+    QSettings settings;
 
   public slots:
 
   private slots:
-  void accept();
+    void accept();
 
   signals:
-  void configurationChanged();
+    void configurationChanged();
 };
 
 

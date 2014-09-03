@@ -12,20 +12,20 @@
 #include <QTreeView>
 
 class ATreeView: public QTreeView {
-  Q_OBJECT
+    Q_OBJECT
 
-    public:
-  ATreeView(QWidget* parent=0): QTreeView(parent) {}
+  public:
+    ATreeView(QWidget* parent=0): QTreeView(parent) {}
 
   private:
-  QSettings settings;
+    QSettings settings;
 
   protected:
-  void enterEvent(QEvent *e){
-    if (settings.value("main/focusFollowsMouse").toBool())
-      this->setFocus();
-    QTreeView::enterEvent(e);
-  }
+    void enterEvent(QEvent *e){
+      if (settings.value("main/focusFollowsMouse").toBool())
+        this->setFocus();
+      QTreeView::enterEvent(e);
+    }
 };
 
 
