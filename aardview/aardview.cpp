@@ -57,10 +57,8 @@ AardView::AardView(){
   dockTaggedItems->hide();
   dockStatusInfo->hide();
 
-  QString initialPath=QDir::currentPath();
-
   dirViewModel = new ADirModel();
-  tnViewModel = new TnViewModel(initialPath);
+  tnViewModel = new TnViewModel();
   dirViewModelProxy = new QSortFilterProxyModel();
   tnViewModelProxy = new QSortFilterProxyModel();
 
@@ -77,12 +75,9 @@ AardView::AardView(){
   dirView->setModel(dirViewModelProxy);
   dirView->setRootIndex(dirViewModelProxy->mapFromSource(
                           dirViewModel->index(QDir::rootPath())));
-  dirView->setCurrentIndex(dirViewModelProxy->mapFromSource(
-                             dirViewModel->index(initialPath)));
 
   tnViewModelProxy->setSourceModel(tnViewModel);
   tnView->setModel(tnViewModelProxy);
-  tnViewModel->setDirectory(initialPath);
 
   settingsDialog=new SettingsDialog;
 
@@ -142,6 +137,9 @@ void AardView::handleArguments(){
       }
     }
   } // >2 FIXME, iterate through arguments and add them to the tag box
+
+  dirView->setCurrentIndex(dirViewModelProxy->mapFromSource(
+                             dirViewModel->index(initialPath)));
 }
 
 void AardView::reconfigure(){

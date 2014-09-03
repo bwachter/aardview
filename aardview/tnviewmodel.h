@@ -1,4 +1,4 @@
-/* tnviewmodel.h	-- Bernd Wachter <bwachter@lart.info>
+/* tnviewmodel.h        -- Bernd Wachter <bwachter@lart.info>
  *
  * $Header$
  * $Log$
@@ -13,7 +13,7 @@ class TnViewModel: public QAbstractListModel {
   Q_OBJECT
 
   public:
-  TnViewModel(QString directoryName, QObject *parent = 0);
+  TnViewModel(QString directoryName="", QObject *parent = 0);
   int rowCount(const QModelIndex &parent = QModelIndex()) const;
   QVariant data(const QModelIndex &index, int role) const;
   QVariant headerData(int section, Qt::Orientation orientation,
@@ -26,7 +26,7 @@ class TnViewModel: public QAbstractListModel {
   private:
     QStringList directoryItems;
     QDir directory;
-  
+
 };
 
 
