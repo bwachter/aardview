@@ -1,5 +1,5 @@
 TEMPLATE = subdirs
-SUBDIRS = aardview
+SUBDIRS = kde aardview
 
 lessThan(QT_MAJOR_VERSION, 5){
   error("Can't build with Qt version $${QT_VERSION}. Use at least Qt 5.0.")

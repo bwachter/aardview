@@ -1,4 +1,4 @@
-#CONFIG += debug
+CONFIG += debug
 HEADERS = aardview.h \
         alistview.h \
         atreeview.h \
@@ -28,6 +28,9 @@ UI_SOURCES_DIR = ../build
 RCC_DIR = ../build
 DESTDIR = ../build
 QT += widgets printsupport
+#CONFIG += plugin
+LIBS += -L../build -lkde
+QTPLUGIN += kde
 
 system(pkg-config --exists libexif):DEFINES += EXIF
 
