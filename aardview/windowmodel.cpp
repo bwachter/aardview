@@ -43,12 +43,25 @@ QVariant WindowModel::data(const QModelIndex &index, int role) const {
   QHash<QUuid, AardView*>::const_iterator iter
     = m_windowList.constBegin() + index.row();
 
-  if (role == Qt::DisplayRole){
-    AardView *win = iter.value();
-    return win->title();
-    //return iter.key();
-  } else if (role == Qt::UserRole)
-    return QVariant::fromValue(iter.value());
-  else
-    return QVariant();
+  // iter.key contains the uuid, which we probably don't need to expose
+  AardView *win = iter.value();
+  QFont font;
+
+  switch(role){
+    case Qt::DisplayRole:
+      return win->title();
+    case Qt::FontRole:
+      if (win->isHidden())
+        font.setItalic(true);
+      return font;
+    case Qt::UserRole:
+      return QVariant::fromValue(iter.value());
+    case Qt::CheckStateRole:
+      if (win->isHidden())
+        return Qt::Unchecked;
+      else
+        return Qt::Checked;
+  }
+
+  return QVariant();
 }
