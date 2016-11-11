@@ -1,4 +1,4 @@
-CONFIG += debug
+CONFIG += debug link_pkgconfig
 HEADERS = aardview.h \
         alistview.h \
         atreeview.h \
@@ -19,7 +19,6 @@ TARGET = aardview
 TEMPLATE = app
 LANGUAGE = C++
 TRANSLATIONS = aardview_de.ts
-PKGCONFIG += libexif
 OBJECTS_DIR = ../build
 MOC_DIR = ../build
 UI_DIR = ../build
@@ -32,12 +31,17 @@ QT += widgets printsupport
 LIBS += -L../build -lkde
 QTPLUGIN += kde
 
-system(pkg-config --exists libexif):DEFINES += EXIF
-
-contains(DEFINES, EXIF){
-  QMAKE_CXXFLAGS += $$system(pkg-config --cflags libexif)
-  QMAKE_CFLAGS += $$system(pkg-config --cflags libexif)
-  LIBS += $$system(pkg-config --libs libexif)
+unix {
+     system(pkg-config --exists libexif){
+            message("Found libexif")
+            DEFINES += HAS_EXIF
+            PKGCONFIG += libexif
+     }
+     system(pkg-config --exists libssh){
+            message("Found libssh")
+            DEFINES += HAS_SSH
+            PKGCONFIG += libssh libssh_threads
+     }
 }
 
 unix {

@@ -1,5 +1,9 @@
 #include <QApplication>
 
+#ifdef HAS_SSH
+#include <libssh/callbacks.h>
+#endif
+
 #include "aardview.h"
 
 // static plugin
@@ -22,6 +26,11 @@ int main(int argc, char** argv){
   QTranslator aardviewTranslator;
   aardviewTranslator.load("aardview_" + QLocale::system().name());
   app.installTranslator(&aardviewTranslator);
+
+#ifdef HAS_SSH
+  ssh_threads_set_callbacks(ssh_threads_get_pthread());
+  ssh_init();
+#endif
 
   AardView mw;
   mw.show();

@@ -318,7 +318,7 @@ void AardView::about(){
                         "<h3>Supported formats</h3>"
                         "Reading: %1<br />"
                         "Writing: %2<br />"
-#ifdef EXIF
+#ifdef HAS_EXIF
                         "<p align=\"right\">Extra features: EXIF</p>"
 #endif
                        )
