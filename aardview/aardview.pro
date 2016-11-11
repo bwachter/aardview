@@ -1,15 +1,19 @@
 CONFIG += debug link_pkgconfig
 HEADERS = aardview.h \
+        aardviewshim.h \
         alistview.h \
         atreeview.h \
         adirmodel.h \
         imageloader.h \
         settingsdialog.h \
+        windowmodel.h \
         tnviewmodel.h
 SOURCES = aardview.cpp \
+        aardviewshim.cpp \
         imageloader.cpp \
         main.cpp \
         settingsdialog.cpp \
+        windowmodel.cpp \
         tnviewmodel.cpp
 FORMS = aardview.ui \
       settingsdialog.ui

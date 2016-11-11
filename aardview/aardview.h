@@ -35,13 +35,14 @@ class AardView: public QMainWindow, private Ui::AardView{
     Q_OBJECT
 
   public:
-    AardView();
+    AardView(QUuid uid);
     ~AardView();
     QString getSelectedFilename();
 
   private:
     bool menuBarVisible;
     QSettings settings;
+    QUuid m_uid;
 
     ADirModel *dirViewModel;
     TnViewModel *tnViewModel;
@@ -61,7 +62,6 @@ class AardView: public QMainWindow, private Ui::AardView{
     void selectPrev();
 
   private slots:
-    void about();
     void dirIndexChanged();
     void displayPixmap(const QPixmap &pixmap);
     void thumbIndexChanged();
@@ -78,11 +78,14 @@ class AardView: public QMainWindow, private Ui::AardView{
   protected:
     bool event(QEvent *event);
     bool gestureEvent(QGestureEvent *event);
+    void closeEvent(QCloseEvent *event);
     void contextMenuEvent(QContextMenuEvent *event);
     bool eventFilter(QObject *obj, QEvent *ev);
 
   signals:
     void requestPixmap(const QString &filename, const QSize viewSize);
+    void showAbout();
+    void requestClose(QUuid uid);
 };
 
 #endif

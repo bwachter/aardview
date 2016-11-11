@@ -1,10 +1,11 @@
 #include <QApplication>
+#include <QtGui>
 
 #ifdef HAS_SSH
 #include <libssh/callbacks.h>
 #endif
 
-#include "aardview.h"
+#include "aardviewshim.h"
 
 // static plugin
 Q_IMPORT_PLUGIN(XCFPlugin)
@@ -32,7 +33,6 @@ int main(int argc, char** argv){
   ssh_init();
 #endif
 
-  AardView mw;
-  mw.show();
+  AardviewShim mw;
   return app.exec();
 }

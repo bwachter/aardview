@@ -10,9 +10,10 @@
 
 #include "aardview.h"
 
-AardView::AardView(){
+AardView::AardView(QUuid uid){
   setupUi(this);
 
+  m_uid = uid;
   this->setWindowIcon(QPixmap(":/images/aardview-icon.png"));
   bool initialized=settings.value("main/initialized").toBool();
 
@@ -91,6 +92,8 @@ AardView::AardView(){
   // finally connect everything we didn't connect by designer already
   connect(actionExit, SIGNAL(triggered()), qApp, SLOT(quit()));
   connect(actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
+  connect(actionAbout, SIGNAL(triggered()), this, SIGNAL(showAbout()));
+
   connect(settingsDialog, SIGNAL(configurationChanged()),
           this, SLOT(reconfigure()));
   connect(settingsDialog, SIGNAL(configurationChanged()),
@@ -136,6 +139,7 @@ AardView::~AardView(){
   }
 }
 
+// TODO: move argument handling to shim
 void AardView::handleArguments(){
   QString initialPath=QDir::currentPath();
   QStringList arguments=qApp->arguments();
@@ -187,6 +191,11 @@ void AardView::reconfigure(){
   } else {
     tnViewModelProxy->setFilterRegExp("");
   }
+}
+
+void AardView::closeEvent(QCloseEvent *event){
+  event->ignore();
+  emit requestClose(m_uid);
 }
 
 void AardView::dirIndexChanged(){
@@ -376,35 +385,6 @@ void AardView::toggleMenuBar(){
     menuBar()->show();
     menuBarVisible=true;
   }
-}
-
-void AardView::about(){
-  QString supportedWriteFormats;
-  QString supportedReadFormats;
-  for (int i = 0; i < QImageReader::supportedImageFormats().count(); ++i){
-    supportedReadFormats += " " +
-      QString(QImageReader::supportedImageFormats().at(i)).toLower();
-  }
-  for (int i = 0; i < QImageWriter::supportedImageFormats().count(); ++i){
-    supportedWriteFormats += " " +
-      QString(QImageWriter::supportedImageFormats().at(i)).toLower();
-  }
-
-  QMessageBox::about(this, tr("About Menu"),
-                     tr("<h1>About Aardview</h1><br />"
-                        "A simple image viewer written by Bernd Wachter. You can visit the <a href=\"http://bwachter.lart.info/projects/aardview/\">project homepage</a> for more information.<br /><br />"
-                        "Aardwork has been contributed by prism.<br /><br />"
-                        "For bug reports and suggestions please <a href=\"https://mantis.lart.info\">visit my mantis installation</a>."
-                        "<h3>Supported formats</h3>"
-                        "Reading: %1<br />"
-                        "Writing: %2<br />"
-#ifdef HAS_EXIF
-                        "<p align=\"right\">Extra features: EXIF</p>"
-#endif
-                       )
-                     .arg(supportedReadFormats)
-                     .arg(supportedWriteFormats)
-    );
 }
 
 bool AardView::event(QEvent *event){
