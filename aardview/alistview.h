@@ -10,6 +10,7 @@
 #include <QtGui>
 #include <QWidget>
 #include <QListView>
+#include "settingsdialog.h"
 
 class AListView: public QListView {
     Q_OBJECT
@@ -18,11 +19,11 @@ class AListView: public QListView {
     AListView(QWidget* parent=0): QListView(parent) {}
 
   private:
-    QSettings settings;
+    SettingsDialog *settings = SettingsDialog::instance();
 
   protected:
     void enterEvent(QEvent *e){
-      if (settings.value("main/focusFollowsMouse").toBool())
+      if (settings->value("main/focusFollowsMouse").toBool())
         this->setFocus();
       QListView::enterEvent(e);
     }

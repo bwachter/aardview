@@ -1,4 +1,5 @@
 #include "imageloader.h"
+#include "settingsdialog.h"
 
 /*
   The UI part of this class will end up in the mainwindow, while
@@ -14,14 +15,18 @@ ImageLoader::ImageLoader(): QObject(){
 }
 
 void ImageLoader::reconfigure(){
+  SettingsDialog *settings = SettingsDialog::instance();
+
   qDebug() << "Checking configuration settings (viewer)";
-  if (settings.value("viewer/resetFtwOnChange").toBool())
-    fitToWindow=settings.value("viewer/fitToWindow").toBool();
-  if (settings.value("viewer/smoothTransformation").toBool())
+  if (settings->value("viewer/resetFtwOnChange").toBool())
+    fitToWindow=settings->value("viewer/fitToWindow").toBool();
+  if (settings->value("viewer/smoothTransformation").toBool())
     transformation=Qt::SmoothTransformation;
 }
 
 void ImageLoader::load(const QString &pathname, const QSize &widgetViewSize){
+  SettingsDialog *settings = SettingsDialog::instance();
+
   qDebug() << "Requested pixmap for " << pathname
            << " with size " << widgetViewSize;
   viewSize=widgetViewSize;
@@ -31,14 +36,15 @@ void ImageLoader::load(const QString &pathname, const QSize &widgetViewSize){
     // FIXME, set pixmap to a valid pixmap or one from resource, configurable
     displayedPixmap = QPixmap();
   } else {
-    settings.setValue("viewer/lastImage", pathname);
+    // FIXME, last image should be tracked per instance
+    //settings->setValue("viewer/lastImage", pathname);
     imageFileName=pathname;
     displayedPixmap=QPixmap::fromImage(originalImage);
   }
 
-  if (settings.value("viewer/resetFtwOnChange").toBool())
-    fitToWindow=settings.value("viewer/fitToWindow").toBool();
-  //if (settings.value("viewer/resetScalingOnChange").toBool())
+  if (settings->value("viewer/resetFtwOnChange").toBool())
+    fitToWindow=settings->value("viewer/fitToWindow").toBool();
+  //if (settings->value("viewer/resetScalingOnChange").toBool())
   // FIXME, add scaling
 
   displayImage();
@@ -49,8 +55,10 @@ void ImageLoader::displayImage(){
     qDebug() << "Skipping display stuff due to the lack of a pixmap";
     return;
   }
+  SettingsDialog *settings = SettingsDialog::instance();
+
   bool keepAspectRatio=true;
-  int p = settings.value("viewer/padding").toInt();
+  int p = settings->value("viewer/padding").toInt();
   QSize pixmapSize=displayedPixmap.size();
   QSize paddingSize(p, p);
 
@@ -58,8 +66,8 @@ void ImageLoader::displayImage(){
   // shrinkonly is true and at least one dimension of the
   // image is larger than the view area
   if (fitToWindow &&
-      (!settings.value("viewer/shrinkOnly").toBool() ||
-      (settings.value("viewer/shrinkOnly").toBool() &&
+      (!settings->value("viewer/shrinkOnly").toBool() ||
+      (settings->value("viewer/shrinkOnly").toBool() &&
        (pixmapSize.height() >= viewSize.height() ||
         pixmapSize.width() >= viewSize.width())))) {
     // fit the image to the window, keeping the aspect ratio

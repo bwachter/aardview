@@ -12,7 +12,6 @@
 #include <QPainter>
 #include <QMenu>
 #include <QMenuBar>
-#include <QSettings>
 #include <QAction>
 #include <QDirModel>
 #include <QGestureEvent>
@@ -25,7 +24,6 @@
 
 #include "ui_aardview.h"
 #include "imageloader.h"
-#include "settingsdialog.h"
 #include "tnviewmodel.h"
 #include "alistview.h"
 #include "atreeview.h"
@@ -42,7 +40,6 @@ class AardView: public QMainWindow, private Ui::AardView{
 
   private:
     bool menuBarVisible;
-    QSettings settings;
     QUuid m_uid;
 
     ADirModel *dirViewModel;

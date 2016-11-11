@@ -1,6 +1,16 @@
 #include "settingsdialog.h"
 
-SettingsDialog::SettingsDialog(): QDialog(){
+SettingsDialog *SettingsDialog::settingsDialog = 0;
+
+SettingsDialog *SettingsDialog::instance(){
+  if (!settingsDialog){
+    settingsDialog = new SettingsDialog();
+  }
+
+  return settingsDialog;
+}
+
+SettingsDialog::SettingsDialog(): QDialog() {
   setupUi(this);
 
   settings.beginGroup("main");
@@ -75,4 +85,47 @@ void SettingsDialog::accept(){
 
   this->hide();
   emit configurationChanged();
+}
+
+void SettingsDialog::defaults(){
+  bool initialized=settings.value("main/initialized").toBool();
+
+  if (!initialized){
+    qDebug() << "Setting initial settings...";
+    settings.beginGroup("main");
+    settings.setValue("focusFollowsMouse", true);
+    settings.setValue("initialized", true);
+    settings.setValue("externalEditor", "/usr/bin/gimp");
+    settings.setValue("showStatusbar", false);
+    settings.setValue("initialX", 640);
+    settings.setValue("initialY", 480);
+    settings.endGroup();
+    settings.beginGroup("dirview");
+    settings.setValue("showOnlyDirs", true);
+    settings.setValue("showSizeCol", false);
+    settings.setValue("showTypeCol", false);
+    settings.setValue("showLastModifiedCol", false);
+    settings.endGroup();
+    settings.beginGroup("tnview");
+    settings.setValue("showOnlyFiles", true);
+    settings.setValue("caseInsensitiveMatching", true);
+    settings.setValue("filterFiles", true);
+    settings.setValue("fileMask", ".*(bmp|gif|ico|jpg|jpeg|mng|png|pbm|pgm|ppm|svg|tif|tiff|xbm|xpm)$");
+    settings.endGroup();
+    settings.beginGroup("viewer");
+    settings.setValue("hideInfoArea", true);
+    settings.setValue("resetFtwOnChange", true);
+    settings.setValue("fitToWindow", true);
+    settings.setValue("shrinkOnly", true);
+    settings.setValue("padding", 5);
+    settings.setValue("loadAction", 0);
+    settings.endGroup();
+    emit configurationChanged();
+    // do something on first start
+  }
+}
+//
+
+QVariant SettingsDialog::value(const QString &key, const QVariant &defaultValue) const {
+  return settings.value(key, defaultValue);
 }

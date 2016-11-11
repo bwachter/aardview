@@ -9,7 +9,6 @@
 
 #include <QImage>
 #include <QPixmap>
-#include <QSettings>
 #include <QDebug>
 
 class ImageLoader: public QObject {
@@ -26,7 +25,6 @@ class ImageLoader: public QObject {
     QImage displayedImage;
     QImage originalImage;
     QPixmap displayedPixmap;
-    QSettings settings;
     QString imageFileName;
     QSize viewSize;
     Qt::TransformationMode transformation;

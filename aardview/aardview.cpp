@@ -9,46 +9,13 @@
 #endif
 
 #include "aardview.h"
+#include "settingsdialog.h"
 
 AardView::AardView(QUuid uid){
   setupUi(this);
 
   m_uid = uid;
   this->setWindowIcon(QPixmap(":/images/aardview-icon.png"));
-  bool initialized=settings.value("main/initialized").toBool();
-
-  if (!initialized){
-    qDebug() << "Setting initial settings...";
-    settings.beginGroup("main");
-    settings.setValue("focusFollowsMouse", true);
-    settings.setValue("initialized", true);
-    settings.setValue("externalEditor", "/usr/bin/gimp");
-    settings.setValue("showStatusbar", false);
-    settings.setValue("initialX", 640);
-    settings.setValue("initialY", 480);
-    settings.endGroup();
-    settings.beginGroup("dirview");
-    settings.setValue("showOnlyDirs", true);
-    settings.setValue("showSizeCol", false);
-    settings.setValue("showTypeCol", false);
-    settings.setValue("showLastModifiedCol", false);
-    settings.endGroup();
-    settings.beginGroup("tnview");
-    settings.setValue("showOnlyFiles", true);
-    settings.setValue("caseInsensitiveMatching", true);
-    settings.setValue("filterFiles", true);
-    settings.setValue("fileMask", ".*(bmp|gif|ico|jpg|jpeg|mng|png|pbm|pgm|ppm|svg|tif|tiff|xbm|xpm)$");
-    settings.endGroup();
-    settings.beginGroup("viewer");
-    settings.setValue("hideInfoArea", true);
-    settings.setValue("resetFtwOnChange", true);
-    settings.setValue("fitToWindow", true);
-    settings.setValue("shrinkOnly", true);
-    settings.setValue("padding", 5);
-    settings.setValue("loadAction", 0);
-    settings.endGroup();
-    // do something on first start
-  }
 
 #ifdef QT_NO_PRINTER
   // disable printer items if qt comes without printing support
@@ -110,8 +77,11 @@ AardView::AardView(QUuid uid){
           loader, SLOT(load(const QString &, const QSize &)));
   connect(loader, SIGNAL(pixmapReady(const QPixmap &)), this, SLOT(displayPixmap(const QPixmap &)));
 
-  this->resize(settings.value("main/initialX").toInt(),
-               settings.value("main/initialY").toInt());
+  // TODO: this should be uid pecidic state restore
+  /*
+  this->resize(settings->value("main/initialX").toInt(),
+               settings->value("main/initialY").toInt());
+  */
   reconfigure();
 
   qDebug() << "Current size: " << centralwidget->size();
@@ -127,15 +97,19 @@ AardView::AardView(QUuid uid){
 }
 
 AardView::~AardView(){
-  if (settings.value("main/saveSizeOnExit").toBool()){
+  // TODO: this should become uid-specific state saving
+  /*
+  if (settings->value("main/saveSizeOnExit").toBool()){
     qDebug() << "Saving current window size" << width();
-    settings.setValue("main/initialX", width());
-    settings.setValue("main/initialY", height());
+    settings->setValue("main/initialX", width());
+    settings->setValue("main/initialY", height());
   }
+  */
 }
 
 // TODO: move argument handling to shim
 void AardView::handleArguments(){
+  SettingsDialog *settings = SettingsDialog::instance();
   QString initialPath=QDir::currentPath();
   QStringList arguments=qApp->arguments();
   if (arguments.count() == 2){
@@ -152,10 +126,10 @@ void AardView::handleArguments(){
       }
     }
   } else {// >2 FIXME, iterate through arguments and add them to the tag box
-    if (settings.value("viewer/loadAction").toInt()==0)
+    if (settings->value("viewer/loadAction").toInt()==0)
       loadPixmap(":/images/aardview.png");
-    else if (settings.value("viewer/loadAction").toInt()==1)
-      loadPixmap(settings.value("viewer/lastImage").toString());
+    else if (settings->value("viewer/loadAction").toInt()==1)
+      loadPixmap(settings->value("viewer/lastImage").toString());
   }
 
   dirView->setCurrentIndex(dirViewModelProxy->mapFromSource(
@@ -163,26 +137,28 @@ void AardView::handleArguments(){
 }
 
 void AardView::reconfigure(){
+  SettingsDialog *settings = SettingsDialog::instance();
+
   loader->reconfigure();
   qDebug() << "Checking configuration settings (main)";
-  QMainWindow::statusBar()->setVisible(settings.value("main/showStatusbar").toBool());
+  QMainWindow::statusBar()->setVisible(settings->value("main/showStatusbar").toBool());
   // dirview options
 
   /** @TODO this probably needs to go through the proxy, with recent Qt this crashes */
-  if (settings.value("dirview/showOnlyDirs", true).toBool())
+  if (settings->value("dirview/showOnlyDirs", true).toBool())
     dirViewModel->setFilter(QDir::Dirs|QDir::NoDotAndDotDot|QDir::AllDirs);
 
-  dirView->setColumnHidden(1, !settings.value("dirview/showSizeCol", false).toBool());
-  dirView->setColumnHidden(2, !settings.value("dirview/showTypeCol", false).toBool());
-  dirView->setColumnHidden(3, !settings.value("dirview/showLastModifiedCol", false).toBool());
+  dirView->setColumnHidden(1, !settings->value("dirview/showSizeCol", false).toBool());
+  dirView->setColumnHidden(2, !settings->value("dirview/showTypeCol", false).toBool());
+  dirView->setColumnHidden(3, !settings->value("dirview/showLastModifiedCol", false).toBool());
   // tnview options
-  if (settings.value("tnview/showOnlyFiles", true).toBool())
+  if (settings->value("tnview/showOnlyFiles", true).toBool())
     tnViewModel->setFilter(QDir::Files);
-  if (settings.value("tnview/fileMask").toString() != "" &&
-      settings.value("tnview/filterFiles").toBool()){
-    qDebug() << "Setting filter: " << settings.value("tnview/fileMask").toString();
-    tnViewModelProxy->setFilterRegExp(settings.value("tnview/fileMask").toString());
-    if (settings.value("tnview/caseInsensitiveMatching").toBool())
+  if (settings->value("tnview/fileMask").toString() != "" &&
+      settings->value("tnview/filterFiles").toBool()){
+    qDebug() << "Setting filter: " << settings->value("tnview/fileMask").toString();
+    tnViewModelProxy->setFilterRegExp(settings->value("tnview/fileMask").toString());
+    if (settings->value("tnview/caseInsensitiveMatching").toBool())
       tnViewModelProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
   } else {
     tnViewModelProxy->setFilterRegExp("");
@@ -285,7 +261,9 @@ void AardView::open(){
 }
 
 void AardView::openEditor(){
-  QString program = settings.value("main/externalEditor").toString();
+  SettingsDialog *settings = SettingsDialog::instance();
+
+  QString program = settings->value("main/externalEditor").toString();
   if (program !=""){
 
     QStringList arguments;
@@ -406,6 +384,8 @@ void AardView::contextMenuEvent(QContextMenuEvent *event){
 }
 
 bool AardView::eventFilter(QObject *obj, QEvent *event){
+  SettingsDialog *settings = SettingsDialog::instance();
+
   if (event->type() == QEvent::MouseButtonPress){
     QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
     switch(mouseEvent->button()){
@@ -463,7 +443,7 @@ bool AardView::eventFilter(QObject *obj, QEvent *event){
       //loader->repaint(centralwidget->size());
       return QWidget::eventFilter(obj, event);
     } else if (event->type() == QEvent::Enter){
-      if (settings.value("main/focusFollowsMouse").toBool())
+      if (settings->value("main/focusFollowsMouse").toBool())
         imageArea->setFocus();
       return QWidget::eventFilter(obj, event);
     }

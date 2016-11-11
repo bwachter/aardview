@@ -14,12 +14,18 @@ class SettingsDialog: public QDialog, private Ui::SettingsDialog {
     Q_OBJECT
 
   public:
-    SettingsDialog();
+    static SettingsDialog *instance();
 
   private:
+    SettingsDialog();
+    SettingsDialog(const SettingsDialog &);
     QSettings settings;
 
+    static SettingsDialog *settingsDialog;
+    void defaults();
+
   public slots:
+    QVariant value(const QString &key, const QVariant &defaultValue = QVariant()) const;
 
   private slots:
     void accept();

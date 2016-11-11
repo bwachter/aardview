@@ -11,7 +11,7 @@
 
 AardviewShim::AardviewShim(){
   m_windowModel = new WindowModel();
-  m_settingsDialog=new SettingsDialog;
+  m_settingsDialog=SettingsDialog::instance();
 
   if (useTray){
     createTrayIcon();
