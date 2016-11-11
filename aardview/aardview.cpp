@@ -87,17 +87,12 @@ AardView::AardView(QUuid uid){
   tnViewModelProxy->setSourceModel(tnViewModel);
   tnView->setModel(tnViewModelProxy);
 
-  settingsDialog=new SettingsDialog;
-
   // finally connect everything we didn't connect by designer already
   connect(actionExit, SIGNAL(triggered()), qApp, SLOT(quit()));
   connect(actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
   connect(actionAbout, SIGNAL(triggered()), this, SIGNAL(showAbout()));
+  connect(actionPreferences, SIGNAL(triggered()), this, SIGNAL(showSettings()));
 
-  connect(settingsDialog, SIGNAL(configurationChanged()),
-          this, SLOT(reconfigure()));
-  connect(settingsDialog, SIGNAL(configurationChanged()),
-          loader, SLOT(reconfigure()));
   connect(dirView->selectionModel(),
           SIGNAL(selectionChanged(const QItemSelection &,
                                   const QItemSelection &)),
@@ -168,6 +163,7 @@ void AardView::handleArguments(){
 }
 
 void AardView::reconfigure(){
+  loader->reconfigure();
   qDebug() << "Checking configuration settings (main)";
   QMainWindow::statusBar()->setVisible(settings.value("main/showStatusbar").toBool());
   // dirview options
@@ -370,10 +366,6 @@ void AardView::selectPrev(){
            << "Index: " << index
            << " Rowcount: " << tnViewModel->rowCount()
            << " Proxyrowcount: " << tnViewModelProxy->rowCount();
-}
-
-void AardView::showSettings(){
-  settingsDialog->show();
 }
 
 void AardView::toggleMenuBar(){

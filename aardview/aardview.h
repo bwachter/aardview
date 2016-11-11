@@ -38,6 +38,7 @@ class AardView: public QMainWindow, private Ui::AardView{
     AardView(QUuid uid);
     ~AardView();
     QString getSelectedFilename();
+    QString title();
 
   private:
     bool menuBarVisible;
@@ -48,7 +49,6 @@ class AardView: public QMainWindow, private Ui::AardView{
     TnViewModel *tnViewModel;
     QSortFilterProxyModel *tnViewModelProxy;
     QSortFilterProxyModel *dirViewModelProxy;
-    SettingsDialog *settingsDialog;
     ImageLoader *loader;
 #ifndef QT_NO_PRINTER
     QPrinter printer;
@@ -65,7 +65,6 @@ class AardView: public QMainWindow, private Ui::AardView{
     void dirIndexChanged();
     void displayPixmap(const QPixmap &pixmap);
     void thumbIndexChanged();
-    void showSettings();
     void open();
     void paintToPrinter(QPrinter *printer);
     void print();
@@ -85,6 +84,7 @@ class AardView: public QMainWindow, private Ui::AardView{
   signals:
     void requestPixmap(const QString &filename, const QSize viewSize);
     void showAbout();
+    void showSettings();
     void requestClose(QUuid uid);
 };
 

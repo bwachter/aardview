@@ -10,7 +10,8 @@
 #include "aardview.h"
 
 AardviewShim::AardviewShim(){
-    m_windowModel = new WindowModel();
+  m_windowModel = new WindowModel();
+  m_settingsDialog=new SettingsDialog;
 
   if (useTray){
     createTrayIcon();
@@ -60,6 +61,9 @@ void AardviewShim::addWindow(){
 
   connect(win, SIGNAL(requestClose(QUuid)), this, SLOT(deleteWindow(QUuid)));
   connect(win, SIGNAL(showAbout()), this, SLOT(about()));
+  connect(win, SIGNAL(showSettings()), m_settingsDialog, SLOT(show()));
+  connect(m_settingsDialog, SIGNAL(configurationChanged()),
+          win, SLOT(reconfigure()));
 
   m_windowModel->addWindow(uid, win);
   win->show();
@@ -82,13 +86,18 @@ void AardviewShim::createTrayIcon()
   trayIconMenu->addAction(trayMenuWidget);
   trayIconMenu->addSeparator();
 
-  actionNewWindow = new QAction(tr("New window"));
+  QAction *actionNewWindow = new QAction(tr("New window"));
   connect(actionNewWindow, SIGNAL(triggered()), this, SLOT(addWindow()));
 
-  actionExit = new QAction(tr("E&xit"));
+  QAction *actionExit = new QAction(tr("E&xit"));
   connect(actionExit, SIGNAL(triggered()), qApp, SLOT(quit()));
 
+  QAction *actionSettings = new QAction(tr("Settings"));
+  connect(actionSettings, SIGNAL(triggered()), m_settingsDialog, SLOT(show()));
+
   trayIconMenu->addAction(actionNewWindow);
+  trayIconMenu->addSeparator();
+  trayIconMenu->addAction(actionSettings);
   trayIconMenu->addSeparator();
   trayIconMenu->addAction(actionExit);
 

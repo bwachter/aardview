@@ -13,6 +13,7 @@
 #include <QWidgetAction>
 
 #include "aardview.h"
+#include "settingsdialog.h"
 #include "windowmodel.h"
 
 class AardviewShim: public QObject {
@@ -27,9 +28,8 @@ class AardviewShim: public QObject {
     QWidgetAction *trayMenuWidget;
     QSystemTrayIcon *trayIcon;
     QMenu *trayIconMenu;
-    QAction *actionExit, *actionNewWindow;
-    AardView *mw;
-    bool useTray=false;
+    bool useTray=true;
+    SettingsDialog *m_settingsDialog;
 
     void createTrayIcon();
 

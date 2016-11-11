@@ -413,22 +413,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>actionPreferences</sender>
-   <signal>triggered()</signal>
-   <receiver>AardView</receiver>
-   <slot>showSettings()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>182</x>
-     <y>190</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>actionMinimize</sender>
    <signal>triggered()</signal>
    <receiver>AardView</receiver>
@@ -590,10 +574,8 @@
   </connection>
  </connections>
  <slots>
-  <slot>about()</slot>
   <slot>aboutQt()</slot>
   <slot>openEditor()</slot>
-  <slot>showSettings()</slot>
   <slot>toggleMenuBar()</slot>
   <slot>open()</slot>
   <slot>print()</slot>
