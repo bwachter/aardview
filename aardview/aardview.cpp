@@ -1,8 +1,14 @@
 #include <QtGui>
 #include <QMessageBox>
+#include <QScrollBar>
+#include <QFileDialog>
+
+#ifndef QT_NO_PRINTER
+#include <QPrintDialog>
+#include <QPrintPreviewDialog>
+#endif
 
 #include "aardview.h"
-#include "imagewidget.h"
 
 AardView::AardView(){
   setupUi(this);
@@ -51,7 +57,8 @@ AardView::AardView(){
   actionPrintPreview->setVisible(false);
 #endif
 
-  widget->installEventFilter(this);
+  loader = new ImageLoader();
+  centralwidget->installEventFilter(this);
 
   // hide currently unused docks
   dockTaggedItems->hide();
@@ -87,7 +94,7 @@ AardView::AardView(){
   connect(settingsDialog, SIGNAL(configurationChanged()),
           this, SLOT(reconfigure()));
   connect(settingsDialog, SIGNAL(configurationChanged()),
-          widget, SLOT(reconfigure()));
+          loader, SLOT(reconfigure()));
   connect(dirView->selectionModel(),
           SIGNAL(selectionChanged(const QItemSelection &,
                                   const QItemSelection &)),
@@ -97,11 +104,20 @@ AardView::AardView(){
                                   const QItemSelection &)),
           this, SLOT(thumbIndexChanged()));
 
+  connect(actionToggleFitToWindow, SIGNAL(triggered()), loader, SLOT(toggleFtw()));
+  //connect(actionRotate, SIGNAL(triggered()), loader, SLOT(rotate()));
+  connect(actionZoomIn, SIGNAL(triggered()), loader, SLOT(zoomIn()));
+  connect(actionZoomOut, SIGNAL(triggered()), loader, SLOT(zoomOut()));
+  connect(this, SIGNAL(requestPixmap(const QString &, const QSize &)),
+          loader, SLOT(load(const QString &, const QSize &)));
+  connect(loader, SIGNAL(pixmapReady(const QPixmap &)), this, SLOT(displayPixmap(const QPixmap &)));
+
   this->resize(settings.value("main/initialX").toInt(),
                settings.value("main/initialY").toInt());
   reconfigure();
 
-  qDebug() << QPluginLoader::staticInstances();
+  qDebug() << "Current size: " << centralwidget->size();
+  qDebug() << "Linked in plugins: " << QPluginLoader::staticInstances();
 
   grabGesture(Qt::TapAndHoldGesture);
   grabGesture(Qt::PanGesture);
@@ -133,10 +149,15 @@ void AardView::handleArguments(){
       if (QFile::exists(arguments.at(1))){
         dockDirectoryTree->hide();
         dockTreeView->hide();
-        widget->load(arguments.at(1));
+        loadPixmap(arguments.at(1), centralwidget->size());
       }
     }
-  } // >2 FIXME, iterate through arguments and add them to the tag box
+  } else {// >2 FIXME, iterate through arguments and add them to the tag box
+    if (settings.value("viewer/loadAction").toInt()==0)
+      loadPixmap(":/images/aardview.png");
+    else if (settings.value("viewer/loadAction").toInt()==1)
+      loadPixmap(settings.value("viewer/lastImage").toString());
+  }
 
   dirView->setCurrentIndex(dirViewModelProxy->mapFromSource(
                              dirViewModel->index(initialPath)));
@@ -177,8 +198,22 @@ void AardView::dirIndexChanged(){
     tnViewModel->setDirectory(dirViewModel->filePath(idx));
     tnView->scrollToTop();
   } else {
-    widget->load(dirViewModel->filePath(idx));
+    loadPixmap(dirViewModel->filePath(idx));
   }
+}
+
+void AardView::displayPixmap(const QPixmap &pixmap){
+  // TODO: divert this to alternate image containers
+  imageContainer->setPixmap(pixmap);
+  imageArea->verticalScrollBar()->setValue(0);
+  imageArea->horizontalScrollBar()->setValue(0);
+}
+
+void AardView::loadPixmap(const QString &filename, const QSize viewSize){
+  if (viewSize == QSize())
+    emit requestPixmap(filename, centralwidget->size());
+  else
+    emit requestPixmap(filename, viewSize);
 }
 
 void AardView::thumbIndexChanged(){
@@ -188,7 +223,7 @@ void AardView::thumbIndexChanged(){
   if (tnViewModel->isDir(idx)){
     qDebug() << "Selected item is a directory";
   } else {
-    widget->load(tnViewModel->filePath(idx));
+    loadPixmap(tnViewModel->filePath(idx));
   }
   qDebug () << "Selected index: " << tnView->selectionModel()->currentIndex().row()
             << "Proxy index: " << idx.row();
@@ -231,7 +266,16 @@ void AardView::handlePaste(){
       qDebug() << "Index is not valid for: " << dir.absolutePath();
     }
   } else if (QFile::exists(selection)){
-    widget->load(selection);
+    loadPixmap(selection);
+  }
+}
+
+void AardView::open(){
+  QString fileName =
+    QFileDialog::getOpenFileName(this,
+                                 tr("Open File"), QDir::currentPath());
+  if (!fileName.isEmpty()) {
+    loadPixmap(fileName);
   }
 }
 
@@ -240,10 +284,46 @@ void AardView::openEditor(){
   if (program !=""){
 
     QStringList arguments;
-    arguments << widget->currentFilename();
+    arguments << loader->currentFilename();
     QProcess *myProcess = new QProcess(this);
     myProcess->start(program, arguments);
   }
+}
+
+void AardView::paintToPrinter(QPrinter *printer){
+#ifndef QT_NO_PRINTER
+  QPainter painter(printer);
+/*
+// TODO: ability to get full pixmap from imagewidget
+//      check if we can just print the QImage
+//      provide scaling functionality
+  QRect rect = painter.viewport();
+  QSize size = displayedPixmap.size();
+  size.scale(rect.size(), Qt::KeepAspectRatio);
+
+  painter.setViewport(rect.x(), rect.y(), size.width(), size.height());
+  painter.setWindow(displayedPixmap.rect());
+  painter.drawPixmap(0, 0, displayedPixmap);
+*/
+#endif
+}
+
+void AardView::print(){
+#ifndef QT_NO_PRINTER
+  QPrintDialog dialog(&printer, this);
+  if (dialog.exec()) {
+    paintToPrinter(&printer);
+  }
+#endif
+}
+
+void AardView::printPreview(){
+#ifndef QT_NO_PRINTER
+  QPrintPreviewDialog dialog(&printer, this);
+  connect(&dialog, SIGNAL(paintRequested(QPrinter *)),
+          this, SLOT(paintToPrinter(QPrinter *)));
+  dialog.exec();
+#endif
 }
 
 void AardView::selectNext(){
@@ -369,7 +449,7 @@ bool AardView::eventFilter(QObject *obj, QEvent *event){
   // come in handy later to bind the default keys only to some widget.
   // for now we don't need the keys without modifier on any widget other
   // than the image widget
-  if (obj == widget){
+  if (obj == centralwidget){
     if (event->type() == QEvent::KeyPress){
       QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
       if (keyEvent->matches(QKeySequence::Paste)) {
@@ -383,22 +463,22 @@ bool AardView::eventFilter(QObject *obj, QEvent *event){
             this->toggleMenuBar();
             break;
           case Qt::Key_N:
-            widget->normalSize();
+            loader->normalSize();
             break;
           case Qt::Key_R:
-            widget->rotate();
+            loader->rotate();
             break;
           case Qt::Key_Z:
-            widget->toggleFtw();
+            loader->toggleFtw();
             break;
           case Qt::Key_Space:
             this->selectNext();
             break;
           case Qt::Key_Minus:
-            widget->zoomOut();
+            loader->zoomOut();
             break;
           case Qt::Key_Plus:
-            widget->zoomIn();
+            loader->zoomIn();
             break;
           default:
             return QWidget::eventFilter(obj, event);
@@ -406,8 +486,17 @@ bool AardView::eventFilter(QObject *obj, QEvent *event){
       }
       // if we got here we consumed the event
       return true;
+    } else if (event->type() == QEvent::Paint){
+      // this messes up scrollbars
+      //loader->repaint(centralwidget->size());
+      return QWidget::eventFilter(obj, event);
+    } else if (event->type() == QEvent::Enter){
+      if (settings.value("main/focusFollowsMouse").toBool())
+        imageArea->setFocus();
+      return QWidget::eventFilter(obj, event);
     }
   }
+
   // if we got here we don't care about the event
   return QWidget::eventFilter(obj, event);
 }

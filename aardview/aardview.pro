@@ -3,16 +3,15 @@ HEADERS = aardview.h \
         alistview.h \
         atreeview.h \
         adirmodel.h \
-        imagewidget.h \
+        imageloader.h \
         settingsdialog.h \
         tnviewmodel.h
 SOURCES = aardview.cpp \
-        imagewidget.cpp \
+        imageloader.cpp \
         main.cpp \
         settingsdialog.cpp \
         tnviewmodel.cpp
 FORMS = aardview.ui \
-      imagewidget.ui \
       settingsdialog.ui
 RESOURCES = aardview.qrc
 TARGET = aardview

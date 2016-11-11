@@ -19,8 +19,12 @@
 
 #include <QtGui>
 
+#ifndef QT_NO_PRINTER
+#include <QPrinter>
+#endif
+
 #include "ui_aardview.h"
-#include "imagewidget.h"
+#include "imageloader.h"
 #include "settingsdialog.h"
 #include "tnviewmodel.h"
 #include "alistview.h"
@@ -44,6 +48,12 @@ class AardView: public QMainWindow, private Ui::AardView{
     QSortFilterProxyModel *tnViewModelProxy;
     QSortFilterProxyModel *dirViewModelProxy;
     SettingsDialog *settingsDialog;
+    ImageLoader *loader;
+#ifndef QT_NO_PRINTER
+    QPrinter printer;
+#endif
+
+    void loadPixmap(const QString &filename, const QSize viewSize=QSize());
 
   public slots:
     void reconfigure();
@@ -53,8 +63,13 @@ class AardView: public QMainWindow, private Ui::AardView{
   private slots:
     void about();
     void dirIndexChanged();
+    void displayPixmap(const QPixmap &pixmap);
     void thumbIndexChanged();
     void showSettings();
+    void open();
+    void paintToPrinter(QPrinter *printer);
+    void print();
+    void printPreview();
     void openEditor();
     void toggleMenuBar();
     void handlePaste();
@@ -65,6 +80,9 @@ class AardView: public QMainWindow, private Ui::AardView{
     bool gestureEvent(QGestureEvent *event);
     void contextMenuEvent(QContextMenuEvent *event);
     bool eventFilter(QObject *obj, QEvent *ev);
+
+  signals:
+    void requestPixmap(const QString &filename, const QSize viewSize);
 };
 
 #endif
