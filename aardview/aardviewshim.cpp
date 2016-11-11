@@ -10,6 +10,8 @@
 #include "aardview.h"
 
 AardviewShim::AardviewShim(){
+  qDebug() << "Linked in plugins: " << QPluginLoader::staticInstances();
+
   m_windowModel = new WindowModel();
   m_settingsDialog=SettingsDialog::instance();
 
@@ -66,6 +68,8 @@ void AardviewShim::addWindow(){
           win, SLOT(reconfigure()));
 
   m_windowModel->addWindow(uid, win);
+
+  win->handleArguments();
   win->show();
 }
 
@@ -79,12 +83,14 @@ void AardviewShim::createTrayIcon()
   m_windowListWidget->setResizeMode(QListView::Adjust);
   m_windowListWidget->setModel(m_windowModel);
   m_windowListWidget->adjustSize();
+
   trayMenuWidget->setDefaultWidget(m_windowListWidget);
   connect(m_windowListWidget, SIGNAL(activated(const QModelIndex &)),
           this, SLOT(toggleWindow(const QModelIndex &)));
+  connect(m_windowListWidget, SIGNAL(clicked(const QModelIndex &)),
+          this, SLOT(toggleWindow(const QModelIndex &)));
 
   trayIconMenu->addAction(trayMenuWidget);
-  trayIconMenu->addSeparator();
 
   QAction *actionNewWindow = new QAction(tr("New window"));
   connect(actionNewWindow, SIGNAL(triggered()), this, SLOT(addWindow()));

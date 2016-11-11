@@ -35,7 +35,18 @@ class AardView: public QMainWindow, private Ui::AardView{
   public:
     AardView(QUuid uid);
     ~AardView();
-    QString getSelectedFilename();
+
+    /**
+     * Return the currently selected directory
+     */
+    QString directory();
+
+    /**
+     * Return the currently selected filename
+     * @return empty string if no file is selected, otherwise a filename
+     *         with path
+     */
+    QString filename();
     QString title();
 
   private:
@@ -57,6 +68,7 @@ class AardView: public QMainWindow, private Ui::AardView{
     void reconfigure();
     void selectNext();
     void selectPrev();
+    void handleArguments();
 
   private slots:
     void dirIndexChanged();
@@ -69,7 +81,6 @@ class AardView: public QMainWindow, private Ui::AardView{
     void openEditor();
     void toggleMenuBar();
     void handlePaste();
-    void handleArguments();
 
   protected:
     bool event(QEvent *event);

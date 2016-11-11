@@ -85,7 +85,6 @@ AardView::AardView(QUuid uid){
   reconfigure();
 
   qDebug() << "Current size: " << centralwidget->size();
-  qDebug() << "Linked in plugins: " << QPluginLoader::staticInstances();
 
   grabGesture(Qt::TapAndHoldGesture);
   grabGesture(Qt::PanGesture);
@@ -93,7 +92,7 @@ AardView::AardView(QUuid uid){
 
   // using a timer we make sure this get's called once the UI
   // is already set up, avoiding annoying resize problems
-  QTimer::singleShot(0, this, SLOT(handleArguments()));
+  //QTimer::singleShot(0, this, SLOT(handleArguments()));
 }
 
 AardView::~AardView(){
@@ -210,13 +209,24 @@ void AardView::thumbIndexChanged(){
             << "Proxy index: " << idx.row();
 }
 
-QString AardView::getSelectedFilename(){
+QString AardView::filename(){
   QModelIndex idx = tnViewModelProxy->mapToSource(
     tnView->selectionModel()->currentIndex());
   if (tnViewModel->isDir(idx)){
     return QString();
   } else {
     return tnViewModel->filePath(idx);
+  }
+}
+
+QString AardView::directory(){
+  QModelIndex idx = dirViewModelProxy->mapToSource(
+    dirView->selectionModel()->currentIndex());
+
+  if (dirViewModel->isDir(idx)){
+    return dirViewModel->filePath(idx);
+  } else {
+    return QString();
   }
 }
 
@@ -344,6 +354,23 @@ void AardView::selectPrev(){
            << "Index: " << index
            << " Rowcount: " << tnViewModel->rowCount()
            << " Proxyrowcount: " << tnViewModelProxy->rowCount();
+}
+
+QString AardView::title(){
+  QString result="<unknown>";
+  QDir dir;
+
+  if (filename() != QString()){
+    result = filename();
+  } else if (directory() != QString()){
+    result = directory();
+  }
+
+  if (result.startsWith(dir.homePath())){
+    result.replace(0, dir.homePath().size(), "~");
+  }
+
+  return result;
 }
 
 void AardView::toggleMenuBar(){
