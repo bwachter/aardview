@@ -9,7 +9,7 @@
 #include "aardviewshim.h"
 #include "aardview.h"
 
-AardviewShim::AardviewShim(){
+AardviewShim::AardviewShim(const QStringList &arguments){
   qDebug() << "Linked in plugins: " << QPluginLoader::staticInstances();
 
   m_windowModel = new WindowModel();
@@ -25,11 +25,7 @@ AardviewShim::AardviewShim(){
   if (useTray && trayIcon->isVisible())
     QApplication::setQuitOnLastWindowClosed(false);
 
-  QStringList argumentList = qApp->arguments();
-  if (!argumentList.isEmpty())
-    argumentList.removeFirst();
-
-  addWindow(argumentList);
+  addWindow(arguments);
 }
 
 void AardviewShim::about(){
@@ -79,7 +75,7 @@ void AardviewShim::addWindow(const QStringList &argumentList){
     qDebug() << "Using " << argument << "as argument";
     QFileInfo info(argument);
 
-    if (info.exists())
+    if (info.exists()){
       // QFileInfo::absolutePath() treats pathnames as files when not ending
       // in /, even though QFileInfo is aware about a path being a directory
       if (info.isDir() && argument.at(argument.size()-1) != '/'){
@@ -87,6 +83,7 @@ void AardviewShim::addWindow(const QStringList &argumentList){
       } else {
         initialItem = argument;
       }
+    }
   }
 
   AardView *win = new AardView(uid, initialItem);
@@ -162,10 +159,6 @@ void AardviewShim::receivedMessage(int instanceId, QByteArray message){
 
   QList<QByteArray> argumentList = message.split(' ');
   QStringList arguments;
-
-  // strip off the application name
-  if (!argumentList.isEmpty())
-    argumentList.removeFirst();
 
   foreach (const QByteArray arg, argumentList)
     arguments.append(QUrl::fromPercentEncoding(arg));

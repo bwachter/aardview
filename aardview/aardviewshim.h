@@ -20,7 +20,7 @@ class AardviewShim: public QObject {
     Q_OBJECT
 
   public:
-    AardviewShim();
+    AardviewShim(const QStringList &arguments);
 
   public slots:
     void receivedMessage(int instanceId, QByteArray message);

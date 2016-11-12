@@ -21,24 +21,37 @@ int main(int argc, char** argv){
   // make sure all arguments are passed through with absolute filenames. Also,
   // if no or invalid arguments are passed, add the instances working directory
   // as argument.
-  if (app.isSecondary()){
-    qDebug() << "Started new secondary instance";
-    QStringList list;
-
-    foreach(const QString arg, app.arguments()){
+  //
+  // the same filtering is applied to main instance arguments as well, just in
+  // case.
+  QStringList absoluteArguments;
+  foreach(const QString arg, app.arguments()){
       QDir dir;
       if (dir.exists(arg)){
         // urlencoding hack to easily pass arguments with spaces
         // without touching singleinstance
-        qDebug() << arg << dir.absolutePath() << dir.absoluteFilePath(arg);
-        list.append(QUrl::toPercentEncoding(dir.absoluteFilePath(arg).toUtf8()));
+        if (app.isSecondary())
+          absoluteArguments.append(QUrl::toPercentEncoding(
+                                     dir.absoluteFilePath(arg).toUtf8()));
+        else
+          absoluteArguments.append(dir.absoluteFilePath(arg).toUtf8());
       }
-    }
+  }
 
-    if (list.size() <= 1)
-      list.append(QUrl::toPercentEncoding(QDir::currentPath()));
+  if (absoluteArguments.size() <= 1){
+    if (app.isSecondary())
+      absoluteArguments.append(QUrl::toPercentEncoding(QDir::currentPath()));
+    else
+      absoluteArguments.append(QDir::currentPath());
+  }
 
-    app.sendMessage(list.join(' ').toUtf8());
+  // strip the application name
+  absoluteArguments.removeFirst();
+
+  if (app.isSecondary()){
+    qDebug() << "Started new secondary instance";
+
+    app.sendMessage(absoluteArguments.join(' ').toUtf8());
     app.exit(0);
     return 0;
   }
@@ -61,7 +74,7 @@ int main(int argc, char** argv){
   ssh_init();
 #endif
 
-  AardviewShim mw;
+  AardviewShim mw(absoluteArguments);
   QObject::connect(&app, &SingleApplication::receivedMessage,
                    &mw, &AardviewShim::receivedMessage);
 
