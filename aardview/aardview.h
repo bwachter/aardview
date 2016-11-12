@@ -18,10 +18,6 @@
 
 #include <QtGui>
 
-#ifndef QT_NO_PRINTER
-#include <QPrinter>
-#endif
-
 #include "ui_aardview.h"
 #include "imageloader.h"
 #include "tnviewmodel.h"
@@ -59,9 +55,6 @@ class AardView: public QMainWindow, private Ui::AardView{
     QSortFilterProxyModel *tnViewModelProxy;
     QSortFilterProxyModel *dirViewModelProxy;
     ImageLoader *loader;
-#ifndef QT_NO_PRINTER
-    QPrinter printer;
-#endif
 
     void loadPixmap(const QString &filename, const QSize viewSize=QSize());
 
@@ -76,9 +69,6 @@ class AardView: public QMainWindow, private Ui::AardView{
     void init();
     void thumbIndexChanged();
     void open();
-    void paintToPrinter(QPrinter *printer);
-    void print();
-    void printPreview();
     void openEditor();
     void toggleMenuBar();
     void handlePaste();

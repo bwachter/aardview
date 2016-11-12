@@ -3,11 +3,6 @@
 #include <QScrollBar>
 #include <QFileDialog>
 
-#ifndef QT_NO_PRINTER
-#include <QPrintDialog>
-#include <QPrintPreviewDialog>
-#endif
-
 #include "aardview.h"
 #include "settingsdialog.h"
 
@@ -276,42 +271,6 @@ void AardView::openEditor(){
     QProcess *myProcess = new QProcess(this);
     myProcess->start(program, arguments);
   }
-}
-
-void AardView::paintToPrinter(QPrinter *printer){
-#ifndef QT_NO_PRINTER
-  QPainter painter(printer);
-/*
-// TODO: ability to get full pixmap from imagewidget
-//      check if we can just print the QImage
-//      provide scaling functionality
-  QRect rect = painter.viewport();
-  QSize size = displayedPixmap.size();
-  size.scale(rect.size(), Qt::KeepAspectRatio);
-
-  painter.setViewport(rect.x(), rect.y(), size.width(), size.height());
-  painter.setWindow(displayedPixmap.rect());
-  painter.drawPixmap(0, 0, displayedPixmap);
-*/
-#endif
-}
-
-void AardView::print(){
-#ifndef QT_NO_PRINTER
-  QPrintDialog dialog(&printer, this);
-  if (dialog.exec()) {
-    paintToPrinter(&printer);
-  }
-#endif
-}
-
-void AardView::printPreview(){
-#ifndef QT_NO_PRINTER
-  QPrintPreviewDialog dialog(&printer, this);
-  connect(&dialog, SIGNAL(paintRequested(QPrinter *)),
-          this, SLOT(paintToPrinter(QPrinter *)));
-  dialog.exec();
-#endif
 }
 
 void AardView::selectNext(){

@@ -6,6 +6,13 @@
  */
 
 #include <QMessageBox>
+#include <QFileDialog>
+
+#ifndef QT_NO_PRINTER
+#include <QPrintDialog>
+#include <QPrintPreviewDialog>
+#endif
+
 #include "aardviewshim.h"
 #include "aardview.h"
 
@@ -47,6 +54,9 @@ void AardviewShim::about(){
 #endif
 #ifdef HAS_SSH
   features.append("ssh");
+#endif
+#ifndef QT_NO_PRINTER
+  features.append("printing");
 #endif
 
   QMessageBox::about(0, tr("About Menu"),
@@ -178,4 +188,39 @@ void AardviewShim::toggleWindow(const QModelIndex &index){
   QObject *object = qvariant_cast<QObject*>(m_windowModel->data(index, Qt::UserRole));
   AardView *win = qobject_cast<AardView*>(object);
   win->setVisible(!win->isVisible());
+}
+void AardviewShim::paintToPrinter(QPrinter *printer){
+#ifndef QT_NO_PRINTER
+  QPainter painter(printer);
+/*
+// TODO: ability to get full pixmap from imagewidget
+//      check if we can just print the QImage
+//      provide scaling functionality
+  QRect rect = painter.viewport();
+  QSize size = displayedPixmap.size();
+  size.scale(rect.size(), Qt::KeepAspectRatio);
+
+  painter.setViewport(rect.x(), rect.y(), size.width(), size.height());
+  painter.setWindow(displayedPixmap.rect());
+  painter.drawPixmap(0, 0, displayedPixmap);
+*/
+#endif
+}
+
+void AardviewShim::print(){
+#ifndef QT_NO_PRINTER
+  QPrintDialog dialog(&printer);
+  if (dialog.exec()) {
+    paintToPrinter(&printer);
+  }
+#endif
+}
+
+void AardviewShim::printPreview(){
+#ifndef QT_NO_PRINTER
+  QPrintPreviewDialog dialog(&printer);
+  connect(&dialog, SIGNAL(paintRequested(QPrinter *)),
+          this, SLOT(paintToPrinter(QPrinter *)));
+  dialog.exec();
+#endif
 }

@@ -12,6 +12,10 @@
 #include <QSystemTrayIcon>
 #include <QWidgetAction>
 
+#ifndef QT_NO_PRINTER
+#include <QPrinter>
+#endif
+
 #include "aardview.h"
 #include "settingsdialog.h"
 #include "windowmodel.h"
@@ -33,6 +37,9 @@ class AardviewShim: public QObject {
     QMenu *trayIconMenu;
     bool useTray=true;
     SettingsDialog *m_settingsDialog;
+#ifndef QT_NO_PRINTER
+    QPrinter printer;
+#endif
 
     void createTrayIcon();
 
@@ -41,6 +48,9 @@ class AardviewShim: public QObject {
     void addWindow(const QStringList &argumentList=QStringList());
     void deleteWindow(QUuid uid);
     void toggleWindow(const QModelIndex &index);
+    void paintToPrinter(QPrinter *printer);
+    void print();
+    void printPreview();
 };
 
 #endif
