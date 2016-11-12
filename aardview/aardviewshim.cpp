@@ -75,6 +75,12 @@ void AardviewShim::about(){
     );
 }
 
+void AardviewShim::addWindow(const QString &argument){
+  QStringList list;
+  list.append(argument);
+  addWindow(list);
+}
+
 void AardviewShim::addWindow(const QStringList &argumentList){
   QUuid uid=QUuid::createUuid();
   SettingsDialog *settings = SettingsDialog::instance();
