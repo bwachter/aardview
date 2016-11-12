@@ -69,9 +69,10 @@ class AardView: public QMainWindow, private Ui::AardView{
     void init();
     void thumbIndexChanged();
     void open();
-    void openEditor();
     void toggleMenuBar();
     void handlePaste();
+
+    void forwardEdit(){ emit openEditor(loader->currentFilename()); };
 
   protected:
     bool event(QEvent *event);
@@ -82,6 +83,7 @@ class AardView: public QMainWindow, private Ui::AardView{
 
   signals:
     void requestPixmap(const QString &filename, const QSize viewSize);
+    void openEditor(const QString &filename);
     void showAbout();
     void showSettings();
     void requestClose(QUuid uid);

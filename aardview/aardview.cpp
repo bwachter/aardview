@@ -50,6 +50,8 @@ AardView::AardView(QUuid uid, QString initialItem){
   tnView->setModel(tnViewModelProxy);
 
   // finally connect everything we didn't connect by designer already
+  connect(actionEditCurrentImage, SIGNAL(triggered()),
+          this, SLOT(forwardEdit()));
   connect(actionExit, SIGNAL(triggered()), qApp, SLOT(quit()));
   connect(actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
   connect(actionAbout, SIGNAL(triggered()), this, SIGNAL(showAbout()));
@@ -257,19 +259,6 @@ void AardView::open(){
                                  tr("Open File"), QDir::currentPath());
   if (!fileName.isEmpty()) {
     loadPixmap(fileName);
-  }
-}
-
-void AardView::openEditor(){
-  SettingsDialog *settings = SettingsDialog::instance();
-
-  QString program = settings->value("main/externalEditor").toString();
-  if (program !=""){
-
-    QStringList arguments;
-    arguments << loader->currentFilename();
-    QProcess *myProcess = new QProcess(this);
-    myProcess->start(program, arguments);
   }
 }
 

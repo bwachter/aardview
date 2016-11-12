@@ -50,6 +50,8 @@ class AardviewShim: public QObject {
     void addWindow(const QStringList &argumentList=QStringList());
     void deleteWindow(QUuid uid);
     void toggleWindow(const QModelIndex &index);
+
+    void edit(const QString &filename);
     void paintToPrinter(QPrinter *printer);
     void print();
     void printPreview();

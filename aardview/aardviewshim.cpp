@@ -112,6 +112,8 @@ void AardviewShim::addWindow(const QStringList &argumentList){
 
   AardView *win = new AardView(uid, initialItem);
 
+  connect(win, SIGNAL(openEditor(const QString&)),
+                      this, SLOT(edit(const QString&)));
   connect(win, SIGNAL(requestClose(QUuid)), this, SLOT(deleteWindow(QUuid)));
   connect(win, SIGNAL(showAbout()), this, SLOT(about()));
   connect(win, SIGNAL(showSettings()), m_settingsDialog, SLOT(show()));
@@ -194,6 +196,21 @@ void AardviewShim::toggleWindow(const QModelIndex &index){
   QObject *object = qvariant_cast<QObject*>(m_windowModel->data(index, Qt::UserRole));
   AardView *win = qobject_cast<AardView*>(object);
   win->setVisible(!win->isVisible());
+}
+
+void AardviewShim::edit(const QString &filename){
+  SettingsDialog *settings = SettingsDialog::instance();
+
+  QString program = settings->value("main/externalEditor").toString();
+  if (program !=""){
+    qDebug() << "Editing " << filename << " with " << program;
+    QStringList arguments;
+    arguments << filename;
+    QProcess *myProcess = new QProcess(this);
+    myProcess->start(program, arguments);
+  } else {
+    qDebug() << "No editor set, skipping " << filename;
+  }
 }
 void AardviewShim::paintToPrinter(QPrinter *printer){
 #ifndef QT_NO_PRINTER
