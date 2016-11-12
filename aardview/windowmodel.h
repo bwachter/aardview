@@ -20,6 +20,7 @@ class WindowModel: public QAbstractListModel {
     QVariant data(const QModelIndex &index, int role) const;
 
     void addWindow(const QUuid &uid, AardView *win);
+    void deleteWindow(const QUuid &uid);
     bool contains(const QUuid &uid);
     AardView* getWindow(const QUuid &uid);
 

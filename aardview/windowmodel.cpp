@@ -24,6 +24,13 @@ bool WindowModel::contains(const QUuid &uid){
   return m_windowList.contains(uid);
 }
 
+void WindowModel::deleteWindow(const QUuid &uid){
+  AardView *win = m_windowList[uid];
+  win->hide();
+  m_windowList.remove(uid);
+  win->deleteLater();
+}
+
 AardView* WindowModel::getWindow(const QUuid &uid){
   return m_windowList[uid];
 }

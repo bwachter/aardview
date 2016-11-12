@@ -29,7 +29,7 @@ class AardView: public QMainWindow, private Ui::AardView{
     Q_OBJECT
 
   public:
-    AardView(QUuid uid, QString initialItem="");
+    AardView(QUuid uid, QString initialItem);
     ~AardView();
 
     /**
@@ -73,6 +73,7 @@ class AardView: public QMainWindow, private Ui::AardView{
     void handlePaste();
 
     void forwardEdit(){ emit openEditor(loader->currentFilename()); };
+    void forwardQuit(){ emit requestDestroy(m_uid, true); };
 
   protected:
     bool event(QEvent *event);
@@ -87,6 +88,7 @@ class AardView: public QMainWindow, private Ui::AardView{
     void showAbout();
     void showSettings();
     void requestClose(QUuid uid);
+    void requestDestroy(QUuid uid, bool force);
 };
 
 #endif

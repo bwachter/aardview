@@ -48,7 +48,16 @@ class AardviewShim: public QObject {
 
     void addWindow(const QString &argument);
     void addWindow(const QStringList &argumentList=QStringList());
-    void deleteWindow(QUuid uid);
+    /**
+     * Request removal of window with given uid
+     *
+     * If force is false the window may just be hidden, depending on variables
+     * like systray availability.
+     *
+     * If force is true the window will always be destroyed. In some cases
+     * closing a window may trigger an application exit.
+     */
+    void deleteWindow(QUuid uid, bool force=false);
     void toggleWindow(const QModelIndex &index);
 
     void edit(const QString &filename);

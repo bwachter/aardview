@@ -52,7 +52,7 @@ AardView::AardView(QUuid uid, QString initialItem){
   // finally connect everything we didn't connect by designer already
   connect(actionEditCurrentImage, SIGNAL(triggered()),
           this, SLOT(forwardEdit()));
-  connect(actionExit, SIGNAL(triggered()), qApp, SLOT(quit()));
+  connect(actionExit, SIGNAL(triggered()), this, SLOT(forwardQuit()));
   connect(actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
   connect(actionAbout, SIGNAL(triggered()), this, SIGNAL(showAbout()));
   connect(actionPreferences, SIGNAL(triggered()), this, SIGNAL(showSettings()));
@@ -104,6 +104,8 @@ AardView::AardView(QUuid uid, QString initialItem){
 }
 
 AardView::~AardView(){
+  qDebug() << "Destroying window " << m_uid;
+
   // TODO: this should become uid-specific state saving
   /*
   if (settings->value("main/saveSizeOnExit").toBool()){

@@ -115,6 +115,8 @@ void AardviewShim::addWindow(const QStringList &argumentList){
   connect(win, SIGNAL(openEditor(const QString&)),
                       this, SLOT(edit(const QString&)));
   connect(win, SIGNAL(requestClose(QUuid)), this, SLOT(deleteWindow(QUuid)));
+  connect(win, SIGNAL(requestDestroy(QUuid, bool)),
+          this, SLOT(deleteWindow(QUuid, bool)));
   connect(win, SIGNAL(showAbout()), this, SLOT(about()));
   connect(win, SIGNAL(showSettings()), m_settingsDialog, SLOT(show()));
   connect(m_settingsDialog, SIGNAL(configurationChanged()),
@@ -164,7 +166,7 @@ void AardviewShim::createTrayIcon()
   trayIcon->setIcon(QIcon(":/images/aardview-icon.png"));
 }
 
-void AardviewShim::deleteWindow(QUuid uid){
+void AardviewShim::deleteWindow(QUuid uid, bool force){
   if (!m_windowModel->contains(uid)){
     qDebug() << "Request closing of invalid window " << uid;
     return;
@@ -172,8 +174,13 @@ void AardviewShim::deleteWindow(QUuid uid){
 
   if (useTray && trayIcon->isVisible()){
     AardView *win = m_windowModel->getWindow(uid);
-    win->hide();
-    qDebug() << "Closing window " << uid;
+    if (force){
+      m_windowModel->deleteWindow(uid);
+      return;
+    } else {
+      win->hide();
+      qDebug() << "Closing window " << uid;
+    }
   } else {
     QApplication::quit();
   }
