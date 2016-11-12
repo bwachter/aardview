@@ -81,6 +81,9 @@ AardView::AardView(QUuid uid, QString initialItem){
   */
   reconfigure();
 
+  // FIXME: make use of it
+  imageName->hide();
+
   qDebug() << "Current size: " << centralwidget->size();
 
   grabGesture(Qt::TapAndHoldGesture);
