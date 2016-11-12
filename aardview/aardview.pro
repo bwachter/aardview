@@ -34,6 +34,9 @@ QT += widgets printsupport
 LIBS += -L../build -lkde
 QTPLUGIN += kde
 
+include(../singleapplication/singleapplication.pri)
+DEFINES += QAPPLICATION_CLASS=QApplication
+
 unix {
      system(pkg-config --exists libexif){
             message("Found libexif")

@@ -11,7 +11,7 @@
 #include "aardview.h"
 #include "settingsdialog.h"
 
-AardView::AardView(QUuid uid){
+AardView::AardView(QUuid uid, QString initialItem){
   setupUi(this);
 
   m_uid = uid;
@@ -90,9 +90,20 @@ AardView::AardView(QUuid uid){
   grabGesture(Qt::PanGesture);
   grabGesture(Qt::SwipeGesture);
 
+  m_initialItem = initialItem;
+  if (initialItem == "")
+    initialItem=QDir::currentPath();
+
+  QFileInfo info(initialItem);
+
+  qDebug() << "mapping to" << info.absolutePath();
+
+  dirView->setCurrentIndex(dirViewModelProxy->mapFromSource(
+                             dirViewModel->index(info.absolutePath())));
+
   // using a timer we make sure this get's called once the UI
   // is already set up, avoiding annoying resize problems
-  //QTimer::singleShot(0, this, SLOT(handleArguments()));
+  QTimer::singleShot(0, this, SLOT(init()));
 }
 
 AardView::~AardView(){
@@ -107,32 +118,16 @@ AardView::~AardView(){
 }
 
 // TODO: move argument handling to shim
-void AardView::handleArguments(){
+void AardView::init(){
   SettingsDialog *settings = SettingsDialog::instance();
-  QString initialPath=QDir::currentPath();
-  QStringList arguments=qApp->arguments();
-  if (arguments.count() == 2){
-    QDir argDir=QDir(arguments.at(1));
-    if (argDir.exists())
-      // argument is a dir, jump to this directory
-      initialPath=arguments.at(1);
-    else {
-      // argument is a file, display the file
-      if (QFile::exists(arguments.at(1))){
-        dockDirectoryTree->hide();
-        dockTreeView->hide();
-        loadPixmap(arguments.at(1), centralwidget->size());
-      }
-    }
-  } else {// >2 FIXME, iterate through arguments and add them to the tag box
-    if (settings->value("viewer/loadAction").toInt()==0)
-      loadPixmap(":/images/aardview.png");
-    else if (settings->value("viewer/loadAction").toInt()==1)
-      loadPixmap(settings->value("viewer/lastImage").toString());
-  }
+  QFileInfo info(m_initialItem);
 
-  dirView->setCurrentIndex(dirViewModelProxy->mapFromSource(
-                             dirViewModel->index(initialPath)));
+  if (info.isFile()){
+    dockDirectoryTree->hide();
+    dockTreeView->hide();
+    loadPixmap(m_initialItem, centralwidget->size());
+  } else if (settings->value("viewer/loadAction").toInt()==0)
+      loadPixmap(":/images/aardview.png");
 }
 
 void AardView::reconfigure(){

@@ -25,7 +25,11 @@ AardviewShim::AardviewShim(){
   if (useTray && trayIcon->isVisible())
     QApplication::setQuitOnLastWindowClosed(false);
 
-  addWindow();
+  QStringList argumentList = qApp->arguments();
+  if (!argumentList.isEmpty())
+    argumentList.removeFirst();
+
+  addWindow(argumentList);
 }
 
 void AardviewShim::about(){
@@ -57,9 +61,35 @@ void AardviewShim::about(){
     );
 }
 
-void AardviewShim::addWindow(){
+void AardviewShim::addWindow(const QStringList &argumentList){
   QUuid uid=QUuid::createUuid();
-  AardView *win = new AardView(uid);
+  SettingsDialog *settings = SettingsDialog::instance();
+  QString initialItem;
+
+  // TODO: take into account uids
+  if (settings->value("viewer/loadAction").toInt()==1) {
+    QFileInfo info(settings->value("viewer/lastImage").toString());
+    if (info.exists())
+      initialItem = settings->value("viewer/lastImage").toString();
+  } else
+    initialItem = QDir::currentPath();
+
+  if (argumentList.count() == 1){
+    QString argument=argumentList.at(0);
+    qDebug() << "Using " << argument << "as argument";
+    QFileInfo info(argument);
+
+    if (info.exists())
+      // QFileInfo::absolutePath() treats pathnames as files when not ending
+      // in /, even though QFileInfo is aware about a path being a directory
+      if (info.isDir() && argument.at(argument.size()-1) != '/'){
+        initialItem = argument + "/";
+      } else {
+        initialItem = argument;
+      }
+  }
+
+  AardView *win = new AardView(uid, initialItem);
 
   connect(win, SIGNAL(requestClose(QUuid)), this, SLOT(deleteWindow(QUuid)));
   connect(win, SIGNAL(showAbout()), this, SLOT(about()));
@@ -69,7 +99,6 @@ void AardviewShim::addWindow(){
 
   m_windowModel->addWindow(uid, win);
 
-  win->handleArguments();
   win->show();
 }
 
@@ -125,6 +154,23 @@ void AardviewShim::deleteWindow(QUuid uid){
   } else {
     QApplication::quit();
   }
+}
+
+void AardviewShim::receivedMessage(int instanceId, QByteArray message){
+  qDebug() << "Received message from instance: " << instanceId;
+  qDebug() << "Message Text: " << message;
+
+  QList<QByteArray> argumentList = message.split(' ');
+  QStringList arguments;
+
+  // strip off the application name
+  if (!argumentList.isEmpty())
+    argumentList.removeFirst();
+
+  foreach (const QByteArray arg, argumentList)
+    arguments.append(QUrl::fromPercentEncoding(arg));
+
+  addWindow(arguments);
 }
 
 void AardviewShim::toggleWindow(const QModelIndex &index){

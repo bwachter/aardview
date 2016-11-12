@@ -33,7 +33,7 @@ class AardView: public QMainWindow, private Ui::AardView{
     Q_OBJECT
 
   public:
-    AardView(QUuid uid);
+    AardView(QUuid uid, QString initialItem="");
     ~AardView();
 
     /**
@@ -52,6 +52,7 @@ class AardView: public QMainWindow, private Ui::AardView{
   private:
     bool menuBarVisible;
     QUuid m_uid;
+    QString m_initialItem;
 
     ADirModel *dirViewModel;
     TnViewModel *tnViewModel;
@@ -68,11 +69,11 @@ class AardView: public QMainWindow, private Ui::AardView{
     void reconfigure();
     void selectNext();
     void selectPrev();
-    void handleArguments();
 
   private slots:
     void dirIndexChanged();
     void displayPixmap(const QPixmap &pixmap);
+    void init();
     void thumbIndexChanged();
     void open();
     void paintToPrinter(QPrinter *printer);

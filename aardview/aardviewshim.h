@@ -22,6 +22,9 @@ class AardviewShim: public QObject {
   public:
     AardviewShim();
 
+  public slots:
+    void receivedMessage(int instanceId, QByteArray message);
+
   private:
     WindowModel *m_windowModel;
     QListView *m_windowListWidget;
@@ -35,7 +38,7 @@ class AardviewShim: public QObject {
 
   private slots:
     void about();
-    void addWindow();
+    void addWindow(const QStringList &argumentList=QStringList());
     void deleteWindow(QUuid uid);
     void toggleWindow(const QModelIndex &index);
 };

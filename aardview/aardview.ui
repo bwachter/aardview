@@ -381,22 +381,6 @@
  <resources/>
  <connections>
   <connection>
-   <sender>actionAbout</sender>
-   <signal>triggered()</signal>
-   <receiver>AardView</receiver>
-   <slot>about()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>182</x>
-     <y>190</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>actionEditCurrentImage</sender>
    <signal>triggered()</signal>
    <receiver>AardView</receiver>
@@ -513,54 +497,6 @@
    <signal>triggered()</signal>
    <receiver>AardView</receiver>
    <slot>printPreview()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>182</x>
-     <y>190</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionToggleFitToWindow</sender>
-   <signal>triggered()</signal>
-   <receiver>AardView</receiver>
-   <slot>toggleFtw()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>182</x>
-     <y>190</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionZoomIn</sender>
-   <signal>triggered()</signal>
-   <receiver>AardView</receiver>
-   <slot>zoomIn()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>182</x>
-     <y>190</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionZoomOut</sender>
-   <signal>triggered()</signal>
-   <receiver>AardView</receiver>
-   <slot>zoomOut()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
