@@ -330,6 +330,8 @@ void AardView::toggleMenuBar(){
 bool AardView::event(QEvent *event){
   if (event->type() == QEvent::Gesture)
     return gestureEvent(static_cast<QGestureEvent*>(event));
+  if (event->type() == QEvent::Resize)
+    loader->repaint(centralwidget->size());
 
   return QWidget::event(event);
 }
