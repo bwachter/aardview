@@ -117,6 +117,8 @@ void AardviewShim::addWindow(const QStringList &argumentList){
   connect(win, SIGNAL(requestClose(QUuid)), this, SLOT(deleteWindow(QUuid)));
   connect(win, SIGNAL(requestDestroy(QUuid, bool)),
           this, SLOT(deleteWindow(QUuid, bool)));
+  connect(win, SIGNAL(showOpen()), this, SLOT(open()));
+  connect(win, SIGNAL(showOpen(QUuid)), this, SLOT(open(QUuid)));
   connect(win, SIGNAL(showAbout()), this, SLOT(about()));
   connect(win, SIGNAL(showSettings()), m_settingsDialog, SLOT(show()));
   connect(m_settingsDialog, SIGNAL(configurationChanged()),
@@ -219,6 +221,22 @@ void AardviewShim::edit(const QString &filename){
     qDebug() << "No editor set, skipping " << filename;
   }
 }
+
+void AardviewShim::open(QUuid uid){
+  QString fileName =
+    QFileDialog::getOpenFileName(0,
+                                 tr("Open File"), QDir::currentPath());
+
+  if (!fileName.isEmpty()) {
+    if (uid == QUuid())
+      addWindow(fileName);
+    else {
+      AardView *win = m_windowModel->getWindow(uid);
+      win->load(fileName);
+    }
+  }
+}
+
 void AardviewShim::paintToPrinter(QPrinter *printer){
 #ifndef QT_NO_PRINTER
   QPainter painter(printer);

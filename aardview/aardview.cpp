@@ -6,7 +6,7 @@
 #include "aardview.h"
 #include "settingsdialog.h"
 
-AardView::AardView(QUuid uid, QString initialItem){
+AardView::AardView(QUuid uid, QString initialPath){
   setupUi(this);
 
   m_uid = uid;
@@ -50,6 +50,9 @@ AardView::AardView(QUuid uid, QString initialItem){
   tnView->setModel(tnViewModelProxy);
 
   // finally connect everything we didn't connect by designer already
+  // file menu actions
+  connect(actionOpen, SIGNAL(triggered()), this, SLOT(forwardOpen()));
+  connect(actionOpenNew, SIGNAL(triggered()), this, SIGNAL(showOpen()));
   connect(actionEditCurrentImage, SIGNAL(triggered()),
           this, SLOT(forwardEdit()));
   connect(actionExit, SIGNAL(triggered()), this, SLOT(forwardQuit()));
@@ -90,20 +93,9 @@ AardView::AardView(QUuid uid, QString initialItem){
   grabGesture(Qt::PanGesture);
   grabGesture(Qt::SwipeGesture);
 
-  m_initialItem = initialItem;
-  if (initialItem == "")
-    initialItem=QDir::currentPath();
-
-  QFileInfo info(initialItem);
-
-  qDebug() << "mapping to" << info.absolutePath();
-
-  dirView->setCurrentIndex(dirViewModelProxy->mapFromSource(
-                             dirViewModel->index(info.absolutePath())));
-
-  // using a timer we make sure this get's called once the UI
-  // is already set up, avoiding annoying resize problems
-  QTimer::singleShot(0, this, SLOT(init()));
+  // store initial locations, initial drawing happens through
+  // polish event
+  setPath(initialPath);
 }
 
 AardView::~AardView(){
@@ -119,15 +111,22 @@ AardView::~AardView(){
   */
 }
 
-// TODO: move argument handling to shim
-void AardView::init(){
+void AardView::load(const QString &path){
   SettingsDialog *settings = SettingsDialog::instance();
-  QFileInfo info(m_initialItem);
 
+  setPath(path);
+
+  QFileInfo info(path);
+
+  dirView->setCurrentIndex(dirViewModelProxy->mapFromSource(
+                             dirViewModel->index(info.absolutePath())));
+
+  // TODO: proper switching between single image and directory mode
   if (info.isFile()){
     dockDirectoryTree->hide();
     dockTreeView->hide();
-    loadPixmap(m_initialItem, centralwidget->size());
+    loadPixmap(path, centralwidget->size());
+    setLoadedPath(path);
   } else if (settings->value("viewer/loadAction").toInt()==0)
       loadPixmap(":/images/aardview.png");
 }
@@ -174,8 +173,10 @@ void AardView::dirIndexChanged(){
     qDebug() << "Selected item is a directory";
     tnViewModel->setDirectory(dirViewModel->filePath(idx));
     tnView->scrollToTop();
+    setPath(dirViewModel->filePath(idx));
   } else {
     loadPixmap(dirViewModel->filePath(idx));
+    setLoadedPath(dirViewModel->filePath(idx));
   }
 }
 
@@ -201,30 +202,18 @@ void AardView::thumbIndexChanged(){
     qDebug() << "Selected item is a directory";
   } else {
     loadPixmap(tnViewModel->filePath(idx));
+    setLoadedPath(tnViewModel->filePath(idx));
   }
   qDebug () << "Selected index: " << tnView->selectionModel()->currentIndex().row()
             << "Proxy index: " << idx.row();
 }
 
-QString AardView::filename(){
-  QModelIndex idx = tnViewModelProxy->mapToSource(
-    tnView->selectionModel()->currentIndex());
-  if (tnViewModel->isDir(idx)){
-    return QString();
-  } else {
-    return tnViewModel->filePath(idx);
-  }
+QString AardView::path(){
+  return m_path;
 }
 
-QString AardView::directory(){
-  QModelIndex idx = dirViewModelProxy->mapToSource(
-    dirView->selectionModel()->currentIndex());
-
-  if (dirViewModel->isDir(idx)){
-    return dirViewModel->filePath(idx);
-  } else {
-    return QString();
-  }
+QString AardView::loadedPath(){
+  return m_loadedPath;
 }
 
 void AardView::handlePaste(){
@@ -255,15 +244,6 @@ void AardView::handlePaste(){
     }
   } else if (QFile::exists(selection)){
     loadPixmap(selection);
-  }
-}
-
-void AardView::open(){
-  QString fileName =
-    QFileDialog::getOpenFileName(this,
-                                 tr("Open File"), QDir::currentPath());
-  if (!fileName.isEmpty()) {
-    loadPixmap(fileName);
   }
 }
 
@@ -304,14 +284,27 @@ void AardView::selectPrev(){
            << " Proxyrowcount: " << tnViewModelProxy->rowCount();
 }
 
+void AardView::setPath(const QString &path){
+  m_path = path;
+
+  setWindowTitle(title());
+}
+
+void AardView::setLoadedPath(const QString &path){
+  m_path = path;
+  m_loadedPath = path;
+
+  setWindowTitle(title());
+}
+
 QString AardView::title(){
   QString result="<unknown>";
   QDir dir;
 
-  if (filename() != QString()){
-    result = filename();
-  } else if (directory() != QString()){
-    result = directory();
+  if (path() != QString()){
+    result = path();
+  } else if (loadedPath() != QString()){
+    result = loadedPath();
   }
 
   if (result.startsWith(dir.homePath())){
@@ -335,6 +328,9 @@ void AardView::toggleMenuBar(){
 bool AardView::event(QEvent *event){
   if (event->type() == QEvent::Gesture)
     return gestureEvent(static_cast<QGestureEvent*>(event));
+  if (event->type() == QEvent::PolishRequest){
+    load(path());
+  }
   if (event->type() == QEvent::Resize)
     loader->repaint(centralwidget->size());
 

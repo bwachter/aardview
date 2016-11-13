@@ -29,7 +29,7 @@ class AardView: public QMainWindow, private Ui::AardView{
     Q_OBJECT
 
   public:
-    AardView(QUuid uid, QString initialItem);
+    AardView(QUuid uid, QString initialPath);
     ~AardView();
 
     /**
@@ -42,13 +42,24 @@ class AardView: public QMainWindow, private Ui::AardView{
      * @return empty string if no file is selected, otherwise a filename
      *         with path
      */
-    QString filename();
+    QString path();
+    QString loadedPath();
     QString title();
 
   private:
     bool menuBarVisible;
     QUuid m_uid;
-    QString m_initialItem;
+    // m_loadedPath stores the path to a loaded image
+    // m_path stores the path to change to
+    // if m_path is an image m_loadedPath is expected to update once the
+    // image is loaded
+    // if m_path is a directory m_path and m_loadedPath are different until
+    // next time an image is loaded (setLoadedPath updates path as well)
+    //
+    // as images can be loaded from both thumbnail and directory view it's
+    // easier to make sure those store the latest changes than trying to
+    // query all possible sources every time this info is needed
+    QString m_path, m_loadedPath;
 
     ADirModel *dirViewModel;
     TnViewModel *tnViewModel;
@@ -56,9 +67,14 @@ class AardView: public QMainWindow, private Ui::AardView{
     QSortFilterProxyModel *dirViewModelProxy;
     ImageLoader *loader;
 
+    void setPath(const QString &path);
+    void setLoadedPath(const QString &path);
+
     void loadPixmap(const QString &filename, const QSize viewSize=QSize());
 
   public slots:
+    // if filename is empty "first display" logic gets triggered
+    void load(const QString &path);
     void reconfigure();
     void selectNext();
     void selectPrev();
@@ -66,13 +82,12 @@ class AardView: public QMainWindow, private Ui::AardView{
   private slots:
     void dirIndexChanged();
     void displayPixmap(const QPixmap &pixmap);
-    void init();
     void thumbIndexChanged();
-    void open();
     void toggleMenuBar();
     void handlePaste();
 
     void forwardEdit(){ emit openEditor(loader->currentFilename()); };
+    void forwardOpen(){ emit showOpen(m_uid); };
     void forwardQuit(){ emit requestDestroy(m_uid, true); };
 
   protected:
@@ -87,6 +102,8 @@ class AardView: public QMainWindow, private Ui::AardView{
     void openEditor(const QString &filename);
     void showAbout();
     void showSettings();
+    void showOpen();
+    void showOpen(QUuid uid);
     void requestClose(QUuid uid);
     void requestDestroy(QUuid uid, bool force);
 };

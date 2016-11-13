@@ -61,6 +61,7 @@ class AardviewShim: public QObject {
     void toggleWindow(const QModelIndex &index);
 
     void edit(const QString &filename);
+    void open(QUuid uid=QUuid());
     void paintToPrinter(QPrinter *printer);
     void print();
     void printPreview();

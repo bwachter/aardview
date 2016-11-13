@@ -46,7 +46,7 @@
            <x>0</x>
            <y>0</y>
            <width>68</width>
-           <height>278</height>
+           <height>296</height>
           </rect>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_10">
@@ -120,6 +120,7 @@
      <string>&amp;File</string>
     </property>
     <addaction name="actionOpen"/>
+    <addaction name="actionOpenNew"/>
     <addaction name="separator"/>
     <addaction name="actionPrint"/>
     <addaction name="actionPrintPreview"/>
@@ -401,6 +402,11 @@
     <string>&amp;Restore</string>
    </property>
   </action>
+  <action name="actionOpenNew">
+   <property name="text">
+    <string>Open new</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -416,22 +422,6 @@
  </customwidgets>
  <resources/>
  <connections>
-  <connection>
-   <sender>actionEditCurrentImage</sender>
-   <signal>triggered()</signal>
-   <receiver>AardView</receiver>
-   <slot>openEditor()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>182</x>
-     <y>190</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>actionMinimize</sender>
    <signal>triggered()</signal>
@@ -485,54 +475,6 @@
    <signal>triggered()</signal>
    <receiver>AardView</receiver>
    <slot>toggleMenuBar()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>182</x>
-     <y>190</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionOpen</sender>
-   <signal>triggered()</signal>
-   <receiver>AardView</receiver>
-   <slot>open()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>182</x>
-     <y>190</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionPrint</sender>
-   <signal>triggered()</signal>
-   <receiver>AardView</receiver>
-   <slot>print()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>182</x>
-     <y>190</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionPrintPreview</sender>
-   <signal>triggered()</signal>
-   <receiver>AardView</receiver>
-   <slot>printPreview()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
