@@ -107,7 +107,9 @@ void AardviewShim::addWindow(const QStringList &argumentList){
 
   if (argumentList.count() == 1){
     QString argument=argumentList.at(0);
+#ifdef DEBUG_OPTIONS
     qDebug() << "Using " << argument << "as argument";
+#endif
 
     AFileInfo info(argument);
 
@@ -118,7 +120,9 @@ void AardviewShim::addWindow(const QStringList &argumentList){
      *       a directory was requested
      */
     if ((win = m_windowModel->getWindow(info.friendlyFilePath())) != 0){
+#ifdef DEBUG_WINDOWS
       qDebug() << "Reusing existing window for " << info.absoluteFilePath();
+#endif
       win->show();
       return;
     }
@@ -202,7 +206,9 @@ void AardviewShim::deleteWindow(QUuid uid, bool force){
       return;
     } else {
       win->hide();
+#ifdef DEBUG_WINDOWS
       qDebug() << "Closing window " << uid;
+#endif
     }
   } else {
     QApplication::quit();
@@ -210,8 +216,10 @@ void AardviewShim::deleteWindow(QUuid uid, bool force){
 }
 
 void AardviewShim::receivedMessage(int instanceId, QByteArray message){
+#ifdef DEBUG_INSTANCE
   qDebug() << "Received message from instance: " << instanceId;
   qDebug() << "Message Text: " << message;
+#endif
 
   QList<QByteArray> argumentList = message.split(' ');
   QStringList arguments;

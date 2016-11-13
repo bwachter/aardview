@@ -26,7 +26,10 @@ ImageLoader::ImageLoader(): QObject(){
 void ImageLoader::reconfigure(){
   SettingsDialog *settings = SettingsDialog::instance();
 
+#ifdef DEBUG_SETTINGS
   qDebug() << "Checking configuration settings (viewer)";
+#endif
+
   if (settings->value("viewer/resetFtwOnChange").toBool())
     fitToWindow=settings->value("viewer/fitToWindow").toBool();
   if (settings->value("viewer/smoothTransformation").toBool())

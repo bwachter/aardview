@@ -36,7 +36,6 @@ int main(int argc, char** argv){
   // case.
   QStringList absoluteArguments;
   foreach(const QString arg, parser.positionalArguments()){
-    qDebug() << arg;
     QDir dir;
     if (dir.exists(arg)){
       // urlencoding hack to easily pass arguments with spaces
@@ -57,7 +56,9 @@ int main(int argc, char** argv){
   }
 
   if (app.isSecondary()){
+#ifdef DEBUG_INSTANCE
     qDebug() << "Started new secondary instance";
+#endif
 
     app.sendMessage(absoluteArguments.join(' ').toUtf8());
     app.exit(0);

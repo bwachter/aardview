@@ -18,7 +18,9 @@ class ADirModel: public QDirModel {
   public:
     ADirModel(QObject* parent=0): QDirModel(parent){}
     void setFilter(QDir::Filters filters){
+#ifdef DEBUG_FILTERS
       qDebug() << "Setting filter" << filters;
+#endif
       beginResetModel();
       QDirModel::setFilter(filters);
       endResetModel();

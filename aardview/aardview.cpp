@@ -95,7 +95,9 @@ AardView::AardView(QUuid uid, QString initialPath){
   // FIXME: make use of it
   imageName->hide();
 
+#ifdef DEBUG_LAYOUT
   qDebug() << "Current size: " << centralwidget->size();
+#endif
 
   grabGesture(Qt::TapAndHoldGesture);
   grabGesture(Qt::PanGesture);
@@ -107,7 +109,9 @@ AardView::AardView(QUuid uid, QString initialPath){
 }
 
 AardView::~AardView(){
+#ifdef DEBUG_WINDOWS
   qDebug() << "Destroying window " << m_uid;
+#endif
 
   // TODO: this should become uid-specific state saving
   /*
@@ -143,7 +147,9 @@ void AardView::reconfigure(){
   SettingsDialog *settings = SettingsDialog::instance();
 
   loader->reconfigure();
+#ifdef DEBUG_SETTINGS
   qDebug() << "Checking configuration settings (main)";
+#endif
   QMainWindow::statusBar()->setVisible(settings->value("main/showStatusbar").toBool());
   // dirview options
 
@@ -159,7 +165,9 @@ void AardView::reconfigure(){
     tnViewModel->setFilter(QDir::Files);
   if (settings->value("tnview/fileMask").toString() != "" &&
       settings->value("tnview/filterFiles").toBool()){
+#ifdef DEBUG_FILTERS
     qDebug() << "Setting filter: " << settings->value("tnview/fileMask").toString();
+#endif
     tnViewModelProxy->setFilterRegExp(settings->value("tnview/fileMask").toString());
     if (settings->value("tnview/caseInsensitiveMatching").toBool())
       tnViewModelProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
@@ -176,9 +184,15 @@ void AardView::closeEvent(QCloseEvent *event){
 void AardView::dirIndexChanged(){
   QModelIndex idx = dirViewModelProxy->mapToSource(
     dirView->selectionModel()->currentIndex());
+
+#ifdef DEBUG_MODEL
   qDebug() << "Path" << dirViewModel->filePath(idx);
+#endif
+
   if (dirViewModel->isDir(idx)){
+#ifdef DEBUG_MODEL
     qDebug() << "Selected item is a directory";
+#endif
     tnViewModel->setDirectory(dirViewModel->filePath(idx));
     tnView->scrollToTop();
     setPath(dirViewModel->filePath(idx));
@@ -205,15 +219,24 @@ void AardView::loadPixmap(const QString &filename, const QSize viewSize){
 void AardView::thumbIndexChanged(){
   QModelIndex idx = tnViewModelProxy->mapToSource(
     tnView->selectionModel()->currentIndex());
+
+#ifdef DEBUG_MODEL
   qDebug() << "Path" << tnViewModel->filePath(idx);
+#endif
+
   if (tnViewModel->isDir(idx)){
+#ifdef DEBUG_MODEL
     qDebug() << "Selected item is a directory";
+#endif
   } else {
     loadPixmap(tnViewModel->filePath(idx));
     setLoadedPath(tnViewModel->filePath(idx));
   }
+
+#ifdef DEBUG_MODEL
   qDebug () << "Selected index: " << tnView->selectionModel()->currentIndex().row()
             << "Proxy index: " << idx.row();
+#endif
 }
 
 QString AardView::path(){
@@ -245,7 +268,9 @@ void AardView::handlePaste(){
   if (dir.exists()){
     QModelIndex idx = dirViewModel->index(dir.absolutePath());
     if (idx.isValid()){
+#ifdef DEBUG_MODEL
       qDebug() << "Changing to " << dir.absolutePath();
+#endif
       dirView->setCurrentIndex(dirViewModelProxy->mapFromSource(idx));
     } else {
       qDebug() << "Index is not valid for: " << dir.absolutePath();
@@ -267,11 +292,13 @@ void AardView::selectNext(){
 
   tnView->setCurrentIndex(tnViewModelProxy->index(index, 0));
 
+#ifdef DEBUG_MODEL
   qDebug() << "Previous row: " << idx.row()
            << "Selected row: " << idx.row()+1
            << "Index: " << index
            << " Rowcount: " << tnViewModel->rowCount()
            << " Proxyrowcount: " << tnViewModelProxy->rowCount();
+#endif
 }
 
 void AardView::selectPrev(){
@@ -285,11 +312,13 @@ void AardView::selectPrev(){
 
   tnView->setCurrentIndex(tnViewModelProxy->index(index, 0));
 
+#ifdef DEBUG_MODEL
   qDebug() << "Previous row: " << idx.row()
            << "Selected row: " << idx.row()+1
            << "Index: " << index
            << " Rowcount: " << tnViewModel->rowCount()
            << " Proxyrowcount: " << tnViewModelProxy->rowCount();
+#endif
 }
 
 void AardView::setPath(const QString &path){
@@ -344,9 +373,13 @@ bool AardView::event(QEvent *event){
 bool AardView::gestureEvent(QGestureEvent *event){
   if (event->gesture(Qt::TapAndHoldGesture)){
   //if (event->gesture(Qt::SwipeGesture)){
+#ifdef DEBUG_GESTURES
     qDebug() << "Tap'n'hold";
+#endif
   } else if (event->gesture(Qt::PanGesture)){
+#ifdef DEBUG_GESTURES
     qDebug() << "Pan gesture";
+#endif
   }
   return true;
 }

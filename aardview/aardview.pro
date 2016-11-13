@@ -1,3 +1,15 @@
+# Some debug flags are available to configure debug output at build time:
+#
+# DEBUG_FILTERS: print info about file/directory filtering
+# DEBUG_GESTURES: print gesture notifications
+# DEBUG_INSTANCE: print messages about multi instance handling
+# DEBUG_LAYOUT: print some widget sizes
+# DEBUG_MODEL: print some info related to file/dir models and their proxy
+# DEBUG_OPTIONS: print program options and arguments
+# DEBUG_SETTINGS: print some info about applying/reloading settings
+# DEBUG_WINDOWS: print debug output related to window handling
+
+
 CONFIG += debug link_pkgconfig
 HEADERS = aardview.h \
         aardviewshim.h \
