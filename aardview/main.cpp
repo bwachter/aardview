@@ -16,6 +16,9 @@ Q_IMPORT_PLUGIN(XCFPlugin)
 int main(int argc, char** argv){
   //Q_INIT_RESOURCE();
   SingleApplication app(argc, argv, true);
+  QCommandLineParser parser;
+
+  parser.parse(app.arguments());
 
   // the secondary instance can't influence the working directory of the app:
   // make sure all arguments are passed through with absolute filenames. Also,
@@ -25,7 +28,8 @@ int main(int argc, char** argv){
   // the same filtering is applied to main instance arguments as well, just in
   // case.
   QStringList absoluteArguments;
-  foreach(const QString arg, app.arguments()){
+  foreach(const QString arg, parser.positionalArguments()){
+    qDebug() << arg;
       QDir dir;
       if (dir.exists(arg)){
         // urlencoding hack to easily pass arguments with spaces
@@ -44,9 +48,6 @@ int main(int argc, char** argv){
     else
       absoluteArguments.append(QDir::currentPath());
   }
-
-  // strip the application name
-  absoluteArguments.removeFirst();
 
   if (app.isSecondary()){
     qDebug() << "Started new secondary instance";
