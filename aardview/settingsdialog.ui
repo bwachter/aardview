@@ -19,7 +19,7 @@
   <property name="sizeGripEnabled">
    <bool>true</bool>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2">
+  <layout class="QHBoxLayout" name="horizontalLayout_8">
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
@@ -61,6 +61,43 @@
                <string>Show statusbar</string>
               </property>
              </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_9">
+              <property name="sizeConstraint">
+               <enum>QLayout::SetDefaultConstraint</enum>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="QLabel" name="label_7">
+                <property name="text">
+                 <string>Image cache (MB):</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSpinBox" name="mainPixmapCache">
+                <property name="maximum">
+                 <number>9999</number>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_3">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
             </item>
             <item>
              <widget class="QLabel" name="label_4">
@@ -155,6 +192,27 @@
              </spacer>
             </item>
            </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tab_2">
+        <attribute name="title">
+         <string>System tray</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <widget class="QCheckBox" name="systrayEnabled">
+           <property name="text">
+            <string>Prefer using system tray / single instance</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBox_5">
+           <property name="title">
+            <string>GroupBox</string>
+           </property>
           </widget>
          </item>
         </layout>
@@ -428,8 +486,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>248</x>
-     <y>254</y>
+     <x>259</x>
+     <y>366</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
@@ -444,8 +502,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>316</x>
-     <y>260</y>
+     <x>327</x>
+     <y>366</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>

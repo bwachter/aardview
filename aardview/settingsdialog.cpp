@@ -25,6 +25,7 @@ SettingsDialog::SettingsDialog(): QDialog() {
   mainFocusFollowsMouse->setChecked(settings.value("focusFollowsMouse").toBool());
   mainShowStatusbar->setChecked(settings.value("showStatusbar").toBool());
   mainExternalEditor->setText(settings.value("externalEditor").toString());
+  mainPixmapCache->setValue(settings.value("pixmapCache").toInt());
   mainInitialX->setValue(settings.value("initialX").toInt());
   mainInitialY->setValue(settings.value("initialY").toInt());
   mainSaveSizeOnExit->setChecked(settings.value("saveSizeOnExit").toBool());
@@ -62,6 +63,7 @@ void SettingsDialog::accept(){
   settings.setValue("focusFollowsMouse", mainFocusFollowsMouse->isChecked());
   settings.setValue("showStatusbar", mainShowStatusbar->isChecked());
   settings.setValue("externalEditor", mainExternalEditor->text());
+  settings.setValue("pixmapCache", mainPixmapCache->value());
   settings.setValue("initialX", mainInitialX->value());
   settings.setValue("initialY", mainInitialY->value());
   settings.setValue("saveSizeOnExit", mainSaveSizeOnExit->isChecked());
@@ -106,6 +108,7 @@ void SettingsDialog::defaults(){
     settings.setValue("showStatusbar", false);
     settings.setValue("initialX", 640);
     settings.setValue("initialY", 480);
+    settings.setValue("pixmapCache", 100);
     settings.endGroup();
     settings.beginGroup("dirview");
     settings.setValue("showOnlyDirs", true);

@@ -8,7 +8,6 @@
 #ifndef _IMAGELOADER_H
 #define _IMAGELOADER_H
 
-#include <QImage>
 #include <QPixmap>
 #include <QDebug>
 
@@ -23,11 +22,10 @@ class ImageLoader: public QObject {
     bool scaledImage;
     bool fitToWindow;
     double scaleFactor;
-    QImage displayedImage;
-    QImage originalImage;
-    QPixmap displayedPixmap;
+    QPixmap m_pixmap;
     QString imageFileName;
     QSize viewSize;
+
     Qt::TransformationMode transformation;
     void displayImage();
     void scale(double factor);

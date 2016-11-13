@@ -34,6 +34,11 @@ AardviewShim::AardviewShim(const QStringList &arguments){
   if (useTray && m_trayIcon->isVisible())
     QApplication::setQuitOnLastWindowClosed(false);
 
+  connect(m_settingsDialog, SIGNAL(configurationChanged()),
+          this, SLOT(reconfigure()));
+
+  reconfigure();
+
   addWindow(arguments);
 }
 
@@ -221,6 +226,12 @@ void AardviewShim::toggleWindow(const QModelIndex &index){
   QObject *object = qvariant_cast<QObject*>(m_windowModel->data(index, Qt::UserRole));
   AardView *win = qobject_cast<AardView*>(object);
   win->setVisible(!win->isVisible());
+}
+
+void AardviewShim::reconfigure(){
+  // pixmapcache limit is in KB, we save in MB
+  QPixmapCache::setCacheLimit(
+    m_settingsDialog->value("main/pixmapCache").toInt() * 1024);
 }
 
 void AardviewShim::edit(const QString &filename){

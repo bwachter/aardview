@@ -5,6 +5,8 @@
  * @date 2009-2016
  */
 
+#include <QTime>
+
 #include "imageloader.h"
 #include "settingsdialog.h"
 
@@ -33,20 +35,24 @@ void ImageLoader::reconfigure(){
 
 void ImageLoader::load(const QString &pathname, const QSize &widgetViewSize){
   SettingsDialog *settings = SettingsDialog::instance();
+  QTime timer;
 
-  qDebug() << "Requested pixmap for " << pathname
-           << " with size " << widgetViewSize;
   viewSize=widgetViewSize;
-  originalImage.load(pathname);
-  if (originalImage.isNull()){
+
+  timer.start();
+  m_pixmap.load(pathname);
+
+  qDebug() << "loaded " << pathname << "for" << widgetViewSize
+           << "in" << timer.elapsed() << "ms";
+
+  if (m_pixmap.isNull()){
     qDebug() << "Unable to load image: " << pathname;
     // FIXME, set pixmap to a valid pixmap or one from resource, configurable
-    displayedPixmap = QPixmap();
+    m_pixmap = QPixmap();
   } else {
     // FIXME, last image should be tracked per instance
     //settings->setValue("viewer/lastImage", pathname);
     imageFileName=pathname;
-    displayedPixmap=QPixmap::fromImage(originalImage);
   }
 
   if (settings->value("viewer/resetFtwOnChange").toBool())
@@ -58,7 +64,7 @@ void ImageLoader::load(const QString &pathname, const QSize &widgetViewSize){
 }
 
 void ImageLoader::displayImage(){
-  if (displayedPixmap.isNull()){
+  if (m_pixmap.isNull()){
     qDebug() << "Skipping display stuff due to the lack of a pixmap";
     return;
   }
@@ -66,7 +72,7 @@ void ImageLoader::displayImage(){
 
   bool keepAspectRatio=true;
   int p = settings->value("viewer/padding").toInt();
-  QSize pixmapSize=displayedPixmap.size();
+  QSize pixmapSize=m_pixmap.size();
   QSize paddingSize(p, p);
 
   // only scale if shrinkOnly is set to false _or_
@@ -80,21 +86,23 @@ void ImageLoader::displayImage(){
     // fit the image to the window, keeping the aspect ratio
     if (keepAspectRatio){
       emit pixmapReady(
-        displayedPixmap.scaled(viewSize - paddingSize,
+        m_pixmap.scaled(viewSize - paddingSize,
                                Qt::KeepAspectRatio,
                                transformation));
     } else {
       // fit the image to the window, ignoring the aspect ratio
-      emit pixmapReady(QPixmap::fromImage(originalImage));
+      // WTF?
+      emit pixmapReady(m_pixmap);
+      //emit pixmapReady(QPixmap::fromImage(originalImage));
     }
   } else if (scaleFactor != 1.0) {
     emit pixmapReady(
-      displayedPixmap.scaled(scaleFactor * displayedPixmap.size(),
+      m_pixmap.scaled(scaleFactor * m_pixmap.size(),
       Qt::KeepAspectRatio,
       transformation));
   } else {
     // display the picture in its original size
-    emit pixmapReady(displayedPixmap);
+    emit pixmapReady(m_pixmap);
   }
 //imageContainer->setScaledContents(false);
 }

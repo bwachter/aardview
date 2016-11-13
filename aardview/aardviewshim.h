@@ -88,6 +88,10 @@ class AardviewShim: public QObject {
      *
      * @param filename the filename to edit
      */
+    /**
+     * Re-read and apply settings when changed
+     */
+    void reconfigure();
     void edit(const QString &filename);
     /**
      * Open a new picture. When called with a valid window uid the given
