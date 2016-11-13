@@ -7,6 +7,7 @@
 
 #include <QMessageBox>
 #include <QFileDialog>
+#include <QWidgetAction>
 
 #ifndef QT_NO_PRINTER
 #include <QPrintDialog>
@@ -25,12 +26,12 @@ AardviewShim::AardviewShim(const QStringList &arguments){
 
   if (useTray){
     createTrayIcon();
-    trayIcon->show();
+    m_trayIcon->show();
   }
 
   // if tray icon exists start a first window, and manage window list
   // if not, just start a single window
-  if (useTray && trayIcon->isVisible())
+  if (useTray && m_trayIcon->isVisible())
     QApplication::setQuitOnLastWindowClosed(false);
 
   addWindow(arguments);
@@ -88,7 +89,10 @@ void AardviewShim::addWindow(const QStringList &argumentList){
   QString initialItem;
   AardView *win;
 
-  // TODO: take into account uids
+  /**
+   * @todo take window uids in account for session restoring,
+   *       which requires proper session saving
+   */
   if (settings->value("viewer/loadAction").toInt()==1) {
     AFileInfo info(settings->value("viewer/lastImage").toString());
     if (info.exists())
@@ -102,6 +106,12 @@ void AardviewShim::addWindow(const QStringList &argumentList){
 
     AFileInfo info(argument);
 
+    /**
+     * @todo once proper switching between single window state and browsing
+     *       state exists this should reuse existing windows for windows
+     *       with filename in title in browsing state as well, if only
+     *       a directory was requested
+     */
     if ((win = m_windowModel->getWindow(info.friendlyFilePath())) != 0){
       qDebug() << "Reusing existing window for " << info.absoluteFilePath();
       win->show();
@@ -137,9 +147,9 @@ void AardviewShim::addWindow(const QStringList &argumentList){
 
 void AardviewShim::createTrayIcon()
 {
-  trayIconMenu = new QMenu();
+  QMenu *trayIconMenu = new QMenu();
 
-  trayMenuWidget = new QWidgetAction(this);
+  QWidgetAction *trayMenuWidget = new QWidgetAction(this);
   m_windowListWidget = new QListView();
   m_windowListWidget->setDragDropMode(QAbstractItemView::DragOnly);
   m_windowListWidget->setResizeMode(QListView::Adjust);
@@ -169,9 +179,9 @@ void AardviewShim::createTrayIcon()
   trayIconMenu->addSeparator();
   trayIconMenu->addAction(actionExit);
 
-  trayIcon = new QSystemTrayIcon(this);
-  trayIcon->setContextMenu(trayIconMenu);
-  trayIcon->setIcon(QIcon(":/images/aardview-icon.png"));
+  m_trayIcon = new QSystemTrayIcon(this);
+  m_trayIcon->setContextMenu(trayIconMenu);
+  m_trayIcon->setIcon(QIcon(":/images/aardview-icon.png"));
 }
 
 void AardviewShim::deleteWindow(QUuid uid, bool force){
@@ -180,7 +190,7 @@ void AardviewShim::deleteWindow(QUuid uid, bool force){
     return;
   }
 
-  if (useTray && trayIcon->isVisible()){
+  if (useTray && m_trayIcon->isVisible()){
     AardView *win = m_windowModel->getWindow(uid);
     if (force){
       m_windowModel->deleteWindow(uid);
@@ -243,6 +253,7 @@ void AardviewShim::open(QUuid uid){
   }
 }
 
+///@todo fix printing support
 void AardviewShim::paintToPrinter(QPrinter *printer){
 #ifndef QT_NO_PRINTER
   QPainter painter(printer);
@@ -263,16 +274,16 @@ void AardviewShim::paintToPrinter(QPrinter *printer){
 
 void AardviewShim::print(){
 #ifndef QT_NO_PRINTER
-  QPrintDialog dialog(&printer);
+  QPrintDialog dialog(&m_printer);
   if (dialog.exec()) {
-    paintToPrinter(&printer);
+    paintToPrinter(&m_printer);
   }
 #endif
 }
 
 void AardviewShim::printPreview(){
 #ifndef QT_NO_PRINTER
-  QPrintPreviewDialog dialog(&printer);
+  QPrintPreviewDialog dialog(&m_printer);
   connect(&dialog, SIGNAL(paintRequested(QPrinter *)),
           this, SLOT(paintToPrinter(QPrinter *)));
   dialog.exec();
