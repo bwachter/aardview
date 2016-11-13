@@ -58,6 +58,7 @@ unix {
 }
 win32:debug { CONFIG += console }
 win32 {
+      LIBS += -lAdvapi32
       RC_FILE = win32.rc
       CONFIG += embed_manifest_exe
 }
