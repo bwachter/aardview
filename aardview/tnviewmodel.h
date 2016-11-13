@@ -1,7 +1,8 @@
-/* tnviewmodel.h        -- Bernd Wachter <bwachter@lart.info>
- *
- * $Header$
- * $Log$
+/**
+ * @file tnviewmodel.h
+ * @copyright GPLv2
+ * @author Bernd Wachter <bwachter@lart.info>
+ * @date 2009-2016
  */
 
 #ifndef _TNVIEWMODEL_H

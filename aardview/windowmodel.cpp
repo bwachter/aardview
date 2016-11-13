@@ -1,6 +1,6 @@
 /**
  * @file windowmodel.cpp
- * @copyright 2016
+ * @copyright GPLv2
  * @author Bernd Wachter <bwachter@lart.info>
  * @date 2016
  */

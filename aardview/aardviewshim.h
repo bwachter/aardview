@@ -1,8 +1,8 @@
 /**
  * @file aardviewshim.h
- * @copyright 2016
+ * @copyright GPLv2
  * @author Bernd Wachter <bwachter@lart.info>
- * @date 2016
+ * @date 2009-2016
  */
 
 #ifndef _AARDVIEWSHIM_H

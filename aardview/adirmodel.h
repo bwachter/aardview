@@ -1,6 +1,6 @@
 /**
  * @file adirmodel.h
- * @copyright 2014 Bernd Wachter
+ * @copyright GPLv2
  * @author Bernd Wachter <bwachter@lart.info>
  * @date 2014
  */

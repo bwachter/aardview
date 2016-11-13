@@ -1,7 +1,8 @@
-/* alistview.h  -- Bernd Wachter <bwachter@lart.info>
- *
- * $Header$
- * $Log$
+/**
+ * @file alistview.h
+ * @copyright GPLv2
+ * @author Bernd Wachter <bwachter@lart.info>
+ * @date 2009-2016
  */
 
 #ifndef _ALISTVIEW_H
