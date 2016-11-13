@@ -11,6 +11,7 @@
 #include <QFileDialog>
 
 #include "aardview.h"
+#include "afileinfo.h"
 #include "settingsdialog.h"
 
 AardView::AardView(QUuid uid, QString initialPath){
@@ -123,7 +124,7 @@ void AardView::load(const QString &path){
 
   setPath(path);
 
-  QFileInfo info(path);
+  AFileInfo info(path);
 
   dirView->setCurrentIndex(dirViewModelProxy->mapFromSource(
                              dirViewModel->index(info.absolutePath())));
@@ -135,7 +136,7 @@ void AardView::load(const QString &path){
     loadPixmap(path, centralwidget->size());
     setLoadedPath(path);
   } else if (settings->value("viewer/loadAction").toInt()==0)
-      loadPixmap(":/images/aardview.png");
+    loadPixmap(":/images/aardview.png");
 }
 
 void AardView::reconfigure(){
@@ -306,7 +307,6 @@ void AardView::setLoadedPath(const QString &path){
 
 QString AardView::title(){
   QString result="<unknown>";
-  QDir dir;
 
   if (path() != QString()){
     result = path();
@@ -314,11 +314,8 @@ QString AardView::title(){
     result = loadedPath();
   }
 
-  if (result.startsWith(dir.homePath())){
-    result.replace(0, dir.homePath().size(), "~");
-  }
-
-  return result;
+  AFileInfo info(result);
+  return info.friendlyFilePath();
 }
 
 void AardView::toggleMenuBar(){

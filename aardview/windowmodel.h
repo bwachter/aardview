@@ -23,6 +23,7 @@ class WindowModel: public QAbstractListModel {
     void deleteWindow(const QUuid &uid);
     bool contains(const QUuid &uid);
     AardView* getWindow(const QUuid &uid);
+    AardView* getWindow(const QString &title);
 
   private:
     QHash <QUuid, AardView*> m_windowList;

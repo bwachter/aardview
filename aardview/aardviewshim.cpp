@@ -15,6 +15,7 @@
 
 #include "aardviewshim.h"
 #include "aardview.h"
+#include "afileinfo.h"
 
 AardviewShim::AardviewShim(const QStringList &arguments){
   qDebug() << "Linked in plugins: " << QPluginLoader::staticInstances();
@@ -85,10 +86,11 @@ void AardviewShim::addWindow(const QStringList &argumentList){
   QUuid uid=QUuid::createUuid();
   SettingsDialog *settings = SettingsDialog::instance();
   QString initialItem;
+  AardView *win;
 
   // TODO: take into account uids
   if (settings->value("viewer/loadAction").toInt()==1) {
-    QFileInfo info(settings->value("viewer/lastImage").toString());
+    AFileInfo info(settings->value("viewer/lastImage").toString());
     if (info.exists())
       initialItem = settings->value("viewer/lastImage").toString();
   } else
@@ -97,20 +99,23 @@ void AardviewShim::addWindow(const QStringList &argumentList){
   if (argumentList.count() == 1){
     QString argument=argumentList.at(0);
     qDebug() << "Using " << argument << "as argument";
-    QFileInfo info(argument);
 
-    if (info.exists()){
-      // QFileInfo::absolutePath() treats pathnames as files when not ending
-      // in /, even though QFileInfo is aware about a path being a directory
-      if (info.isDir() && argument.at(argument.size()-1) != '/'){
-        initialItem = argument + "/";
-      } else {
-        initialItem = argument;
-      }
+    AFileInfo info(argument);
+
+    if ((win = m_windowModel->getWindow(info.friendlyFilePath())) != 0){
+      qDebug() << "Reusing existing window for " << info.absoluteFilePath();
+      win->show();
+      return;
     }
+
+    if (info.exists())
+      initialItem = info.absoluteFilePath();
+  } else {
+    qDebug() << "Multiple arguments are currently not supported";
+    return;
   }
 
-  AardView *win = new AardView(uid, initialItem);
+  win = new AardView(uid, initialItem);
 
   connect(win, SIGNAL(openEditor(const QString&)),
                       this, SLOT(edit(const QString&)));
@@ -128,6 +133,7 @@ void AardviewShim::addWindow(const QStringList &argumentList){
 
   win->show();
 }
+
 
 void AardviewShim::createTrayIcon()
 {

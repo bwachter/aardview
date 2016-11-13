@@ -1,6 +1,7 @@
 CONFIG += debug link_pkgconfig
 HEADERS = aardview.h \
         aardviewshim.h \
+        afileinfo.h \
         alistview.h \
         atreeview.h \
         adirmodel.h \
