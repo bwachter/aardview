@@ -148,13 +148,13 @@ void AardviewShim::createTrayIcon()
 
   trayIconMenu->addAction(trayMenuWidget);
 
-  QAction *actionNewWindow = new QAction(tr("New window"));
+  QAction *actionNewWindow = new QAction(tr("New window"), 0);
   connect(actionNewWindow, SIGNAL(triggered()), this, SLOT(addWindow()));
 
-  QAction *actionExit = new QAction(tr("E&xit"));
+  QAction *actionExit = new QAction(tr("E&xit"), 0);
   connect(actionExit, SIGNAL(triggered()), qApp, SLOT(quit()));
 
-  QAction *actionSettings = new QAction(tr("Settings"));
+  QAction *actionSettings = new QAction(tr("Settings"), 0);
   connect(actionSettings, SIGNAL(triggered()), m_settingsDialog, SLOT(show()));
 
   trayIconMenu->addAction(actionNewWindow);
