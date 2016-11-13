@@ -30,19 +30,19 @@ int main(int argc, char** argv){
   QStringList absoluteArguments;
   foreach(const QString arg, parser.positionalArguments()){
     qDebug() << arg;
-      QDir dir;
-      if (dir.exists(arg)){
-        // urlencoding hack to easily pass arguments with spaces
-        // without touching singleinstance
-        if (app.isSecondary())
-          absoluteArguments.append(QUrl::toPercentEncoding(
-                                     dir.absoluteFilePath(arg).toUtf8()));
-        else
-          absoluteArguments.append(dir.absoluteFilePath(arg).toUtf8());
-      }
+    QDir dir;
+    if (dir.exists(arg)){
+      // urlencoding hack to easily pass arguments with spaces
+      // without touching singleinstance
+      if (app.isSecondary())
+        absoluteArguments.append(QUrl::toPercentEncoding(
+                                   dir.absoluteFilePath(arg).toUtf8()));
+      else
+        absoluteArguments.append(dir.absoluteFilePath(arg).toUtf8());
+    }
   }
 
-  if (absoluteArguments.size() <= 1){
+  if (absoluteArguments.size() <= 0){
     if (app.isSecondary())
       absoluteArguments.append(QUrl::toPercentEncoding(QDir::currentPath()));
     else
