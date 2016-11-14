@@ -10,15 +10,8 @@
 #include "imageloader.h"
 #include "settingsdialog.h"
 
-/*
-  The UI part of this class will end up in the mainwindow, while
-  the image rescaling logic will end up in a caching multithreaded
-  image loader. Though it would be possible to implement a simple,
-  non-threaded image loader it's just not worth the trouble for v0.1
-*/
-
 ImageLoader::ImageLoader(): QObject(){
-  scaleFactor=1.0;
+  m_scaleFactor=1.0;
 
   reconfigure();
 }
@@ -31,16 +24,16 @@ void ImageLoader::reconfigure(){
 #endif
 
   if (settings->value("viewer/resetFtwOnChange").toBool())
-    fitToWindow=settings->value("viewer/fitToWindow").toBool();
+    m_fitToWindow=settings->value("viewer/fitToWindow").toBool();
   if (settings->value("viewer/smoothTransformation").toBool())
-    transformation=Qt::SmoothTransformation;
+    m_transformation=Qt::SmoothTransformation;
 }
 
 void ImageLoader::load(const QString &pathname, const QSize &widgetViewSize){
   SettingsDialog *settings = SettingsDialog::instance();
   QTime timer;
 
-  viewSize=widgetViewSize;
+  m_viewSize=widgetViewSize;
 
   timer.start();
   m_pixmap.load(pathname);
@@ -53,13 +46,13 @@ void ImageLoader::load(const QString &pathname, const QSize &widgetViewSize){
     // FIXME, set pixmap to a valid pixmap or one from resource, configurable
     m_pixmap = QPixmap();
   } else {
-    // FIXME, last image should be tracked per instance
+    /// @todo last image should be tracked per instance; move to generic session saving
     //settings->setValue("viewer/lastImage", pathname);
-    imageFileName=pathname;
+    m_imageFileName=pathname;
   }
 
   if (settings->value("viewer/resetFtwOnChange").toBool())
-    fitToWindow=settings->value("viewer/fitToWindow").toBool();
+    m_fitToWindow=settings->value("viewer/fitToWindow").toBool();
   //if (settings->value("viewer/resetScalingOnChange").toBool())
   // FIXME, add scaling
 
@@ -81,36 +74,38 @@ void ImageLoader::displayImage(){
   // only scale if shrinkOnly is set to false _or_
   // shrinkonly is true and at least one dimension of the
   // image is larger than the view area
-  if (fitToWindow &&
+  if (m_fitToWindow &&
       (!settings->value("viewer/shrinkOnly").toBool() ||
       (settings->value("viewer/shrinkOnly").toBool() &&
-       (pixmapSize.height() >= viewSize.height() ||
-        pixmapSize.width() >= viewSize.width())))) {
+       (pixmapSize.height() >= m_viewSize.height() ||
+        pixmapSize.width() >= m_viewSize.width())))) {
     // fit the image to the window, keeping the aspect ratio
     if (keepAspectRatio){
       emit pixmapReady(
-        m_pixmap.scaled(viewSize - paddingSize,
-                               Qt::KeepAspectRatio,
-                               transformation));
+        m_pixmap.scaled(m_viewSize - paddingSize,
+                        Qt::KeepAspectRatio,
+                        m_transformation));
     } else {
       // fit the image to the window, ignoring the aspect ratio
-      // WTF?
-      emit pixmapReady(m_pixmap);
-      //emit pixmapReady(QPixmap::fromImage(originalImage));
+      emit pixmapReady(
+        m_pixmap.scaled(m_viewSize - paddingSize,
+                        Qt::IgnoreAspectRatio,
+                        m_transformation));
     }
-  } else if (scaleFactor != 1.0) {
+  } else if (m_scaleFactor != 1.0) {
     emit pixmapReady(
-      m_pixmap.scaled(scaleFactor * m_pixmap.size(),
+      m_pixmap.scaled(m_scaleFactor * m_pixmap.size(),
       Qt::KeepAspectRatio,
-      transformation));
+      m_transformation));
   } else {
     // display the picture in its original size
     emit pixmapReady(m_pixmap);
   }
-//imageContainer->setScaledContents(false);
 }
 
-QString ImageLoader::currentFilename(){ return imageFileName; }
+QString ImageLoader::currentFilename() const{ return m_imageFileName; }
+
+QPixmap ImageLoader::currentPixmap() const{ return m_pixmap; }
 
 void ImageLoader::normalSize(){ scale(0); }
 
@@ -118,20 +113,21 @@ void ImageLoader::rotate(){
 }
 
 void ImageLoader::toggleFtw(){
-  if (fitToWindow) fitToWindow=false;
-  else fitToWindow=true;
+  if (m_fitToWindow) m_fitToWindow=false;
+  else m_fitToWindow=true;
   displayImage();
 }
 
 void ImageLoader::scale(double factor){
-  fitToWindow=false;
-  scaleFactor*=factor;
-  if (scaleFactor==0) scaleFactor++;
+  /// @todo: scale based on current size (fitted to window) instead of image size
+  m_fitToWindow=false;
+  m_scaleFactor*=factor;
+  if (m_scaleFactor==0) m_scaleFactor++;
   displayImage();
 }
 
 void ImageLoader::repaint(const QSize &widgetViewSize){
-  viewSize=widgetViewSize;
+  m_viewSize=widgetViewSize;
   displayImage();
 }
 
