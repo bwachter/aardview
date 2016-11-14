@@ -167,6 +167,9 @@ void AardviewShim::createTrayIcon()
 {
   QMenu *trayIconMenu = new QMenu();
 
+  trayIconMenu->setObjectName("trayIconMenu");
+  trayIconMenu->installEventFilter(this);
+
   QWidgetAction *trayMenuWidget = new QWidgetAction(this);
   m_windowListWidget = new QListView();
   m_windowListWidget->setDragDropMode(QAbstractItemView::DragOnly);
@@ -222,6 +225,23 @@ void AardviewShim::deleteWindow(QUuid uid, bool force){
   } else {
     QApplication::quit();
   }
+}
+
+bool AardviewShim::eventFilter(QObject *obj, QEvent *event){
+  if (obj->objectName() == "trayIconMenu"){
+    // disable right-click on tray icon menu
+    // this prevents accidentally closing by right-click on exit,
+    // but might be too restrictive later on
+    if (event->type() == QEvent::MouseButtonPress){
+      QMouseEvent *me = dynamic_cast<QMouseEvent*>(event);
+      if (me && me->button() == Qt::RightButton){
+        me->ignore();
+        return true;
+      }
+    }
+  }
+
+  return QObject::eventFilter(obj, event);
 }
 
 void AardviewShim::receivedMessage(int instanceId, QByteArray message){

@@ -115,6 +115,8 @@ class AardviewShim: public QObject {
      * Note: printing functionality is currently disabled.
      */
     void printPreview(const QPixmap &pixmap);
+  protected:
+    bool eventFilter(QObject *obj, QEvent *event);
 };
 
 #endif
