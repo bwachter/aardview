@@ -11,7 +11,7 @@
 
 #ifndef QT_NO_PRINTER
 #include <QPrintDialog>
-#include <QPrintPreviewDialog>
+#include <aprintpreviewdialog.h>
 #endif
 
 #include "aardviewshim.h"
@@ -143,6 +143,10 @@ void AardviewShim::addWindow(const QStringList &argumentList){
           this, SLOT(deleteWindow(QUuid, bool)));
   connect(win, SIGNAL(showOpen()), this, SLOT(open()));
   connect(win, SIGNAL(showOpen(QUuid)), this, SLOT(open(QUuid)));
+  connect(win, SIGNAL(showPrint(const QPixmap&)),
+          this, SLOT(print(const QPixmap&)));
+  connect(win, SIGNAL(showPrintPreview(const QPixmap&)),
+          this, SLOT(printPreview(const QPixmap&)));
   connect(win, SIGNAL(showAbout()), this, SLOT(about()));
   connect(win, SIGNAL(showSettings()), m_settingsDialog, SLOT(show()));
   connect(m_settingsDialog, SIGNAL(configurationChanged()),
@@ -272,39 +276,39 @@ void AardviewShim::open(QUuid uid){
   }
 }
 
-///@todo fix printing support
-void AardviewShim::paintToPrinter(QPrinter *printer){
+void AardviewShim::paintToPrinter(QPrinter *printer, const QPixmap &pixmap){
 #ifndef QT_NO_PRINTER
   QPainter painter(printer);
-/*
-// TODO: ability to get full pixmap from imagewidget
-//      check if we can just print the QImage
-//      provide scaling functionality
   QRect rect = painter.viewport();
-  QSize size = displayedPixmap.size();
-  size.scale(rect.size(), Qt::KeepAspectRatio);
+  QSize size = pixmap.size();
+
+  // if picture is larger than paper scale down, otherwise keep as is
+  if (size.height() >= rect.height() ||
+      size.width() >= rect.width())
+    size.scale(rect.size(), Qt::KeepAspectRatio);
 
   painter.setViewport(rect.x(), rect.y(), size.width(), size.height());
-  painter.setWindow(displayedPixmap.rect());
-  painter.drawPixmap(0, 0, displayedPixmap);
-*/
+  painter.setWindow(pixmap.rect());
+  painter.drawPixmap(0, 0, pixmap);
 #endif
 }
 
-void AardviewShim::print(){
+void AardviewShim::print(const QPixmap &pixmap){
 #ifndef QT_NO_PRINTER
   QPrintDialog dialog(&m_printer);
   if (dialog.exec()) {
-    paintToPrinter(&m_printer);
+    paintToPrinter(&m_printer, pixmap);
   }
 #endif
 }
 
-void AardviewShim::printPreview(){
+void AardviewShim::printPreview(const QPixmap &pixmap){
 #ifndef QT_NO_PRINTER
-  QPrintPreviewDialog dialog(&m_printer);
-  connect(&dialog, SIGNAL(paintRequested(QPrinter *)),
-          this, SLOT(paintToPrinter(QPrinter *)));
+  APrintPreviewDialog dialog(&m_printer, pixmap);
+  connect(&dialog,
+          SIGNAL(paintRequested(QPrinter *, const QPixmap&)),
+          this,
+          SLOT(paintToPrinter(QPrinter *, const QPixmap&)));
   dialog.exec();
 #endif
 }

@@ -89,6 +89,8 @@ class AardView: public QMainWindow, private Ui::AardView{
 
     void forwardEdit(){ emit openEditor(loader->currentFilename()); };
     void forwardOpen(){ emit showOpen(m_uid); };
+    void forwardPrint(){ emit showPrint(loader->currentPixmap()); };
+    void forwardPrintPreview(){ emit showPrintPreview(loader->currentPixmap()); };
     void forwardQuit(){ emit requestDestroy(m_uid, true); };
 
   protected:
@@ -105,6 +107,8 @@ class AardView: public QMainWindow, private Ui::AardView{
     void showSettings();
     void showOpen();
     void showOpen(QUuid uid);
+    void showPrint(const QPixmap &pixmap);
+    void showPrintPreview(const QPixmap &pixmap);
     void requestClose(QUuid uid);
     void requestDestroy(QUuid uid, bool force);
 };

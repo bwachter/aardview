@@ -61,6 +61,10 @@ AardView::AardView(QUuid uid, QString initialPath){
   // file menu actions
   connect(actionOpen, SIGNAL(triggered()), this, SLOT(forwardOpen()));
   connect(actionOpenNew, SIGNAL(triggered()), this, SIGNAL(showOpen()));
+  connect(actionPrint, SIGNAL(triggered()), this, SLOT(forwardPrint()));
+  connect(actionPrintPreview, SIGNAL(triggered()),
+          this, SLOT(forwardPrintPreview()));
+
   connect(actionEditCurrentImage, SIGNAL(triggered()),
           this, SLOT(forwardEdit()));
   connect(actionExit, SIGNAL(triggered()), this, SLOT(forwardQuit()));

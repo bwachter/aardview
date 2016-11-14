@@ -104,17 +104,17 @@ class AardviewShim: public QObject {
      * Paint pixmap data to a specific printer
      * Note: printing functionality is currently disabled.
      */
-    void paintToPrinter(QPrinter *printer);
+    void paintToPrinter(QPrinter *printer, const QPixmap &pixmap);
     /**
      * Open a print dialogue
      * Note: printing functionality is currently disabled.
      */
-    void print();
+    void print(const QPixmap &pixmap);
     /**
      * Open a print preview
      * Note: printing functionality is currently disabled.
      */
-    void printPreview();
+    void printPreview(const QPixmap &pixmap);
 };
 
 #endif
