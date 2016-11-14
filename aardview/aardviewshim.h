@@ -59,13 +59,13 @@ class AardviewShim: public QObject {
      *
      * @param argumentList a list of directories or filenames to open
      */
-    void addWindow(const QStringList &argumentList=QStringList());
+    void addWindow(const QStringList &argumentList);
     /**
      * @overload
      *
      * @param argument a single file or directory to open
      */
-    void addWindow(const QString &argument);
+    void addWindow(const QString &argument="");
     /**
      * Request removal of window with given uid
      *

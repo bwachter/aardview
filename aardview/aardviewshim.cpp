@@ -84,7 +84,12 @@ void AardviewShim::about(){
 
 void AardviewShim::addWindow(const QString &argument){
   QStringList list;
-  list.append(argument);
+
+  if (argument == "")
+    list.append(QDir::currentPath());
+  else
+    list.append(argument);
+
   addWindow(list);
 }
 
