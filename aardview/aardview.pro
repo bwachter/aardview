@@ -49,7 +49,7 @@ LIBS += -L../build -lkde
 QTPLUGIN += kde
 
 include(../singleapplication/singleapplication.pri)
-DEFINES += QAPPLICATION_CLASS=QApplication
+DEFINES += QAPPLICATION_CLASS=QApplication DEBUG_GESTURES=1
 
 unix {
      system(pkg-config --exists libexif){
