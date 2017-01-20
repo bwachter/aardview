@@ -384,7 +384,20 @@ bool AardView::gestureEvent(QGestureEvent *event){
 #ifdef DEBUG_GESTURES
     qDebug() << "Pan gesture";
 #endif
+  } else if (event->gesture(Qt::PinchGesture)){
+#ifdef DEBUG_GESTURES
+    qDebug() << "Pinch gesture";
+#endif
+  } else if (event->gesture(Qt::SwipeGesture)){
+#ifdef DEBUG_GESTURES
+    qDebug() << "Swipe gesture";
+#endif
+  } else if (event->gesture(Qt::CustomGesture)){
+#ifdef DEBUG_GESTURES
+    qDebug() << "Custom gesture";
+#endif
   }
+
   return true;
 }
 
