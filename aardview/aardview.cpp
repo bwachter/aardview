@@ -103,9 +103,12 @@ AardView::AardView(QUuid uid, QString initialPath){
   qDebug() << "Current size: " << centralwidget->size();
 #endif
 
+  // grabGesture(Qt::TapGesture);
   grabGesture(Qt::TapAndHoldGesture);
   grabGesture(Qt::PanGesture);
+  grabGesture(Qt::PinchGesture);
   grabGesture(Qt::SwipeGesture);
+  //grabGesture(Qt::CustomGesture);
 
   // store initial locations, initial drawing happens through
   // polish event
