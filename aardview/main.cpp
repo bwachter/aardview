@@ -25,6 +25,10 @@ int main(int argc, char** argv){
   SingleApplication app(argc, argv, true);
   QCommandLineParser parser;
 
+  QCoreApplication::setOrganizationName("AardSoft");
+  QCoreApplication::setOrganizationDomain("aardsoft.de");
+  QCoreApplication::setApplicationName("Aardview");
+
   parser.parse(app.arguments());
 
   // the secondary instance can't influence the working directory of the app:
@@ -64,10 +68,6 @@ int main(int argc, char** argv){
     app.exit(0);
     return 0;
   }
-
-  QCoreApplication::setOrganizationName("AardSoft");
-  QCoreApplication::setOrganizationDomain("aardsoft.de");
-  QCoreApplication::setApplicationName("Aardview");
 
   QTranslator qtTranslator;
   qtTranslator.load("qt_" + QLocale::system().name(),

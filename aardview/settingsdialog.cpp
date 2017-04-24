@@ -20,6 +20,8 @@ SettingsDialog *SettingsDialog::instance(){
 SettingsDialog::SettingsDialog(): QDialog() {
   setupUi(this);
 
+  defaults();
+
   settings.beginGroup("main");
   mainInitialized->setChecked(!settings.value("initialized").toBool());
   mainFocusFollowsMouse->setChecked(settings.value("focusFollowsMouse").toBool());
