@@ -85,6 +85,7 @@ AardView::AardView(QUuid uid, QString initialPath){
   //connect(actionRotate, SIGNAL(triggered()), loader, SLOT(rotate()));
   connect(actionZoomIn, SIGNAL(triggered()), loader, SLOT(zoomIn()));
   connect(actionZoomOut, SIGNAL(triggered()), loader, SLOT(zoomOut()));
+  connect(actionRefreshDirs, SIGNAL(triggered()), dirView, SLOT(refresh()));
   connect(this, SIGNAL(requestPixmap(const QString &, const QSize &)),
           loader, SLOT(load(const QString &, const QSize &)));
   connect(loader, SIGNAL(pixmapReady(const QPixmap &)), this, SLOT(displayPixmap(const QPixmap &)));
