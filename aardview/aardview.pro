@@ -60,7 +60,13 @@ unix {
      system(pkg-config --exists libssh){
             message("Found libssh")
             DEFINES += HAS_SSH
-            PKGCONFIG += libssh libssh_threads
+            PKGCONFIG += libssh
+     }
+     # libssh before 0.8 has a separate threads library
+     system(pkg-config --exists libssh_threads){
+            message("Found libssh_threads")
+            DEFINES += HAS_SSH
+            PKGCONFIG += libssh_threads
      }
 }
 
