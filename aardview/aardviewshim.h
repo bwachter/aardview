@@ -23,7 +23,8 @@ class AardviewShim: public QObject {
     Q_OBJECT
 
   public:
-    AardviewShim(const QStringList &arguments);
+    AardviewShim(const QStringList &arguments,
+                 const QStringList &optionArguments);
 
   public slots:
     void receivedMessage(int instanceId, QByteArray message);

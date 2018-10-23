@@ -18,7 +18,8 @@
 #include "aardview.h"
 #include "afileinfo.h"
 
-AardviewShim::AardviewShim(const QStringList &arguments){
+AardviewShim::AardviewShim(const QStringList &arguments,
+                           const QStringList &optionArguments){
   qDebug() << "Linked in plugins: " << QPluginLoader::staticInstances();
 
   m_windowModel = new WindowModel();
@@ -39,7 +40,13 @@ AardviewShim::AardviewShim(const QStringList &arguments){
 
   reconfigure();
 
-  addWindow(arguments);
+  qDebug() << "Arguments: " << arguments;
+  qDebug() << "Option arguments: " << optionArguments;
+
+  if (optionArguments.contains("service") or optionArguments.contains("s"))
+    qDebug() << "Starting in service mode";
+  else
+    addWindow(arguments);
 }
 
 void AardviewShim::about(){

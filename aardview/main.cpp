@@ -31,9 +31,23 @@ int main(int argc, char** argv){
   QCoreApplication::setApplicationName("Aardview");
   QCoreApplication::setApplicationVersion(AARDVIEW_VERSION);
 
+  QTranslator qtTranslator;
+  qtTranslator.load("qt_" + QLocale::system().name(),
+                    QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+  app.installTranslator(&qtTranslator);
+
+  QTranslator aardviewTranslator;
+  aardviewTranslator.load("aardview_" + QLocale::system().name());
+  app.installTranslator(&aardviewTranslator);
+
   parser.setApplicationDescription("A simple image viewer");
   parser.addVersionOption();
   parser.addHelpOption();
+
+  QCommandLineOption serviceOption(QStringList() << "s"
+                                   << "service",
+                                   "Start as service");
+  parser.addOption(serviceOption);
 
   parser.process(app);
 
@@ -44,7 +58,11 @@ int main(int argc, char** argv){
   //
   // the same filtering is applied to main instance arguments as well, just in
   // case.
-  QStringList absoluteArguments;
+  QStringList absoluteArguments, optionArguments;
+  foreach(const QString arg, parser.optionNames()){
+    optionArguments.append(arg);
+  }
+
   foreach(const QString arg, parser.positionalArguments()){
     QDir dir;
     if (dir.exists(arg)){
@@ -75,21 +93,12 @@ int main(int argc, char** argv){
     return 0;
   }
 
-  QTranslator qtTranslator;
-  qtTranslator.load("qt_" + QLocale::system().name(),
-                    QLibraryInfo::location(QLibraryInfo::TranslationsPath));
-  app.installTranslator(&qtTranslator);
-
-  QTranslator aardviewTranslator;
-  aardviewTranslator.load("aardview_" + QLocale::system().name());
-  app.installTranslator(&aardviewTranslator);
-
 #ifdef HAS_SSH
   ssh_threads_set_callbacks(ssh_threads_get_pthread());
   ssh_init();
 #endif
 
-  AardviewShim mw(absoluteArguments);
+  AardviewShim mw(absoluteArguments, optionArguments);
   QObject::connect(&app, &SingleApplication::receivedMessage,
                    &mw, &AardviewShim::receivedMessage);
 
