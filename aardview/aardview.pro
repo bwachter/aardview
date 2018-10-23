@@ -21,7 +21,8 @@ HEADERS = aardview.h \
         imageloader.h \
         settingsdialog.h \
         windowmodel.h \
-        tnviewmodel.h
+        tnviewmodel.h \
+        version.h
 SOURCES = aardview.cpp \
         aardviewshim.cpp \
         imageloader.cpp \
@@ -52,6 +53,11 @@ include(../singleapplication/singleapplication.pri)
 DEFINES += QAPPLICATION_CLASS=QApplication DEBUG_GESTURES=1
 
 unix {
+     PRE_TARGETDEPS = version-dummy
+     QMAKE_EXTRA_TARGETS += version-dummy
+     version-dummy.target = version-dummy
+     version-dummy.commands = ../write-version-header.sh
+
      system(pkg-config --exists libexif){
             message("Found libexif")
             DEFINES += HAS_EXIF

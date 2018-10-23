@@ -14,6 +14,7 @@
 #endif
 
 #include "aardviewshim.h"
+#include "version.h"
 
 // static plugin
 Q_IMPORT_PLUGIN(XCFPlugin)
@@ -28,8 +29,13 @@ int main(int argc, char** argv){
   QCoreApplication::setOrganizationName("AardSoft");
   QCoreApplication::setOrganizationDomain("aardsoft.de");
   QCoreApplication::setApplicationName("Aardview");
+  QCoreApplication::setApplicationVersion(AARDVIEW_VERSION);
 
-  parser.parse(app.arguments());
+  parser.setApplicationDescription("A simple image viewer");
+  parser.addVersionOption();
+  parser.addHelpOption();
+
+  parser.process(app);
 
   // the secondary instance can't influence the working directory of the app:
   // make sure all arguments are passed through with absolute filenames. Also,
