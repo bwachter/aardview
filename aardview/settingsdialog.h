@@ -16,6 +16,9 @@ class SettingsDialog: public QDialog, private Ui::SettingsDialog {
 
   public:
     static SettingsDialog *instance();
+    static QStringList features();
+    static QStringList readFormats();
+    static QStringList writeFormats();
 
   private:
     SettingsDialog();

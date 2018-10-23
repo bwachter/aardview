@@ -51,29 +51,6 @@ AardviewShim::AardviewShim(const QStringList &arguments,
 }
 
 void AardviewShim::about(){
-  QString supportedWriteFormats;
-  QString supportedReadFormats;
-  QStringList features;
-
-  for (int i = 0; i < QImageReader::supportedImageFormats().count(); ++i){
-    supportedReadFormats += " " +
-      QString(QImageReader::supportedImageFormats().at(i)).toLower();
-  }
-  for (int i = 0; i < QImageWriter::supportedImageFormats().count(); ++i){
-    supportedWriteFormats += " " +
-      QString(QImageWriter::supportedImageFormats().at(i)).toLower();
-  }
-
-#ifdef HAS_EXIF
-  features.append("exif");
-#endif
-#ifdef HAS_SSH
-  features.append("ssh");
-#endif
-#ifndef QT_NO_PRINTER
-  features.append("printing");
-#endif
-
   QMessageBox::about(0, tr("About Menu"),
                      tr("<h1>About Aardview</h1><br />"
                         "A simple image viewer written by Bernd Wachter. You can visit the <a href=\"http://bwachter.lart.info/projects/aardview/\">project homepage</a> for more information.<br /><br />"
@@ -87,9 +64,9 @@ void AardviewShim::about(){
                         "Reading: %1<br />"
                         "Writing: %2<br />"
                        )
-                     .arg(supportedReadFormats)
-                     .arg(supportedWriteFormats)
-                     .arg(features.join(", "))
+                     .arg(SettingsDialog::readFormats().join(", "))
+                     .arg(SettingsDialog::writeFormats().join(", "))
+                     .arg(SettingsDialog::features().join(", "))
                      .arg(AARDVIEW_VERSION)
                      .arg(AARDVIEW_GIT_SHA)
     );

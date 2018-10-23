@@ -14,6 +14,7 @@
 #endif
 
 #include "aardviewshim.h"
+#include "settingsdialog.h"
 #include "version.h"
 
 // static plugin
@@ -43,8 +44,15 @@ int main(int argc, char** argv){
   parser.setApplicationDescription(
     QString("\nA simple image viewer\n\n"
             "Version: %1\n"
+            "Features: %2\n"
+            "Image formats (reading): %3\n"
+            "Image formats (writing): %4\n"
       )
-    .arg(AARDVIEW_VERSION));
+    .arg(AARDVIEW_VERSION)
+    .arg(SettingsDialog::features().join(", "))
+    .arg(SettingsDialog::readFormats().join(", "))
+    .arg(SettingsDialog::writeFormats().join(", "))
+    );
 
   parser.addVersionOption();
   parser.addHelpOption();

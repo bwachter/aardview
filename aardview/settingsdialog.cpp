@@ -17,6 +17,42 @@ SettingsDialog *SettingsDialog::instance(){
   return settingsDialog;
 }
 
+QStringList SettingsDialog::features() {
+  QStringList features;
+
+#ifdef HAS_EXIF
+  features.append("exif");
+#endif
+#ifdef HAS_SSH
+  features.append("ssh");
+#endif
+#ifndef QT_NO_PRINTER
+  features.append("printing");
+#endif
+
+  return features;
+}
+
+QStringList SettingsDialog::readFormats() {
+  QStringList readFormats;
+
+  for (int i = 0; i < QImageReader::supportedImageFormats().count(); ++i){
+    readFormats.append(QString(QImageReader::supportedImageFormats().at(i)).toLower());
+  }
+
+  return readFormats;
+}
+
+QStringList SettingsDialog::writeFormats() {
+  QStringList writeFormats;
+
+  for (int i = 0; i < QImageWriter::supportedImageFormats().count(); ++i){
+    writeFormats.append(QString(QImageWriter::supportedImageFormats().at(i)).toLower());
+  }
+
+  return writeFormats;
+}
+
 SettingsDialog::SettingsDialog(): QDialog() {
   setupUi(this);
 
