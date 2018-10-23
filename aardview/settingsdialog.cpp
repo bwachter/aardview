@@ -26,6 +26,9 @@ QStringList SettingsDialog::features() {
 #ifdef HAS_SSH
   features.append("ssh");
 #endif
+#ifdef HAS_SYSTEMD
+  features.append("systemd");
+#endif
 #ifndef QT_NO_PRINTER
   features.append("printing");
 #endif

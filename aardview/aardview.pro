@@ -74,6 +74,11 @@ unix {
             DEFINES += HAS_SSH
             PKGCONFIG += libssh_threads
      }
+     system(pkg-config --exists libsystemd){
+            message("Found libsystemd")
+            DEFINES += HAS_SYSTEMD
+            PKGCONFIG += libsystemd
+     }
 }
 
 unix {
