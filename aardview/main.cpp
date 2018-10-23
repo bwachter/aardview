@@ -40,7 +40,12 @@ int main(int argc, char** argv){
   aardviewTranslator.load("aardview_" + QLocale::system().name());
   app.installTranslator(&aardviewTranslator);
 
-  parser.setApplicationDescription("A simple image viewer");
+  parser.setApplicationDescription(
+    QString("\nA simple image viewer\n\n"
+            "Version: %1\n"
+      )
+    .arg(AARDVIEW_VERSION));
+
   parser.addVersionOption();
   parser.addHelpOption();
 

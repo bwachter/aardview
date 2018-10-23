@@ -17,6 +17,7 @@
 #include "aardviewshim.h"
 #include "aardview.h"
 #include "afileinfo.h"
+#include "version.h"
 
 AardviewShim::AardviewShim(const QStringList &arguments,
                            const QStringList &optionArguments){
@@ -78,14 +79,19 @@ void AardviewShim::about(){
                         "A simple image viewer written by Bernd Wachter. You can visit the <a href=\"http://bwachter.lart.info/projects/aardview/\">project homepage</a> for more information.<br /><br />"
                         "Aardwork has been contributed by prism.<br /><br />"
                         "For bug reports and suggestions please <a href=\"https://mantis.lart.info\">visit my mantis installation</a>."
+                        "<h2>Build info</h2>"
+                        "Version: %4<br />"
+                        "Extra features: %3<br />"
+                        "Git SHA: %5"
                         "<h3>Supported formats</h3>"
                         "Reading: %1<br />"
                         "Writing: %2<br />"
-                        "<p align=\"right\">Extra features: %3</p>"
                        )
                      .arg(supportedReadFormats)
                      .arg(supportedWriteFormats)
                      .arg(features.join(", "))
+                     .arg(AARDVIEW_VERSION)
+                     .arg(AARDVIEW_GIT_SHA)
     );
 }
 
