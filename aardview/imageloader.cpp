@@ -36,7 +36,27 @@ void ImageLoader::load(const QString &pathname, const QSize &widgetViewSize){
   m_viewSize=widgetViewSize;
 
   timer.start();
-  m_pixmap.load(pathname);
+  /*
+   * QImageReader to QPixmap seems to be about 10% slower than just using
+   * QPixmap::load, but saves manually dealing with exif data for properly
+   * rotating images.
+   * Both the code here as well as using QPixmap::fromImageReader is slower
+   * than QPixmap::load. fromImageReader is faster in some cases, but the
+   * current code seems to provide more consistent speeds.
+   */
+  QString hash =
+    QCryptographicHash::hash(pathname.toUtf8(),
+                             QCryptographicHash::Sha1).toHex();
+  if (!QPixmapCache::find(hash, &m_pixmap)){
+    QImageReader reader(pathname);
+    reader.setAutoTransform(true);
+    /*
+    QImage image = reader.read();
+    m_pixmap.convertFromImage(image);
+    */
+    m_pixmap = QPixmap::fromImageReader(&reader);
+    QPixmapCache::insert(hash, m_pixmap);
+  }
 
   qDebug() << "loaded " << pathname << "for" << widgetViewSize
            << "in" << timer.elapsed() << "ms";
