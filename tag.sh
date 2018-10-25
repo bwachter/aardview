@@ -13,5 +13,5 @@ NEW_VERSION=`echo $OLD_VERSION | awk -f version.awk`
 ( cd aardview && ../write-version-header.sh $NEW_VERSION )
 
 git add -f aardview/version.h
-git commit -m "Bump to version $VERSION" aardview/version.h
+git commit -m "Bump to version $NEW_VERSION" aardview/version.h
 git tag $NEW_VERSION
