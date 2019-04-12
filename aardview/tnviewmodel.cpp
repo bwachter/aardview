@@ -27,6 +27,9 @@ QVariant TnViewModel::data(const QModelIndex &index, int role) const {
 
   if (role == Qt::DisplayRole)
     return directoryItems.at(index.row());
+  else if (role == Qt::DecorationRole)
+    // TODO: set to default icon, request thumbnail, update model once thumbnail is ready
+    return QIcon(":/images/aardview-icon.png");
   else
     return QVariant();
 }
