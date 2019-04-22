@@ -35,9 +35,8 @@ AardView::AardView(QUuid uid, QString initialPath){
   dockTaggedItems->hide();
   dockStatusInfo->hide();
 
-  dirViewModel = new ADirModel();
+  dirViewModel = new QFileSystemModel();
   tnViewModel = new TnViewModel();
-  dirViewModelProxy = new QSortFilterProxyModel();
   tnViewModelProxy = new QSortFilterProxyModel();
 
   // add toggle actions for docks
@@ -48,11 +47,9 @@ AardView::AardView(QUuid uid, QString initialPath){
   menuView->addAction(dockTreeView->toggleViewAction());
   menuView->addAction(dockTaggedItems->toggleViewAction());
 
-  // set the model
-  dirViewModelProxy->setSourceModel(dirViewModel);
-  dirView->setModel(dirViewModelProxy);
-  dirView->setRootIndex(dirViewModelProxy->mapFromSource(
-                          dirViewModel->index(QDir::rootPath())));
+  dirViewModel->setRootPath(QDir::rootPath());
+  dirView->setModel(dirViewModel);
+  dirView->setRootIndex(dirViewModel->index(QDir::rootPath()));
 
   tnViewModelProxy->setSourceModel(tnViewModel);
   tnView->setModel(tnViewModelProxy);
@@ -85,6 +82,9 @@ AardView::AardView(QUuid uid, QString initialPath){
   //connect(actionRotate, SIGNAL(triggered()), loader, SLOT(rotate()));
   connect(actionZoomIn, SIGNAL(triggered()), loader, SLOT(zoomIn()));
   connect(actionZoomOut, SIGNAL(triggered()), loader, SLOT(zoomOut()));
+  // TODO: unlike QDirModel QFileSystemModel doesn't have a refresh slot
+  //       it seems it shouldn't be needed if root directory gets moved correctly,
+  //       but needs testing
   connect(actionRefreshDirs, SIGNAL(triggered()), dirViewModel, SLOT(refresh()));
   connect(this, SIGNAL(requestPixmap(const QString &, const QSize &)),
           loader, SLOT(load(const QString &, const QSize &)));
@@ -138,8 +138,7 @@ void AardView::load(const QString &path){
 
   AFileInfo info(path);
 
-  dirView->setCurrentIndex(dirViewModelProxy->mapFromSource(
-                             dirViewModel->index(info.absolutePath())));
+  dirView->setCurrentIndex(dirViewModel->index(info.absolutePath()));
 
   // TODO: proper switching between single image and directory mode
   if (info.isFile()){
@@ -162,8 +161,12 @@ void AardView::reconfigure(){
   // dirview options
 
   /** @TODO this probably needs to go through the proxy, with recent Qt this crashes */
-  if (settings->value("dirview/showOnlyDirs", true).toBool())
-    dirViewModel->setFilter(QDir::Dirs|QDir::NoDotAndDotDot|QDir::AllDirs);
+  if (settings->value("dirview/showOnlyDirs", true).toBool()){
+    dirViewModel->setFilter(QDir::Dirs|QDir::NoDotAndDotDot|QDir::AllDirs|QDir::Drives);
+  } else {
+    dirViewModel->setFilter(QDir::AllEntries|QDir::NoDotAndDotDot|QDir::AllDirs);
+  }
+
 
   dirView->setColumnHidden(1, !settings->value("dirview/showSizeCol", false).toBool());
   dirView->setColumnHidden(2, !settings->value("dirview/showTypeCol", false).toBool());
@@ -190,8 +193,7 @@ void AardView::closeEvent(QCloseEvent *event){
 }
 
 void AardView::dirIndexChanged(){
-  QModelIndex idx = dirViewModelProxy->mapToSource(
-    dirView->selectionModel()->currentIndex());
+  QModelIndex idx = dirView->selectionModel()->currentIndex();
 
 #ifdef DEBUG_MODEL
   qDebug() << "Path" << dirViewModel->filePath(idx);
@@ -279,7 +281,7 @@ void AardView::handlePaste(){
 #ifdef DEBUG_MODEL
       qDebug() << "Changing to " << dir.absolutePath();
 #endif
-      dirView->setCurrentIndex(dirViewModelProxy->mapFromSource(idx));
+      dirView->setCurrentIndex(idx);
     } else {
       qDebug() << "Index is not valid for: " << dir.absolutePath();
     }

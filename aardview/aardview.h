@@ -14,8 +14,8 @@
 #include <QMenu>
 #include <QMenuBar>
 #include <QAction>
-#include <QDirModel>
 #include <QGestureEvent>
+#include <QFileSystemModel>
 
 #include <QtGui>
 
@@ -24,7 +24,6 @@
 #include "tnviewmodel.h"
 #include "alistview.h"
 #include "atreeview.h"
-#include "adirmodel.h"
 
 class AardView: public QMainWindow, private Ui::AardView{
     Q_OBJECT
@@ -62,10 +61,9 @@ class AardView: public QMainWindow, private Ui::AardView{
     // query all possible sources every time this info is needed
     QString m_path, m_loadedPath;
 
-    ADirModel *dirViewModel;
+    QFileSystemModel *dirViewModel;
     TnViewModel *tnViewModel;
     QSortFilterProxyModel *tnViewModelProxy;
-    QSortFilterProxyModel *dirViewModelProxy;
     ImageLoader *loader;
 
     void setPath(const QString &path);

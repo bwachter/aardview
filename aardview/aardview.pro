@@ -17,7 +17,6 @@ HEADERS = aardview.h \
         alistview.h \
         aprintpreviewdialog.h \
         atreeview.h \
-        adirmodel.h \
         imageloader.h \
         settingsdialog.h \
         windowmodel.h \
