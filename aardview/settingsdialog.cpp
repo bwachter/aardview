@@ -97,9 +97,7 @@ SettingsDialog::SettingsDialog(): QDialog() {
 }
 
 void SettingsDialog::accept(){
-#ifdef DEBUG_SETTINGS
   qDebug() << "Saved settings";
-#endif
 
   settings.beginGroup("main");
   settings.setValue("initialized", !mainInitialized->isChecked());
@@ -143,9 +141,8 @@ void SettingsDialog::defaults(){
   bool initialized=settings.value("main/initialized").toBool();
 
   if (!initialized){
-#ifdef DEBUG_SETTINGS
     qDebug() << "Setting initial settings...";
-#endif
+
     settings.beginGroup("main");
     settings.setValue("focusFollowsMouse", true);
     settings.setValue("initialized", true);

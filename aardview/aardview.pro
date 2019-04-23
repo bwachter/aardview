@@ -1,18 +1,7 @@
-# Some debug flags are available to configure debug output at build time:
-#
-# DEBUG_FILTERS: print info about file/directory filtering
-# DEBUG_GESTURES: print gesture notifications
-# DEBUG_INSTANCE: print messages about multi instance handling
-# DEBUG_LAYOUT: print some widget sizes
-# DEBUG_MODEL: print some info related to file/dir models and their proxy
-# DEBUG_OPTIONS: print program options and arguments
-# DEBUG_SETTINGS: print some info about applying/reloading settings
-# DEBUG_WINDOWS: print debug output related to window handling
-
-
 CONFIG += debug link_pkgconfig
 HEADERS = aardview.h \
         aardviewshim.h \
+        aardviewlog.h \
         afileinfo.h \
         alistview.h \
         aprintpreviewdialog.h \
@@ -24,6 +13,7 @@ HEADERS = aardview.h \
         version.h
 SOURCES = aardview.cpp \
         aardviewshim.cpp \
+        aardviewlog.cpp \
         imageloader.cpp \
         main.cpp \
         settingsdialog.cpp \
@@ -49,7 +39,7 @@ LIBS += -L../build -lkde
 QTPLUGIN += kde
 
 include(../singleapplication/singleapplication.pri)
-DEFINES += QAPPLICATION_CLASS=QApplication DEBUG_GESTURES=1
+DEFINES += QAPPLICATION_CLASS=QApplication
 
 unix {
      PRE_TARGETDEPS = version-dummy

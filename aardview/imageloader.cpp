@@ -19,9 +19,7 @@ ImageLoader::ImageLoader(): QObject(){
 void ImageLoader::reconfigure(){
   SettingsDialog *settings = SettingsDialog::instance();
 
-#ifdef DEBUG_SETTINGS
   qDebug() << "Checking configuration settings (viewer)";
-#endif
 
   if (settings->value("viewer/resetFtwOnChange").toBool())
     m_fitToWindow=settings->value("viewer/fitToWindow").toBool();
@@ -58,11 +56,11 @@ void ImageLoader::load(const QString &pathname, const QSize &widgetViewSize){
     QPixmapCache::insert(hash, m_pixmap);
   }
 
-  qDebug() << "loaded " << pathname << "for" << widgetViewSize
+  qInfo() << "loaded " << pathname << "for" << widgetViewSize
            << "in" << timer.elapsed() << "ms";
 
   if (m_pixmap.isNull()){
-    qDebug() << "Unable to load image: " << pathname;
+    qWarning() << "Unable to load image: " << pathname;
     // FIXME, set pixmap to a valid pixmap or one from resource, configurable
     m_pixmap = QPixmap();
   } else {

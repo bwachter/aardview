@@ -14,6 +14,7 @@
 #endif
 
 #include "aardviewshim.h"
+#include "aardviewlog.h"
 #include "settingsdialog.h"
 #include "version.h"
 
@@ -26,6 +27,8 @@ int main(int argc, char** argv){
   //Q_INIT_RESOURCE();
   SingleApplication app(argc, argv, true);
   QCommandLineParser parser;
+
+  qInstallMessageHandler(AardviewLog::messageHandler);
 
   QCoreApplication::setOrganizationName("AardSoft");
   QCoreApplication::setOrganizationDomain("aardsoft.de");

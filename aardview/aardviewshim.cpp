@@ -21,7 +21,7 @@
 
 AardviewShim::AardviewShim(const QStringList &arguments,
                            const QStringList &optionArguments){
-  qDebug() << "Linked in plugins: " << QPluginLoader::staticInstances();
+  qInfo() << "Linked in plugins: " << QPluginLoader::staticInstances();
 
   m_windowModel = new WindowModel();
   m_settingsDialog=SettingsDialog::instance();
@@ -102,9 +102,7 @@ void AardviewShim::addWindow(const QStringList &argumentList){
 
   if (argumentList.count() == 1){
     QString argument=argumentList.at(0);
-#ifdef DEBUG_OPTIONS
     qDebug() << "Using " << argument << "as argument";
-#endif
 
     AFileInfo info(argument);
 
@@ -115,9 +113,7 @@ void AardviewShim::addWindow(const QStringList &argumentList){
      *       a directory was requested
      */
     if ((win = m_windowModel->getWindow(info.friendlyFilePath())) != 0){
-#ifdef DEBUG_WINDOWS
       qDebug() << "Reusing existing window for " << info.absoluteFilePath();
-#endif
       win->show();
       return;
     }
@@ -125,7 +121,7 @@ void AardviewShim::addWindow(const QStringList &argumentList){
     if (info.exists())
       initialItem = info.absoluteFilePath();
   } else {
-    qDebug() << "Multiple arguments are currently not supported";
+    qWarning() << "Multiple arguments are currently not supported";
     return;
   }
 
@@ -197,7 +193,7 @@ void AardviewShim::createTrayIcon()
 
 void AardviewShim::deleteWindow(QUuid uid, bool force){
   if (!m_windowModel->contains(uid)){
-    qDebug() << "Request closing of invalid window " << uid;
+    qWarning() << "Request closing of invalid window " << uid;
     return;
   }
 
@@ -208,9 +204,7 @@ void AardviewShim::deleteWindow(QUuid uid, bool force){
       return;
     } else {
       win->hide();
-#ifdef DEBUG_WINDOWS
       qDebug() << "Closing window " << uid;
-#endif
     }
   } else {
     QApplication::quit();
@@ -235,10 +229,8 @@ bool AardviewShim::eventFilter(QObject *obj, QEvent *event){
 }
 
 void AardviewShim::receivedMessage(int instanceId, QByteArray message){
-#ifdef DEBUG_INSTANCE
   qDebug() << "Received message from instance: " << instanceId;
   qDebug() << "Message Text: " << message;
-#endif
 
   QList<QByteArray> argumentList = message.split(' ');
   QStringList arguments;
