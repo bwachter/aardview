@@ -49,6 +49,7 @@ int main(int argc, char** argv){
   QTranslator aardviewTranslator;
   aardviewTranslator.load("aardview_" + QLocale::system().name());
   app.installTranslator(&aardviewTranslator);
+  //AardviewLog::setPriority(10);
 
   parser.setApplicationDescription(
     QString("\nA simple image viewer\n\n"

@@ -175,6 +175,11 @@ void SettingsDialog::defaults(){
     emit configurationChanged();
     // do something on first start
   }
+
+  settings.beginGroup("main");
+  // write a stringlist of all profiles. for each profile, separate section with name, command and possibly keybinding
+  settings.endGroup();
+
 }
 //
 

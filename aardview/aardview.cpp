@@ -13,6 +13,7 @@
 #include "aardview.h"
 #include "afileinfo.h"
 #include "settingsdialog.h"
+#include "aardviewlog.h"
 
 AardView::AardView(QUuid uid, QString initialPath){
   setupUi(this);
@@ -152,8 +153,12 @@ void AardView::reconfigure(){
   loader->reconfigure();
   qDebug() << "Checking configuration settings (main)";
   QMainWindow::statusBar()->setVisible(settings->value("main/showStatusbar").toBool());
-  // dirview options
 
+  // logging options
+  AardviewLog::setPriority(settings->value("log/loglevel", LOG_INFO).toInt());
+  AardviewLog::setConsoleLogging(settings->value("log/console", 0).toInt());
+
+  // dirview options
   /** @TODO this probably needs to go through the proxy, with recent Qt this crashes */
   if (settings->value("dirview/showOnlyDirs", true).toBool()){
     dirViewModel->setFilter(QDir::Dirs|QDir::NoDotAndDotDot|QDir::AllDirs|QDir::Drives);
