@@ -38,10 +38,12 @@ QT += widgets printsupport
 LIBS += -L../build -lkde
 QTPLUGIN += kde
 
-include(../singleapplication/singleapplication.pri)
-DEFINES += QAPPLICATION_CLASS=QApplication
+unix:android {
+}
 
-unix {
+unix:!android {
+     include(../singleapplication/singleapplication.pri)
+     DEFINES += USE_SINGLEAPPLICATION=1
      PRE_TARGETDEPS = version-dummy
      QMAKE_EXTRA_TARGETS += version-dummy
      version-dummy.target = version-dummy
@@ -77,7 +79,9 @@ unix {
 }
 win32:debug { CONFIG += console }
 win32 {
-      LIBS += -lAdvapi32
-      RC_FILE = win32.rc
-      CONFIG += embed_manifest_exe
+     include(../singleapplication/singleapplication.pri)
+     DEFINES += USE_SINGLEAPPLICATION=1
+     LIBS += -lAdvapi32
+     RC_FILE = win32.rc
+     CONFIG += embed_manifest_exe
 }

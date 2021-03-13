@@ -6,7 +6,9 @@
  */
 
 #include <QApplication>
+#ifdef USE_SINGLEAPPLICATION
 #include <singleapplication.h>
+#endif
 #include <QtGui>
 
 #ifdef HAS_SSH
@@ -25,7 +27,11 @@ Q_IMPORT_PLUGIN(XCFPlugin)
 
 int main(int argc, char** argv){
   //Q_INIT_RESOURCE();
+#ifdef USE_SINGLEAPPLICATION
   SingleApplication app(argc, argv, true);
+#else
+  QApplication app(argc, argv);
+#endif
   QCommandLineParser parser;
 
   qInstallMessageHandler(AardviewLog::messageHandler);
@@ -84,21 +90,26 @@ int main(int argc, char** argv){
     if (dir.exists(arg)){
       // urlencoding hack to easily pass arguments with spaces
       // without touching singleinstance
+#ifdef USE_SINGLEAPPLICATION
       if (app.isSecondary())
         absoluteArguments.append(QUrl::toPercentEncoding(
                                    dir.absoluteFilePath(arg).toUtf8()));
       else
+#endif
         absoluteArguments.append(dir.absoluteFilePath(arg).toUtf8());
     }
   }
 
   if (absoluteArguments.size() <= 0){
+#ifdef USE_SINGLEAPPLICATION
     if (app.isSecondary())
       absoluteArguments.append(QUrl::toPercentEncoding(QDir::currentPath()));
     else
+#endif
       absoluteArguments.append(QDir::currentPath());
   }
 
+#ifdef USE_SINGLEAPPLICATION
   if (app.isSecondary()){
 #ifdef DEBUG_INSTANCE
     qDebug() << "Started new secondary instance";
@@ -108,6 +119,7 @@ int main(int argc, char** argv){
     app.exit(0);
     return 0;
   }
+#endif
 
 #ifdef HAS_SSH
   ssh_threads_set_callbacks(ssh_threads_get_pthread());
@@ -115,8 +127,10 @@ int main(int argc, char** argv){
 #endif
 
   AardviewShim mw(absoluteArguments, optionArguments);
+#ifdef USE_SINGLEAPPLICATION
   QObject::connect(&app, &SingleApplication::receivedMessage,
                    &mw, &AardviewShim::receivedMessage);
+#endif
 
   return app.exec();
 }
