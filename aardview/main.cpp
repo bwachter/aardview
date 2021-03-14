@@ -67,10 +67,12 @@ int main(int argc, char** argv){
   parser.addVersionOption();
   parser.addHelpOption();
 
+#ifdef USE_SINGLEAPPLICATION
   QCommandLineOption serviceOption(QStringList() << "s"
                                    << "service",
                                    "Start as service");
   parser.addOption(serviceOption);
+#endif
 
   parser.process(app);
 
