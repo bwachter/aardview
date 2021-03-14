@@ -75,6 +75,49 @@ void ImageLoader::load(const QString &pathname, const QSize &widgetViewSize){
   // FIXME, add scaling
 
   displayImage();
+  displayEXIF();
+}
+
+#ifdef HAS_EXIF
+void ImageLoader::exifDataContentCB(ExifContent *content, void *user_data){
+  exif_content_foreach_entry(content, exifDataEntryCB, user_data);
+}
+
+void ImageLoader::exifDataEntryCB(ExifEntry *entry, void *user_data){
+  QHash<QString, QString> *data=(QHash<QString, QString>*)user_data;
+  ExifIfd ifd=exif_entry_get_ifd(entry);
+  if (ifd!=EXIF_IFD_COUNT){
+    QString title=QString::fromLocal8Bit(exif_tag_get_title_in_ifd(entry->tag, ifd));
+
+    char value_c[MAX_EXIF_BUFFER];
+    exif_entry_get_value(entry, value_c, MAX_EXIF_BUFFER);
+    QString value=QString::fromLocal8Bit(value_c);
+    qDebug()<<title<<value;
+    data->insert(title, value);
+  }
+}
+#endif
+
+void ImageLoader::displayEXIF(){
+#ifdef HAS_EXIF
+  ExifData *data;
+  ExifEntry *entry;
+
+  QByteArray filename=m_imageFileName.toLocal8Bit();
+
+  m_exifData.clear();
+
+  data=exif_data_new_from_file(filename.constData());
+  if (!data){
+    qDebug() << "No EXIF readable from" << m_imageFileName;
+    return;
+  }
+
+  exif_data_foreach_content(data, exifDataContentCB, &m_exifData);
+
+  exif_data_unref(data);
+  qInfo()<<"Exif data members: "<<m_exifData.count();
+#endif
 }
 
 void ImageLoader::displayImage(){

@@ -11,6 +11,11 @@
 #include <QPixmap>
 #include <QDebug>
 
+#ifdef HAS_EXIF
+#include <libexif/exif-data.h>
+#define MAX_EXIF_BUFFER 1024
+#endif
+
 class ImageLoader: public QObject {
     Q_OBJECT
 
@@ -37,9 +42,15 @@ class ImageLoader: public QObject {
     QString m_imageFileName;
     /// The size of the display widget (i.e., size the image is scaled to)
     QSize m_viewSize;
+    QHash<QString, QString> m_exifData;
 
     /// The transformation mode for scaling the image (fast or smooth)
     Qt::TransformationMode m_transformation;
+
+    /**
+     * Display exif data for current image, if possible.
+     */
+    void displayEXIF();
 
     /**
      * Scale the image correctly, and emit pixmapReady() once done.
@@ -55,6 +66,10 @@ class ImageLoader: public QObject {
      * @param factor scale factor to apply
      */
     void scale(double factor);
+#ifdef HAS_EXIF
+    static void exifDataContentCB(ExifContent *content, void *user_data);
+    static void exifDataEntryCB(ExifEntry *entry, void *user_data);
+#endif
 
   public slots:
     /**
