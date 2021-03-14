@@ -43,7 +43,7 @@ unix:android {
 
 unix:!android {
      include(../singleapplication/singleapplication.pri)
-     DEFINES += USE_SINGLEAPPLICATION=1
+     DEFINES += USE_SINGLEAPPLICATION=1 QAPPLICATION_CLASS=QApplication
      PRE_TARGETDEPS = version-dummy
      QMAKE_EXTRA_TARGETS += version-dummy
      version-dummy.target = version-dummy
