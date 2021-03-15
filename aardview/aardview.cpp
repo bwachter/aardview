@@ -36,6 +36,7 @@ AardView::AardView(QUuid uid, QString initialPath){
   dockTaggedItems->hide();
   dockStatusInfo->hide();
 
+  exifViewModel = new ExifViewModel(NULL);
   dirViewModel = new QFileSystemModel();
   tnViewModel = new TnViewModel();
   tnViewModelProxy = new QSortFilterProxyModel();
@@ -51,6 +52,8 @@ AardView::AardView(QUuid uid, QString initialPath){
   dirViewModel->setRootPath(QDir::rootPath());
   dirView->setModel(dirViewModel);
   dirView->setRootIndex(dirViewModel->index(QDir::rootPath()));
+
+  exifView->setModel(exifViewModel);
 
   tnViewModelProxy->setSourceModel(tnViewModel);
   tnView->setModel(tnViewModelProxy);
@@ -90,6 +93,8 @@ AardView::AardView(QUuid uid, QString initialPath){
   connect(this, SIGNAL(requestPixmap(const QString &, const QSize &)),
           loader, SLOT(load(const QString &, const QSize &)));
   connect(loader, SIGNAL(pixmapReady(const QPixmap &)), this, SLOT(displayPixmap(const QPixmap &)));
+  connect(loader, SIGNAL(exifDataReady(const QMap<QString, QString> &)),
+          exifViewModel, SLOT(setMap(const QMap<QString, QString> &)));
 
   // TODO: this should be uid pecidic state restore
   /*

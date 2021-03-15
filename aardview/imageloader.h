@@ -42,7 +42,7 @@ class ImageLoader: public QObject {
     QString m_imageFileName;
     /// The size of the display widget (i.e., size the image is scaled to)
     QSize m_viewSize;
-    QHash<QString, QString> m_exifData;
+    QMap<QString, QString> m_exifData;
 
     /// The transformation mode for scaling the image (fast or smooth)
     Qt::TransformationMode m_transformation;
@@ -120,6 +120,7 @@ class ImageLoader: public QObject {
      * Pass a properly scaled pixmap of the current image once loaded
      */
     void pixmapReady(const QPixmap &picture);
+    void exifDataReady(const QMap<QString, QString> &exifData);
 };
 
 

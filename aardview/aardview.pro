@@ -6,6 +6,7 @@ HEADERS = aardview.h \
         alistview.h \
         aprintpreviewdialog.h \
         atreeview.h \
+        exifviewmodel.h \
         imageloader.h \
         settingsdialog.h \
         windowmodel.h \
@@ -15,6 +16,7 @@ SOURCES = aardview.cpp \
         aardviewshim.cpp \
         aardviewlog.cpp \
         imageloader.cpp \
+        exifviewmodel.cpp \
         main.cpp \
         settingsdialog.cpp \
         windowmodel.cpp \

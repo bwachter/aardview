@@ -84,7 +84,7 @@ void ImageLoader::exifDataContentCB(ExifContent *content, void *user_data){
 }
 
 void ImageLoader::exifDataEntryCB(ExifEntry *entry, void *user_data){
-  QHash<QString, QString> *data=(QHash<QString, QString>*)user_data;
+  QMap<QString, QString> *data=(QMap<QString, QString>*)user_data;
   ExifIfd ifd=exif_entry_get_ifd(entry);
   if (ifd!=EXIF_IFD_COUNT){
     QString title=QString::fromLocal8Bit(exif_tag_get_title_in_ifd(entry->tag, ifd));
@@ -92,7 +92,6 @@ void ImageLoader::exifDataEntryCB(ExifEntry *entry, void *user_data){
     char value_c[MAX_EXIF_BUFFER];
     exif_entry_get_value(entry, value_c, MAX_EXIF_BUFFER);
     QString value=QString::fromLocal8Bit(value_c);
-    qDebug()<<title<<value;
     data->insert(title, value);
   }
 }
@@ -116,6 +115,7 @@ void ImageLoader::displayEXIF(){
   exif_data_foreach_content(data, exifDataContentCB, &m_exifData);
 
   exif_data_unref(data);
+  emit exifDataReady(m_exifData);
   qInfo()<<"Exif data members: "<<m_exifData.count();
 #endif
 }

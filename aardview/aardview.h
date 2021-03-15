@@ -22,6 +22,7 @@
 #include "ui_aardview.h"
 #include "imageloader.h"
 #include "tnviewmodel.h"
+#include "exifviewmodel.h"
 #include "alistview.h"
 #include "atreeview.h"
 
@@ -62,6 +63,7 @@ class AardView: public QMainWindow, private Ui::AardView{
     QString m_path, m_loadedPath;
 
     QFileSystemModel *dirViewModel;
+    ExifViewModel *exifViewModel;
     TnViewModel *tnViewModel;
     QSortFilterProxyModel *tnViewModelProxy;
     ImageLoader *loader;
