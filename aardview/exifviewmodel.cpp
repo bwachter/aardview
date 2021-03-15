@@ -8,12 +8,17 @@
 #include <QIcon>
 #include "exifviewmodel.h"
 
-ExifViewModel::ExifViewModel(QMap<QString, QString>* mapPtr, QObject *parent):
+ExifViewModel::ExifViewModel(QObject *parent):
   QAbstractTableModel(parent) {
-  //_data=mapPtr;
+}
+
+ExifViewModel::ExifViewModel(QMap<QString, QString> map, QObject *parent):
+  QAbstractTableModel(parent) {
+  _data=map;
 }
 
 int ExifViewModel::columnCount(const QModelIndex &parent) const {
+  (void) parent;
   return 2;
 }
 
@@ -35,8 +40,9 @@ QVariant ExifViewModel::data(const QModelIndex &index, int role) const {
       return _data.keys().at(index.row());
     if (index.column() == 1)
       return _data.values().at(index.row());
-  } else
-    return QVariant();
+  }
+
+  return QVariant();
 }
 
 QVariant ExifViewModel::headerData(int section, Qt::Orientation orientation,

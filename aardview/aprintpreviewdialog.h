@@ -25,16 +25,14 @@ class APrintPreviewDialog: public QPrintPreviewDialog {
   public:
     APrintPreviewDialog(): QPrintPreviewDialog(){}
     APrintPreviewDialog(QPrinter *printer,
-                        QWidget *parent=0,
-                        Qt::WindowFlags flags=0):
-      QPrintPreviewDialog(printer, parent, flags){
+                        QWidget *parent=0):
+      QPrintPreviewDialog(printer, parent){
       init();
     }
     APrintPreviewDialog(QPrinter *printer,
                         const QPixmap &pixmap,
-                        QWidget *parent=0,
-                        Qt::WindowFlags flags=0):
-      QPrintPreviewDialog(printer, parent, flags){
+                        QWidget *parent=0):
+      QPrintPreviewDialog(printer, parent){
       m_pixmap = pixmap;
       init();
     }

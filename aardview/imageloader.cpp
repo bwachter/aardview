@@ -29,7 +29,7 @@ void ImageLoader::reconfigure(){
 
 void ImageLoader::load(const QString &pathname, const QSize &widgetViewSize){
   SettingsDialog *settings = SettingsDialog::instance();
-  QTime timer;
+  QElapsedTimer timer;
 
   m_viewSize=widgetViewSize;
 
@@ -100,7 +100,7 @@ void ImageLoader::exifDataEntryCB(ExifEntry *entry, void *user_data){
 void ImageLoader::displayEXIF(){
 #ifdef HAS_EXIF
   ExifData *data;
-  ExifEntry *entry;
+  //ExifEntry *entry;
 
   QByteArray filename=m_imageFileName.toLocal8Bit();
 

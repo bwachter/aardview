@@ -217,7 +217,7 @@ bool XCFImageFormat::loadImageProperties(QDataStream& xcf_io, XCFImage& xcf_imag
                                         property >> flags >> data;
 
                                         if (tag && strncmp(tag, "gimp-comment", strlen("gimp-comment")) == 0)
-                                                xcf_image.image.setText("Comment", 0, data);
+                                                xcf_image.image.setText("Comment", data);
 
                                         delete[] tag;
                                         delete[] data;
@@ -536,21 +536,21 @@ bool XCFImageFormat::composeTiles(XCFImage& xcf_image)
                         switch (layer.type) {
                                 case RGB_GIMAGE:
                                         layer.image_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_RGB32);
-                                        layer.image_tiles[j][i].setNumColors(0);
+                                        layer.image_tiles[j][i].setColorCount(0);
                                         if( layer.image_tiles[j][i].isNull())
                                                 return false;
                                         break;
 
                                 case RGBA_GIMAGE:
                                         layer.image_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_ARGB32);
-                                        layer.image_tiles[j][i].setNumColors(0);
+                                        layer.image_tiles[j][i].setColorCount(0);
                                         if( layer.image_tiles[j][i].isNull())
                                                 return false;
                                         break;
 
                                 case GRAY_GIMAGE:
                                         layer.image_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_Indexed8);
-                                        layer.image_tiles[j][i].setNumColors(256);
+                                        layer.image_tiles[j][i].setColorCount(256);
                                         if( layer.image_tiles[j][i].isNull())
                                                 return false;
                                         setGrayPalette(layer.image_tiles[j][i]);
@@ -558,13 +558,13 @@ bool XCFImageFormat::composeTiles(XCFImage& xcf_image)
 
                                 case GRAYA_GIMAGE:
                                         layer.image_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_Indexed8);
-                                        layer.image_tiles[j][i].setNumColors(256);
+                                        layer.image_tiles[j][i].setColorCount(256);
                                         if( layer.image_tiles[j][i].isNull())
                                                 return false;
                                         setGrayPalette(layer.image_tiles[j][i]);
 
                                         layer.alpha_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_Indexed8);
-                                        layer.alpha_tiles[j][i].setNumColors(256);
+                                        layer.alpha_tiles[j][i].setColorCount(256);
                                         if( layer.alpha_tiles[j][i].isNull())
                                                 return false;
                                         setGrayPalette(layer.alpha_tiles[j][i]);
@@ -572,7 +572,7 @@ bool XCFImageFormat::composeTiles(XCFImage& xcf_image)
 
                                 case INDEXED_GIMAGE:
                                         layer.image_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_Indexed8);
-                                        layer.image_tiles[j][i].setNumColors(xcf_image.num_colors);
+                                        layer.image_tiles[j][i].setColorCount(xcf_image.num_colors);
                                         if( layer.image_tiles[j][i].isNull())
                                                 return false;
                                         setPalette(xcf_image, layer.image_tiles[j][i]);
@@ -580,13 +580,13 @@ bool XCFImageFormat::composeTiles(XCFImage& xcf_image)
 
                                 case INDEXEDA_GIMAGE:
                                         layer.image_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_Indexed8);
-                                        layer.image_tiles[j][i].setNumColors(xcf_image.num_colors);
+                                        layer.image_tiles[j][i].setColorCount(xcf_image.num_colors);
                                         if( layer.image_tiles[j][i].isNull())
                                                 return false;
                                         setPalette(xcf_image, layer.image_tiles[j][i]);
 
                                         layer.alpha_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_Indexed8);
-                                        layer.alpha_tiles[j][i].setNumColors(256);
+                                        layer.alpha_tiles[j][i].setColorCount(256);
                                         if( layer.alpha_tiles[j][i].isNull())
                                                 return false;
                                         setGrayPalette(layer.alpha_tiles[j][i]);
@@ -594,7 +594,7 @@ bool XCFImageFormat::composeTiles(XCFImage& xcf_image)
 
                         if (layer.mask_offset != 0) {
                                 layer.mask_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_Indexed8);
-                                layer.mask_tiles[j][i].setNumColors(256);
+                                layer.mask_tiles[j][i].setColorCount(256);
                                 if( layer.mask_tiles[j][i].isNull())
                                         return false;
                                 setGrayPalette(layer.mask_tiles[j][i]);
@@ -696,7 +696,7 @@ void XCFImageFormat::assignImageBytes(Layer& layer, uint i, uint j)
                                 // are some cases where the image can contain larger indices
                                 // than there are colors in the palette. (A bug in The GIMP?)
 
-                                        if (tile[0] < image.numColors())
+                                        if (tile[0] < image.colorCount())
                                                 *dataPtr = tile[0];
 
                                         *alphaPtr = tile[1];
@@ -1089,7 +1089,7 @@ bool XCFImageFormat::initializeImage(XCFImage& xcf_image)
                                 image.fill(qRgb(255, 255, 255));
                                 break;
                         } // else, fall through to 32-bit representation
-
+                        [[fallthrough]];
                 case RGBA_GIMAGE:
                         image = QImage(xcf_image.width, xcf_image.height, QImage::Format_ARGB32);
                         if( image.isNull())
@@ -1100,14 +1100,14 @@ bool XCFImageFormat::initializeImage(XCFImage& xcf_image)
                 case GRAY_GIMAGE:
                         if (layer.opacity == OPAQUE_OPACITY) {
                                 image = QImage(xcf_image.width, xcf_image.height, QImage::Format_Indexed8);
-                                image.setNumColors(256);
+                                image.setColorCount(256);
                                 if( image.isNull())
                                         return false;
                                 setGrayPalette(image);
                                 image.fill(255);
                                 break;
                         } // else, fall through to 32-bit representation
-
+                        [[fallthrough]];
                 case GRAYA_GIMAGE:
                         image = QImage(xcf_image.width, xcf_image.height, QImage::Format_ARGB32);
                         if( image.isNull())
@@ -1130,14 +1130,14 @@ bool XCFImageFormat::initializeImage(XCFImage& xcf_image)
 
                         if (xcf_image.num_colors <= 2) {
                                 image = QImage(xcf_image.width, xcf_image.height, QImage::Format_MonoLSB);
-                                image.setNumColors(xcf_image.num_colors);
+                                image.setColorCount(xcf_image.num_colors);
                                 if( image.isNull())
                                         return false;
                                 image.fill(0);
                                 setPalette(xcf_image, image);
                         } else if (xcf_image.num_colors <= 256) {
                                 image = QImage(xcf_image.width, xcf_image.height, QImage::Format_Indexed8);
-                                image.setNumColors(xcf_image.num_colors);
+                                image.setColorCount(xcf_image.num_colors);
                                 if( image.isNull())
                                         return false;
                                 image.fill(0);
@@ -1154,7 +1154,7 @@ bool XCFImageFormat::initializeImage(XCFImage& xcf_image)
                                 xcf_image.palette[0] = qRgba(255, 255, 255, 0);
 
                                 image = QImage(xcf_image.width, xcf_image.height, QImage::Format_MonoLSB);
-                                image.setNumColors(xcf_image.num_colors);
+                                image.setColorCount(xcf_image.num_colors);
                                 if( image.isNull())
                                         return false;
                                 image.fill(0);
@@ -1168,7 +1168,7 @@ bool XCFImageFormat::initializeImage(XCFImage& xcf_image)
 
                                 xcf_image.palette[0] = qRgba(255, 255, 255, 0);
                                 image = QImage( xcf_image.width, xcf_image.height, QImage::Format_Indexed8);
-                                image.setNumColors(xcf_image.num_colors);
+                                image.setColorCount(xcf_image.num_colors);
                                 if( image.isNull())
                                         return false;
                                 image.fill(0);
@@ -2429,9 +2429,9 @@ QImageIOPlugin::Capabilities XCFPlugin::capabilities(QIODevice *device, const QB
     if (format == "xcf" || format == "XCF")
         return Capabilities(CanRead);
     if (!format.isEmpty())
-        return 0;
+        return Capabilities();
     if (!device->isOpen())
-        return 0;
+        return Capabilities();
 
     Capabilities cap;
     if (device->isReadable() && XCFHandler::canRead(device))

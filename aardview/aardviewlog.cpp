@@ -41,10 +41,10 @@ void AardviewLog::messageHandler(QtMsgType type, const QMessageLogContext &conte
   const char *function = context.function ? context.function : "";
 
   // filter based on function white/blacklisting
-  if (_instance->_functionList.contains(file) &&
+  if (_instance->_functionList.contains(function) &&
       _instance->_functionListIsWhitelist == false)
     return;
-  if (!_instance->_functionList.contains(file) &&
+  if (!_instance->_functionList.contains(function) &&
       _instance->_functionListIsWhitelist == true)
     return;
 

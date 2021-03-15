@@ -15,7 +15,8 @@ class ExifViewModel: public QAbstractTableModel {
     Q_OBJECT
 
   public:
-    ExifViewModel(QMap<QString, QString>* mapPtr, QObject *parent = 0);
+    ExifViewModel(QObject *parent = 0);
+    ExifViewModel(QMap<QString, QString> map, QObject *parent = 0);
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     QVariant data(const QModelIndex &index, int role) const;

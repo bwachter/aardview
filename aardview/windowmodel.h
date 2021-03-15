@@ -26,7 +26,7 @@ class WindowModel: public QAbstractListModel {
     AardView* getWindow(const QString &title);
 
   private:
-    QHash <QUuid, AardView*> m_windowList;
+    QMap <QUuid, AardView*> m_windowList;
 };
 
 #endif

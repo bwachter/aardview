@@ -36,7 +36,7 @@ AardView* WindowModel::getWindow(const QUuid &uid){
 }
 
 AardView* WindowModel::getWindow(const QString &title){
-  QHash<QUuid, AardView*>::const_iterator iter
+  QMap<QUuid, AardView*>::const_iterator iter
     = m_windowList.constBegin();
 
   while (iter != m_windowList.constEnd()){
@@ -61,7 +61,7 @@ QVariant WindowModel::data(const QModelIndex &index, int role) const {
   if (index.row() >= m_windowList.size())
     return QVariant();
 
-  QHash<QUuid, AardView*>::const_iterator iter
+  QMap<QUuid, AardView*>::const_iterator iter
     = m_windowList.constBegin() + index.row();
 
   // iter.key contains the uuid, which we probably don't need to expose
