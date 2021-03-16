@@ -1,0 +1,31 @@
+* Aardview                                                            :TOC_4:
+  - [[#introduction][Introduction]]
+
+** Introduction
+Aardview is a simple image viewer for UNIX and Windows based on the Qt toolkit. I started it after an unusable version of [[http://sourceforge.net/projects/xzgv/][xzgv]] hit [[http://www.debian.org/][Debian]] Lenny and it became clear that existing image viewers are either bloated or unusable. Version 0.1 implements all features I've been regulary using in xzgv (without thumbnailing, as that was often broken in xzgv as well, and I don't rely on it that much).
+
+As I needed a usable viewer fast when starting this project parts of the code are quite messy, though it got better over the years.
+
+Picture editing functions apart from scaling and rotating are unlikely to show up in Aardview -- there are already programs specifically designed for that, there's no need to reimplement that functionality in a picture viewer. You can easily open the image you're currently viewing in your favourite picture editor by just pressing 'e'.
+
+Some of the currently implemented features include:
+
+- Multiple windows and [[https://github.com/itay-grudev/SingleApplication][SingleApplication]] support configurable at build time. With SingleApplication starting Aardview multiple times will just open additional windows in the running instance
+- System tray support with fast access to settings and existing windows. Windows can be minimised to the systray
+- Configurable memory cache size for raw image data. On systems with lots of memory this should be increased to speed up browsing
+- Support for displaying Exif data
+- Toggle between fitting images to the current windowsize and displaying in full resolution (z)
+- Browse through a directory by pressing SPACE
+- Load an image by pasting its pathname - either by pressing the middle mousebutton or CTRL-V. (Under X11 both the X selection and clipboard are evaluated, selection first)
+- Configurable directory browser: include files in directory listing, add collums for size, type and last modified
+- Configurable file browser: Use a regular expression to define which filenames are listed
+- Change focus between widgets by moving the mouse pointer
+- Load current image in external editor (e)
+
+Aardview - unlike xzgv - allows most of the features to be configured by the user. That is, by GUI, not using configuration files (*.c).
+
+#+CAPTION: Aardview on CDE, undocked
+[[./doc/aardview_undocked.png][./doc/aardview_undocked_small.png]]
+
+#+CAPTION: Aardview on CDE, docked
+[[./doc/aardview_docked.png][./doc/aardview_docked_small.png]]
