@@ -105,6 +105,7 @@ void ImageLoader::displayEXIF(){
   QByteArray filename=m_imageFileName.toLocal8Bit();
 
   m_exifData.clear();
+  emit exifDataReady(m_exifData);
 
   data=exif_data_new_from_file(filename.constData());
   if (!data){
