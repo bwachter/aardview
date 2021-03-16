@@ -1,5 +1,5 @@
 TEMPLATE = subdirs
-SUBDIRS = kde aardview
+SUBDIRS = imageformats aardview
 
 lessThan(QT_MAJOR_VERSION, 5){
   lessThan(QT_MINOR_VERSION, 2){

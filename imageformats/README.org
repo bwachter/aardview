@@ -1,0 +1,3 @@
+* Source of image plugins shipped with Aardview
+** [[https://invent.kde.org/frameworks/kimageformats/][KImageFormats]]
+Imported and split to subdirectories from a73e3d44ddb00d3f11c57a404242a038e6e534ad

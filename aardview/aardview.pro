@@ -37,8 +37,8 @@ RCC_DIR = ../build
 DESTDIR = ../build
 QT += widgets printsupport
 #CONFIG += plugin
-LIBS += -L../build -lkde
-QTPLUGIN += kde
+LIBS += -L../build -lani -lpcx -lpsd -lxcf
+QTPLUGIN += ani pcx psd xcf
 
 unix:android {
 }

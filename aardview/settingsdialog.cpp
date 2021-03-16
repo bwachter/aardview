@@ -162,7 +162,7 @@ void SettingsDialog::defaults(){
     settings.setValue("showOnlyFiles", true);
     settings.setValue("caseInsensitiveMatching", true);
     settings.setValue("filterFiles", true);
-    settings.setValue("fileMask", ".*(bmp|gif|ico|jpg|jpeg|mng|png|pbm|pgm|ppm|svg|tif|tiff|xbm|xpm)$");
+    settings.setValue("fileMask", ".*(ani|bmp|gif|ico|jpg|jpeg|mng|pcx|png|pbm|pgm|ppm|psd|svg|tif|tiff|xbm|xcf|xpm)$");
     settings.endGroup();
     settings.beginGroup("viewer");
     settings.setValue("hideInfoArea", true);

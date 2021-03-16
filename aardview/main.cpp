@@ -20,10 +20,12 @@
 #include "settingsdialog.h"
 #include "version.h"
 
-// static plugin
+// use only static plugins for image format plugins shipped with aardview
+// to avoid headaches on various platforms
+Q_IMPORT_PLUGIN(ANIPlugin)
+Q_IMPORT_PLUGIN(PCXPlugin)
+Q_IMPORT_PLUGIN(PSDPlugin)
 Q_IMPORT_PLUGIN(XCFPlugin)
-// dynamic plugin might require something like
-// QCoreApplication::addLibraryPath("<path>");
 
 int main(int argc, char** argv){
   //Q_INIT_RESOURCE();
@@ -36,8 +38,8 @@ int main(int argc, char** argv){
 
   qInstallMessageHandler(AardviewLog::messageHandler);
 
-  QCoreApplication::setOrganizationName("AardSoft");
-  QCoreApplication::setOrganizationDomain("aardsoft.de");
+  QCoreApplication::setOrganizationName("Aardsoft");
+  QCoreApplication::setOrganizationDomain("aardsoft.fi");
   QCoreApplication::setApplicationName("Aardview");
   QCoreApplication::setApplicationVersion(AARDVIEW_VERSION);
 
