@@ -1,5 +1,8 @@
 * Aardview                                                            :TOC_4:
   - [[#introduction][Introduction]]
+  - [[#installing][Installing]]
+    - [[#pre-built-binaries][Pre-built binaries]]
+    - [[#compiling-yourself][Compiling yourself]]
 
 ** Introduction
 Aardview is a simple image viewer for UNIX and Windows based on the Qt toolkit. I started it after an unusable version of [[http://sourceforge.net/projects/xzgv/][xzgv]] hit [[http://www.debian.org/][Debian]] Lenny and it became clear that existing image viewers are either bloated or unusable. Version 0.1 implements all features I've been regulary using in xzgv (without thumbnailing, as that was often broken in xzgv as well, and I don't rely on it that much).
@@ -29,3 +32,22 @@ Aardview - unlike xzgv - allows most of the features to be configured by the use
 
 #+CAPTION: Aardview on CDE, docked
 [[./doc/aardview_docked.png][./doc/aardview_docked_small.png]]
+
+** Installing
+*** Pre-built binaries
+Binaries of stable releases for OpenSuSE Leap and Tumbleweed are available on [[https://build.opensuse.org/repositories/home:bhwachter:desktop/aardview][OBS]].
+
+*** Compiling yourself
+To compile aardview you need Qt (http://www.qtsoftware.com/products/) version 5.10 or newer. Older versions of Qt 5.x may work, but are not tested. On an average Linux distribution you'll need to install packages for qmake, uic, and headers.
+
+Some optional features can be autodetected, and will be enabled if present:
+
+- for exif support you need to install the devel packages for [[http://libexif.sourceforge.net][libexif]].
+- for ssh sharing support you need to install the devel packages for [[https://www.libssh.org/][libssh]].
+- for systemd journal integration you need to install the devel packages for [[https://github.com/systemd/systemd/tree/main/src/libsystemd][libsystemd]].
+
+Now change to the aardview toplevel directory (i.e. the one with this file in) and execute qmake (quite likely qmake-qt5). After that, just type make.
+
+If you're using debian or a related distribution you may be able to build a debian package by changing into the aardview toplevel directory and typing dpkg-buildpackage. This hasn't been tested for ages.
+
+The binary (build/aardview) is self-contained, apart from the Qt library dependencies. Just copy it to wherever you like.
