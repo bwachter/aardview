@@ -5,6 +5,7 @@
  * @date 2009-2016
  */
 
+#include <syslog.h>
 #include "settingsdialog.h"
 
 SettingsDialog *SettingsDialog::settingsDialog = 0;
@@ -94,6 +95,11 @@ SettingsDialog::SettingsDialog(): QDialog() {
   viewerSmoothTransformation->setChecked(settings.value("smoothTransformation").toBool());
   viewerLoadAction->setCurrentIndex(settings.value("loadAction").toInt());
   settings.endGroup();
+
+  settings.beginGroup("log");
+  logLevel->setValue(settings.value("loglevel", LOG_INFO).toInt());
+  logLevelConsole->setValue(settings.value("console", 0).toInt());
+  settings.endGroup();
 }
 
 void SettingsDialog::accept(){
@@ -131,6 +137,11 @@ void SettingsDialog::accept(){
   settings.setValue("shrinkOnly", viewerShrinkOnly->isChecked());
   settings.setValue("smoothTransformation", viewerSmoothTransformation->isChecked());
   settings.setValue("loadAction", viewerLoadAction->currentIndex());
+  settings.endGroup();
+
+  settings.beginGroup("log");
+  settings.setValue("loglevel", logLevel->value());
+  settings.setValue("console", logLevelConsole->value());
   settings.endGroup();
 
   this->hide();
@@ -171,6 +182,10 @@ void SettingsDialog::defaults(){
     settings.setValue("shrinkOnly", true);
     settings.setValue("padding", 5);
     settings.setValue("loadAction", 0);
+    settings.endGroup();
+    settings.beginGroup("log");
+    settings.setValue("loglevel", LOG_INFO);
+    settings.setValue("console", 0);
     settings.endGroup();
     emit configurationChanged();
     // do something on first start
