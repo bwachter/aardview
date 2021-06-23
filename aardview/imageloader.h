@@ -80,6 +80,14 @@ class ImageLoader: public QObject {
      */
     void load(const QString &pathname, const QSize &widgetViewSize);
     /**
+     * Execute a process script on the image.
+     */
+    void process();
+    /**
+     * Toggle process flag for current image.
+     */
+    void toggleFlag();
+    /**
      * Toggle fitting the image to the view size and repaint.
      */
     void toggleFtw();

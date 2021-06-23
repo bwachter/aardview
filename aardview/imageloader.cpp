@@ -174,6 +174,13 @@ void ImageLoader::normalSize(){ scale(0); }
 void ImageLoader::rotate(){
 }
 
+void ImageLoader::process(){
+  QProcess::execute("process-script " + m_imageFileName);
+}
+
+void ImageLoader::toggleFlag(){
+}
+
 void ImageLoader::toggleFtw(){
   if (m_fitToWindow) m_fitToWindow=false;
   else m_fitToWindow=true;

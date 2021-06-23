@@ -420,11 +420,17 @@ bool AardView::eventFilter(QObject *obj, QEvent *event){
           case Qt::Key_B:
             this->selectPrev();
             break;
+          case Qt::Key_F:
+            loader->toggleFlag();
+            break;
           case Qt::Key_M:
             this->toggleMenuBar();
             break;
           case Qt::Key_N:
             loader->normalSize();
+            break;
+          case Qt::Key_P:
+            loader->process();
             break;
           case Qt::Key_R:
             loader->rotate();
@@ -455,6 +461,20 @@ bool AardView::eventFilter(QObject *obj, QEvent *event){
       if (settings->value("main/focusFollowsMouse").toBool())
         imageArea->setFocus();
       return QWidget::eventFilter(obj, event);
+    }
+  } else {
+    // global events
+    if (event->type() == QEvent::KeyPress){
+      QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
+      switch(keyEvent->key()){
+        case Qt::Key_P:
+          loader->process();
+          break;
+        default:
+          return QWidget::eventFilter(obj, event);
+      };
+
+      return true;
     }
   }
 
