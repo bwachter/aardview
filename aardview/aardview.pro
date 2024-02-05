@@ -79,6 +79,9 @@ unix {
      INSTALLS += target
      CONFIG += static
 }
+macx {
+     ICON = ../images/aardview.icns
+}
 win32:debug { CONFIG += console }
 win32 {
      include(../singleapplication/singleapplication.pri)
