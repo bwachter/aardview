@@ -10,6 +10,7 @@
 
 #include <QPixmap>
 #include <QDebug>
+#include <QObject>
 
 #ifdef HAS_EXIF
 #include <libexif/exif-data.h>

@@ -181,11 +181,11 @@ void AardView::reconfigure(){
   if (settings->value("tnview/fileMask").toString() != "" &&
       settings->value("tnview/filterFiles").toBool()){
     qDebug() << "Setting filter: " << settings->value("tnview/fileMask").toString();
-    tnViewModelProxy->setFilterRegExp(settings->value("tnview/fileMask").toString());
+    tnViewModelProxy->setFilterRegularExpression(settings->value("tnview/fileMask").toString());
     if (settings->value("tnview/caseInsensitiveMatching").toBool())
       tnViewModelProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
   } else {
-    tnViewModelProxy->setFilterRegExp("");
+    tnViewModelProxy->setFilterRegularExpression("");
   }
 }
 
@@ -398,7 +398,7 @@ bool AardView::eventFilter(QObject *obj, QEvent *event){
   if (event->type() == QEvent::MouseButtonPress){
     QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
     switch(mouseEvent->button()){
-      case Qt::MidButton:
+      case Qt::MiddleButton:
         this->handlePaste();
         break;
       default:

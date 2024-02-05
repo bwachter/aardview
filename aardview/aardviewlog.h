@@ -12,6 +12,12 @@
 
 #ifdef HAS_SYSLOG
 #include <syslog.h>
+#else
+#define LOG_EMERG 0
+#define LOG_CRIT 2
+#define LOG_WARNING 4
+#define LOG_INFO 6
+#define LOG_DEBUG 7
 #endif
 
 #ifdef HAS_SYSTEMD

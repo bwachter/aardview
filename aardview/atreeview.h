@@ -23,7 +23,7 @@ class ATreeView: public QTreeView {
     SettingsDialog *settings = SettingsDialog::instance();
 
   protected:
-    void enterEvent(QEvent *e){
+    void enterEvent(QEnterEvent *e){
       if (settings->value("main/focusFollowsMouse").toBool())
         this->setFocus();
       QTreeView::enterEvent(e);

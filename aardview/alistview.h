@@ -23,7 +23,7 @@ class AListView: public QListView {
     SettingsDialog *settings = SettingsDialog::instance();
 
   protected:
-    void enterEvent(QEvent *e){
+    void enterEvent(QEnterEvent *e){
       if (settings->value("main/focusFollowsMouse").toBool())
         this->setFocus();
       QListView::enterEvent(e);
