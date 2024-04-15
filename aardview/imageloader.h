@@ -114,6 +114,10 @@ class ImageLoader: public QObject {
      */
     void rotate();
     /**
+     * Zoom in/out by an arbitrary factor
+     */
+    void zoom(float factor);
+    /**
      * Zoom into the image by factor 1.25 to the current displayed size
      */
     void zoomIn();

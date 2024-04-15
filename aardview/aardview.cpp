@@ -355,8 +355,9 @@ void AardView::toggleMenuBar(){
 }
 
 bool AardView::event(QEvent *event){
-  if (event->type() == QEvent::Gesture)
+  if (event->type() == QEvent::Gesture){
     return gestureEvent(static_cast<QGestureEvent*>(event));
+  }
   if (event->type() == QEvent::PolishRequest){
     load(path());
   }
@@ -372,8 +373,13 @@ bool AardView::gestureEvent(QGestureEvent *event){
     qDebug() << "Tap'n'hold";
   } else if (event->gesture(Qt::PanGesture)){
     qDebug() << "Pan gesture";
-  } else if (event->gesture(Qt::PinchGesture)){
+  } else if (QGesture *pinch = event->gesture(Qt::PinchGesture)){
     qDebug() << "Pinch gesture";
+    QPinchGesture *pinchGesture = static_cast<QPinchGesture *>(pinch);
+    QPinchGesture::ChangeFlags changeFlags = pinchGesture->changeFlags();
+    if (changeFlags & QPinchGesture::ScaleFactorChanged) {
+      loader->zoom(pinchGesture->scaleFactor());
+    }
   } else if (event->gesture(Qt::SwipeGesture)){
     qDebug() << "Swipe gesture";
   } else if (event->gesture(Qt::CustomGesture)){

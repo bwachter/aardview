@@ -203,3 +203,4 @@ void ImageLoader::repaint(const QSize &widgetViewSize){
 void ImageLoader::zoomIn(){ scale(1.25); }
 
 void ImageLoader::zoomOut(){ scale(0.8); }
+void ImageLoader::zoom(float factor){ scale(factor); }
