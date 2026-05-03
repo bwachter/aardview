@@ -21,6 +21,8 @@ AardView::AardView(QUuid uid, QString initialPath){
   m_uid = uid;
   this->setWindowIcon(QPixmap(":/images/aardview-icon.png"));
 
+  //videoContainer->setVisible(false);
+
 #ifdef QT_NO_PRINTER
   // disable printer items if qt comes without printing support
   actionPrint->setEnabled(false);
