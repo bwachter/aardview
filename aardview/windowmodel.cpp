@@ -49,6 +49,14 @@ AardView* WindowModel::getWindow(const QString &title){
   return 0;
 }
 
+QUuid WindowModel::uidAt(int row) const {
+  if (row < 0 || row >= m_windowList.size())
+    return QUuid();
+
+  QMap<QUuid, AardView*>::const_iterator iter = m_windowList.constBegin() + row;
+  return iter.key();
+}
+
 int WindowModel::rowCount(const QModelIndex &parent) const {
   (void) parent;
   return m_windowList.size();

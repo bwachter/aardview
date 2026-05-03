@@ -144,6 +144,7 @@ void AardviewShim::addWindow(const QStringList &argumentList){
           win, SLOT(reconfigure()));
 
   m_windowModel->addWindow(uid, win);
+  refreshTrayWindowList();
 
   win->show();
 }
@@ -156,20 +157,7 @@ void AardviewShim::createTrayIcon()
   trayIconMenu->setObjectName("trayIconMenu");
   trayIconMenu->installEventFilter(this);
 
-  QWidgetAction *trayMenuWidget = new QWidgetAction(this);
-  m_windowListWidget = new QListView();
-  m_windowListWidget->setDragDropMode(QAbstractItemView::DragOnly);
-  m_windowListWidget->setResizeMode(QListView::Adjust);
-  m_windowListWidget->setModel(m_windowModel);
-  m_windowListWidget->adjustSize();
-
-  trayMenuWidget->setDefaultWidget(m_windowListWidget);
-  connect(m_windowListWidget, SIGNAL(activated(const QModelIndex &)),
-          this, SLOT(toggleWindow(const QModelIndex &)));
-  connect(m_windowListWidget, SIGNAL(clicked(const QModelIndex &)),
-          this, SLOT(toggleWindow(const QModelIndex &)));
-
-  trayIconMenu->addAction(trayMenuWidget);
+  m_windowListSeparator = trayIconMenu->addSeparator();
 
   QAction *actionNewWindow = new QAction(tr("New window"), 0);
   connect(actionNewWindow, SIGNAL(triggered()), this, SLOT(addWindow()));
@@ -189,6 +177,8 @@ void AardviewShim::createTrayIcon()
   m_trayIcon = new QSystemTrayIcon(this);
   m_trayIcon->setContextMenu(trayIconMenu);
   m_trayIcon->setIcon(QIcon(":/images/aardview-icon.png"));
+
+  connect(trayIconMenu, SIGNAL(aboutToShow()), this, SLOT(refreshTrayWindowList()));
 }
 
 void AardviewShim::deleteWindow(QUuid uid, bool force){
@@ -201,6 +191,7 @@ void AardviewShim::deleteWindow(QUuid uid, bool force){
     AardView *win = m_windowModel->getWindow(uid);
     if (force){
       m_windowModel->deleteWindow(uid);
+      refreshTrayWindowList();
       return;
     } else {
       win->hide();
@@ -241,10 +232,45 @@ void AardviewShim::receivedMessage(int instanceId, QByteArray message){
   addWindow(arguments);
 }
 
-void AardviewShim::toggleWindow(const QModelIndex &index){
-  QObject *object = qvariant_cast<QObject*>(m_windowModel->data(index, Qt::UserRole));
-  AardView *win = qobject_cast<AardView*>(object);
+void AardviewShim::refreshTrayWindowList()
+{
+  QMenu *trayMenu = m_trayIcon->contextMenu();
+  if (!trayMenu) return;
+
+  foreach (QAction *action, m_windowActions) {
+    trayMenu->removeAction(action);
+    delete action;
+  }
+  m_windowActions.clear();
+
+  for (int i = 0; i < m_windowModel->rowCount(); ++i) {
+    QModelIndex index = m_windowModel->index(i, 0);
+    AardView *win = qvariant_cast<AardView*>(m_windowModel->data(index, Qt::UserRole));
+    QUuid uid = m_windowModel->uidAt(i);
+    if (!win || uid.isNull()) continue;
+
+    QAction *action = new QAction(win->title(), this);
+    action->setCheckable(true);
+    action->setChecked(win->isVisible());
+    action->setData(uid.toString());
+    connect(action, SIGNAL(triggered()), this, SLOT(toggleWindowFromTray()));
+
+    trayMenu->insertAction(m_windowListSeparator, action);
+    m_windowActions.append(action);
+  }
+}
+
+void AardviewShim::toggleWindowFromTray()
+{
+  QAction *action = qobject_cast<QAction*>(sender());
+  if (!action) return;
+
+  QUuid uid(action->data().toString());
+  AardView *win = m_windowModel->getWindow(uid);
+  if (!win) return;
+
   win->setVisible(!win->isVisible());
+  action->setChecked(win->isVisible());
 }
 
 void AardviewShim::reconfigure(){

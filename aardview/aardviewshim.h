@@ -31,8 +31,9 @@ class AardviewShim: public QObject {
 
   private:
     WindowModel *m_windowModel;
-    QListView *m_windowListWidget;
     QSystemTrayIcon *m_trayIcon;
+    QAction *m_windowListSeparator;
+    QList<QAction*> m_windowActions;
 
     /// @todo hack, make it configurable
     bool useTray=true;
@@ -82,7 +83,8 @@ class AardviewShim: public QObject {
      *
      * @param index the index of the window in a view
      */
-    void toggleWindow(const QModelIndex &index);
+    void refreshTrayWindowList();
+    void toggleWindowFromTray();
 
     /**
      * Open an external editor for image editing.

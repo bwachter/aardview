@@ -24,6 +24,7 @@ class WindowModel: public QAbstractListModel {
     bool contains(const QUuid &uid);
     AardView* getWindow(const QUuid &uid);
     AardView* getWindow(const QString &title);
+    QUuid uidAt(int row) const;
 
   private:
     QMap <QUuid, AardView*> m_windowList;
