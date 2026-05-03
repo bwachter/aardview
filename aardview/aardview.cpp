@@ -34,6 +34,11 @@ AardView::AardView(QUuid uid, QString initialPath){
     if (status == QMediaPlayer::EndOfMedia)
       selectNext();
   });
+  // Reset subtitle track whenever a new source is loaded — prevents stale
+  // subtitle data from a previous file persisting onto the next video.
+  connect(m_player, &QMediaPlayer::tracksChanged, this, [this](){
+    m_player->setActiveSubtitleTrack(-1);
+  });
 
 #ifdef QT_NO_PRINTER
   // disable printer items if qt comes without printing support
@@ -170,6 +175,8 @@ void AardView::reconfigure(){
   SettingsDialog *settings = SettingsDialog::instance();
 
   loader->reconfigure();
+  tnViewModel->reconfigure();
+  dirViewModel->reconfigure();
   qDebug() << "Checking configuration settings (main)";
   QMainWindow::statusBar()->setVisible(settings->value("main/showStatusbar").toBool());
 
@@ -190,6 +197,8 @@ void AardView::reconfigure(){
   dirView->setColumnHidden(2, !settings->value("dirview/showTypeCol", false).toBool());
   dirView->setColumnHidden(3, !settings->value("dirview/showLastModifiedCol", false).toBool());
   // tnview options
+  int tnSz = settings->value("tnview/thumbnailSize", 128).toInt();
+  tnView->setIconSize(QSize(tnSz, tnSz));
   if (settings->value("tnview/showOnlyFiles", true).toBool())
     tnViewModel->setFilter(QDir::Files);
   if (settings->value("tnview/fileMask").toString() != "" &&

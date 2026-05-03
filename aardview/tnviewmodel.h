@@ -27,11 +27,14 @@ class TnViewModel: public QAbstractListModel {
     QString filePath(const QModelIndex &index) const;
     bool isDir(const QModelIndex &index) const;
 
+  public slots:
+    void reconfigure();
+
   private slots:
     void onThumbnailReady(const QString &path, const QPixmap &thumbnail);
 
   private:
-    static const QSize thumbnailSize;
+    QSize m_thumbnailSize;
 
     QStringList directoryItems;
     QDir directory;

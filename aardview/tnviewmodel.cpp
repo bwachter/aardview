@@ -6,16 +6,18 @@
  */
 
 #include "localthumbnailprovider.h"
+#include "settingsdialog.h"
 #include "thumbnailprovider.h"
 #include "tnviewmodel.h"
-
-const QSize TnViewModel::thumbnailSize(128, 128);
 
 TnViewModel::TnViewModel(QString directoryName, QObject *parent):
   QAbstractListModel(parent) {
   m_provider = new LocalThumbnailProvider(this);
   connect(m_provider, &ThumbnailProvider::thumbnailReady,
           this, &TnViewModel::onThumbnailReady);
+  SettingsDialog *settings = SettingsDialog::instance();
+  int sz = settings->value("tnview/thumbnailSize", 128).toInt();
+  m_thumbnailSize = QSize(sz, sz);
   directory = QDir(directoryName);
   directoryItems = directory.entryList();
   rebuildIndex();
@@ -44,8 +46,8 @@ QVariant TnViewModel::data(const QModelIndex &index, int role) const {
   else if (role == Qt::DecorationRole){
     QString path = directory.filePath(directoryItems.at(index.row()));
     if (m_thumbnails.contains(path))
-      return QIcon(m_thumbnails[path]);
-    m_provider->requestThumbnail(path, thumbnailSize);
+      return QIcon(m_thumbnails.value(path));
+    m_provider->requestThumbnail(path, m_thumbnailSize);
     return QIcon(":/images/aardview-icon.png");
   } else
     return QVariant();
@@ -89,6 +91,15 @@ void TnViewModel::setFilter(QDir::Filters filters){
   directoryItems = directory.entryList();
   rebuildIndex();
   endResetModel();
+}
+
+void TnViewModel::reconfigure(){
+  SettingsDialog *settings = SettingsDialog::instance();
+  int sz = settings->value("tnview/thumbnailSize", 128).toInt();
+  m_thumbnailSize = QSize(sz, sz);
+  m_thumbnails.clear();
+  if (rowCount() > 0)
+    emit dataChanged(index(0, 0), index(rowCount() - 1, 0), {Qt::DecorationRole});
 }
 
 void TnViewModel::onThumbnailReady(const QString &path, const QPixmap &thumbnail){

@@ -22,11 +22,14 @@ class ThumbnailFileSystemModel: public QFileSystemModel {
     explicit ThumbnailFileSystemModel(QObject *parent = nullptr);
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
+  public slots:
+    void reconfigure();
+
   private slots:
     void onThumbnailReady(const QString &path, const QPixmap &thumbnail);
 
   private:
-    static const QSize thumbnailSize;
+    QSize m_thumbnailSize;
     ThumbnailProvider *m_provider;
     QHash<QString, QPixmap> m_thumbnails;
 };

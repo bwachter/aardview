@@ -6,16 +6,18 @@
  */
 
 #include "localthumbnailprovider.h"
+#include "settingsdialog.h"
 #include "thumbnailfilesystemmodel.h"
 #include "thumbnailprovider.h"
-
-const QSize ThumbnailFileSystemModel::thumbnailSize(128, 128);
 
 ThumbnailFileSystemModel::ThumbnailFileSystemModel(QObject *parent)
   : QFileSystemModel(parent)
   , m_provider(new LocalThumbnailProvider(this)) {
   connect(m_provider, &ThumbnailProvider::thumbnailReady,
           this, &ThumbnailFileSystemModel::onThumbnailReady);
+  SettingsDialog *settings = SettingsDialog::instance();
+  int sz = settings->value("tnview/thumbnailSize", 128).toInt();
+  m_thumbnailSize = QSize(sz, sz);
 }
 
 QVariant ThumbnailFileSystemModel::data(const QModelIndex &index, int role) const {
@@ -23,10 +25,17 @@ QVariant ThumbnailFileSystemModel::data(const QModelIndex &index, int role) cons
     QString path = filePath(index);
     if (m_thumbnails.contains(path))
       return QIcon(m_thumbnails.value(path));
-    m_provider->requestThumbnail(path, thumbnailSize);
+    m_provider->requestThumbnail(path, m_thumbnailSize);
     return QFileSystemModel::data(index, role);
   }
   return QFileSystemModel::data(index, role);
+}
+
+void ThumbnailFileSystemModel::reconfigure(){
+  SettingsDialog *settings = SettingsDialog::instance();
+  int sz = settings->value("tnview/thumbnailSize", 128).toInt();
+  m_thumbnailSize = QSize(sz, sz);
+  m_thumbnails.clear();
 }
 
 void ThumbnailFileSystemModel::onThumbnailReady(const QString &path, const QPixmap &thumbnail){

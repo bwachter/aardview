@@ -85,6 +85,7 @@ SettingsDialog::SettingsDialog(): QDialog() {
   tnFileMask->setText(settings.value("fileMask").toString());
   tnShowOnlyFiles->setChecked(settings.value("showOnlyFiles").toBool());
   tnCaseInsensitiveMatching->setChecked(settings.value("caseInsensitiveMatching").toBool());
+  tnThumbnailSize->setValue(settings.value("thumbnailSize", 128).toInt());
   settings.endGroup();
 
   settings.beginGroup("viewer");
@@ -128,6 +129,7 @@ void SettingsDialog::accept(){
   settings.setValue("fileMask", tnFileMask->text());
   settings.setValue("showOnlyFiles", tnShowOnlyFiles->isChecked());
   settings.setValue("caseInsensitiveMatching", tnCaseInsensitiveMatching->isChecked());
+  settings.setValue("thumbnailSize", tnThumbnailSize->value());
   settings.endGroup();
 
   settings.beginGroup("viewer");
@@ -174,6 +176,7 @@ void SettingsDialog::defaults(){
     settings.setValue("caseInsensitiveMatching", true);
     settings.setValue("filterFiles", true);
     settings.setValue("fileMask", ".*(ani|bmp|gif|ico|jpg|jpeg|mng|pcx|png|pbm|pgm|ppm|psd|svg|tif|tiff|xbm|xcf|xpm|avi|mp4|ogv|mov|mkv|wmv|webm)$");
+    settings.setValue("thumbnailSize", 128);
     settings.endGroup();
     settings.beginGroup("viewer");
     settings.setValue("hideInfoArea", true);
