@@ -51,7 +51,7 @@ AardView::AardView(QUuid uid, QString initialPath){
   dockStatusInfo->hide();
 
   exifViewModel = new ExifViewModel();
-  dirViewModel = new QFileSystemModel();
+  dirViewModel = new ThumbnailFileSystemModel();
   tnViewModel = new TnViewModel();
   tnViewModelProxy = new QSortFilterProxyModel();
 

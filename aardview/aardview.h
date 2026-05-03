@@ -15,7 +15,6 @@
 #include <QMenuBar>
 #include <QAction>
 #include <QGestureEvent>
-#include <QFileSystemModel>
 #include <QMediaPlayer>
 #include <QAudioOutput>
 
@@ -23,6 +22,7 @@
 
 #include "ui_aardview.h"
 #include "imageloader.h"
+#include "thumbnailfilesystemmodel.h"
 #include "tnviewmodel.h"
 #include "exifviewmodel.h"
 #include "alistview.h"
@@ -64,7 +64,7 @@ class AardView: public QMainWindow, private Ui::AardView{
     // query all possible sources every time this info is needed
     QString m_path, m_loadedPath;
 
-    QFileSystemModel *dirViewModel;
+    ThumbnailFileSystemModel *dirViewModel;
     ExifViewModel *exifViewModel;
     TnViewModel *tnViewModel;
     QSortFilterProxyModel *tnViewModelProxy;

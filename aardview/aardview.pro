@@ -8,7 +8,10 @@ HEADERS = aardview.h \
         atreeview.h \
         exifviewmodel.h \
         imageloader.h \
+        localthumbnailprovider.h \
         settingsdialog.h \
+        thumbnailfilesystemmodel.h \
+        thumbnailprovider.h \
         windowmodel.h \
         tnviewmodel.h \
         version.h
@@ -17,6 +20,8 @@ SOURCES = aardview.cpp \
         aardviewlog.cpp \
         imageloader.cpp \
         exifviewmodel.cpp \
+        localthumbnailprovider.cpp \
+        thumbnailfilesystemmodel.cpp \
         main.cpp \
         settingsdialog.cpp \
         windowmodel.cpp \
@@ -35,7 +40,7 @@ UI_HEADERS_DIR = ../build
 UI_SOURCES_DIR = ../build
 RCC_DIR = ../build
 DESTDIR = ../build
-QT += widgets printsupport multimedia multimediawidgets
+QT += widgets printsupport multimedia multimediawidgets concurrent
 #CONFIG += plugin
 LIBS += -L../build -lani -lpcx -lpsd -lxcf
 QTPLUGIN += ani pcx psd xcf
