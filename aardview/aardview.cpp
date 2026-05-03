@@ -9,6 +9,8 @@
 #include <QMessageBox>
 #include <QScrollBar>
 #include <QFileDialog>
+#include <QMimeDatabase>
+#include <QMimeType>
 
 #include "aardview.h"
 #include "afileinfo.h"
@@ -19,9 +21,19 @@ AardView::AardView(QUuid uid, QString initialPath){
   setupUi(this);
 
   m_uid = uid;
+  m_videoMode = false;
   this->setWindowIcon(QPixmap(":/images/aardview-icon.png"));
 
-  //videoContainer->setVisible(false);
+  videoContainer->setVisible(false);
+  m_player = new QMediaPlayer(this);
+  m_audioOutput = new QAudioOutput(this);
+  m_audioOutput->setVolume(1.0f);
+  m_player->setVideoOutput(videoContainer);
+  m_player->setAudioOutput(m_audioOutput);
+  connect(m_player, &QMediaPlayer::mediaStatusChanged, this, [this](QMediaPlayer::MediaStatus status){
+    if (status == QMediaPlayer::EndOfMedia)
+      selectNext();
+  });
 
 #ifdef QT_NO_PRINTER
   // disable printer items if qt comes without printing support
@@ -219,11 +231,29 @@ void AardView::displayPixmap(const QPixmap &pixmap){
   imageArea->horizontalScrollBar()->setValue(0);
 }
 
+bool AardView::isVideoFile(const QString &path){
+  if (path.startsWith(":/")) return false;
+  return QMimeDatabase().mimeTypeForFile(path).name().startsWith("video/");
+}
+
 void AardView::loadPixmap(const QString &filename, const QSize viewSize){
-  if (viewSize == QSize())
-    emit requestPixmap(filename, centralwidget->size());
-  else
-    emit requestPixmap(filename, viewSize);
+  if (isVideoFile(filename)){
+    m_player->stop();
+    imageContainer->setVisible(false);
+    videoContainer->setVisible(true);
+    m_videoMode = true;
+    m_player->setSource(QUrl::fromLocalFile(filename));
+    m_player->play();
+  } else {
+    m_player->stop();
+    videoContainer->setVisible(false);
+    imageContainer->setVisible(true);
+    m_videoMode = false;
+    if (viewSize == QSize())
+      emit requestPixmap(filename, centralwidget->size());
+    else
+      emit requestPixmap(filename, viewSize);
+  }
 }
 
 void AardView::thumbIndexChanged(){
@@ -426,34 +456,71 @@ bool AardView::eventFilter(QObject *obj, QEvent *event){
       } else {
         switch(keyEvent->key()){
           case Qt::Key_B:
+            if (m_videoMode) m_player->stop();
             this->selectPrev();
             break;
+          case Qt::Key_Down:
+            if (m_videoMode)
+              m_audioOutput->setVolume(qMax(0.0f, m_audioOutput->volume() - 0.1f));
+            else
+              return QWidget::eventFilter(obj, event);
+            break;
           case Qt::Key_F:
-            loader->toggleFlag();
+            if (!m_videoMode) loader->toggleFlag();
+            break;
+          case Qt::Key_Left:
+            if (m_videoMode)
+              m_player->setPosition(qMax(qint64(0), m_player->position() - 10000));
+            else
+              return QWidget::eventFilter(obj, event);
             break;
           case Qt::Key_M:
             this->toggleMenuBar();
             break;
           case Qt::Key_N:
-            loader->normalSize();
+            if (m_videoMode){
+              m_player->stop();
+              this->selectNext();
+            } else {
+              loader->normalSize();
+            }
             break;
           case Qt::Key_P:
-            loader->process();
+            if (!m_videoMode) loader->process();
             break;
           case Qt::Key_R:
-            loader->rotate();
+            if (!m_videoMode) loader->rotate();
+            break;
+          case Qt::Key_Right:
+            if (m_videoMode)
+              m_player->setPosition(qMin(m_player->duration(), m_player->position() + 10000));
+            else
+              return QWidget::eventFilter(obj, event);
+            break;
+          case Qt::Key_Up:
+            if (m_videoMode)
+              m_audioOutput->setVolume(qMin(1.0f, m_audioOutput->volume() + 0.1f));
+            else
+              return QWidget::eventFilter(obj, event);
             break;
           case Qt::Key_Z:
-            loader->toggleFtw();
+            if (!m_videoMode) loader->toggleFtw();
             break;
           case Qt::Key_Space:
-            this->selectNext();
+            if (m_videoMode){
+              if (m_player->playbackState() == QMediaPlayer::PlayingState)
+                m_player->pause();
+              else
+                m_player->play();
+            } else {
+              this->selectNext();
+            }
             break;
           case Qt::Key_Minus:
-            loader->zoomOut();
+            if (!m_videoMode) loader->zoomOut();
             break;
           case Qt::Key_Plus:
-            loader->zoomIn();
+            if (!m_videoMode) loader->zoomIn();
             break;
           default:
             return QWidget::eventFilter(obj, event);

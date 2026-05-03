@@ -16,6 +16,8 @@
 #include <QAction>
 #include <QGestureEvent>
 #include <QFileSystemModel>
+#include <QMediaPlayer>
+#include <QAudioOutput>
 
 #include <QtGui>
 
@@ -68,6 +70,11 @@ class AardView: public QMainWindow, private Ui::AardView{
     QSortFilterProxyModel *tnViewModelProxy;
     ImageLoader *loader;
 
+    QMediaPlayer *m_player;
+    QAudioOutput *m_audioOutput;
+    bool m_videoMode;
+
+    bool isVideoFile(const QString &path);
     void setPath(const QString &path);
     void setLoadedPath(const QString &path);
 
