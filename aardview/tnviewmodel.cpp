@@ -20,6 +20,7 @@ TnViewModel::TnViewModel(QString directoryName, QObject *parent):
   m_thumbnailSize = QSize(sz, sz);
   directory = QDir(directoryName);
   directoryItems = directory.entryList();
+  applyFileMask();
   rebuildIndex();
 }
 
@@ -32,6 +33,14 @@ void TnViewModel::rebuildIndex(){
 int TnViewModel::rowCount(const QModelIndex &parent) const {
   (void) parent;
   return directoryItems.count();
+}
+
+QHash<int, QByteArray> TnViewModel::roleNames() const {
+  QHash<int, QByteArray> roles = QAbstractListModel::roleNames();
+  roles[FilePathRole] = "filePath";
+  roles[Qt::DisplayRole] = "fileName";
+  roles[Qt::DecorationRole] = "decoration";
+  return roles;
 }
 
 QVariant TnViewModel::data(const QModelIndex &index, int role) const {
@@ -49,7 +58,9 @@ QVariant TnViewModel::data(const QModelIndex &index, int role) const {
       return QIcon(m_thumbnails.value(path));
     m_provider->requestThumbnail(path, m_thumbnailSize);
     return QIcon(":/images/aardview-icon.png");
-  } else
+  } else if (role == FilePathRole)
+    return directory.filePath(directoryItems.at(index.row()));
+  else
     return QVariant();
 }
 
@@ -70,6 +81,12 @@ QString TnViewModel::filePath(const QModelIndex & index) const{
   return directory.filePath(directoryItems.at(index.row()));
 }
 
+QString TnViewModel::filePath(int row) const{
+  if (row < 0 || row >= directoryItems.size())
+    return QString();
+  return directory.filePath(directoryItems.at(row));
+}
+
 bool TnViewModel::isDir(const QModelIndex & index) const {
   if (!index.isValid() || index.row() >= directoryItems.size())
     return false;
@@ -77,10 +94,18 @@ bool TnViewModel::isDir(const QModelIndex & index) const {
   return info.isDir();
 }
 
+bool TnViewModel::isDir(int row) const {
+  if (row < 0 || row >= directoryItems.size())
+    return false;
+  QFileInfo info=QFileInfo(directoryItems.at(row));
+  return info.isDir();
+}
+
 void TnViewModel::setDirectory(QString directoryName){
   beginResetModel();
   directory.setPath(directoryName);
   directoryItems = directory.entryList();
+  applyFileMask();
   rebuildIndex();
   endResetModel();
 }
@@ -89,6 +114,7 @@ void TnViewModel::setFilter(QDir::Filters filters){
   beginResetModel();
   directory.setFilter(filters);
   directoryItems = directory.entryList();
+  applyFileMask();
   rebuildIndex();
   endResetModel();
 }
@@ -98,8 +124,12 @@ void TnViewModel::reconfigure(){
   int sz = settings->value("tnview/thumbnailSize", 128).toInt();
   m_thumbnailSize = QSize(sz, sz);
   m_thumbnails.clear();
-  if (rowCount() > 0)
-    emit dataChanged(index(0, 0), index(rowCount() - 1, 0), {Qt::DecorationRole});
+
+  beginResetModel();
+  directoryItems = directory.entryList();
+  applyFileMask();
+  rebuildIndex();
+  endResetModel();
 }
 
 void TnViewModel::onThumbnailReady(const QString &path, const QPixmap &thumbnail){
@@ -108,4 +138,32 @@ void TnViewModel::onThumbnailReady(const QString &path, const QPixmap &thumbnail
   m_thumbnails[path] = thumbnail;
   QModelIndex idx = index(it.value(), 0);
   emit dataChanged(idx, idx, {Qt::DecorationRole});
+}
+
+void TnViewModel::applyFileMask(){
+  SettingsDialog *settings = SettingsDialog::instance();
+  m_filterFiles = settings->value("tnview/filterFiles").toBool();
+  m_caseInsensitive = settings->value("tnview/caseInsensitiveMatching").toBool();
+  m_fileMask = settings->value("tnview/fileMask").toString();
+
+  if (!m_filterFiles || m_fileMask.isEmpty())
+    return;
+
+  QRegularExpression::PatternOptions options = QRegularExpression::NoPatternOption;
+  if (m_caseInsensitive)
+    options |= QRegularExpression::CaseInsensitiveOption;
+
+  m_fileRegex = QRegularExpression(m_fileMask, options);
+  if (!m_fileRegex.isValid()){
+    qWarning() << "Invalid file mask regex:" << m_fileMask;
+    m_filterFiles = false;
+    return;
+  }
+
+  QStringList filtered;
+  for (const QString &item : directoryItems){
+    if (m_fileRegex.match(item).hasMatch())
+      filtered.append(item);
+  }
+  directoryItems = filtered;
 }

@@ -17,6 +17,9 @@
 #include <QGestureEvent>
 #include <QMediaPlayer>
 #include <QAudioOutput>
+#include <QGraphicsView>
+#include <QGraphicsScene>
+#include <QGraphicsVideoItem>
 
 #include <QtGui>
 
@@ -72,11 +75,15 @@ class AardView: public QMainWindow, private Ui::AardView{
 
     QMediaPlayer *m_player;
     QAudioOutput *m_audioOutput;
+    QGraphicsVideoItem *m_videoItem;
+    int m_videoRotation;
     bool m_videoMode;
 
     bool isVideoFile(const QString &path);
     void setPath(const QString &path);
     void setLoadedPath(const QString &path);
+    void updateVideoGeometry();
+    void rotateVideo();
 
     void loadPixmap(const QString &filename, const QSize viewSize=QSize());
 

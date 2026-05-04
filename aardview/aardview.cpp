@@ -28,11 +28,38 @@ AardView::AardView(QUuid uid, QString initialPath){
   m_player = new QMediaPlayer(this);
   m_audioOutput = new QAudioOutput(this);
   m_audioOutput->setVolume(1.0f);
-  m_player->setVideoOutput(videoContainer);
+
+  QGraphicsScene *scene = new QGraphicsScene(this);
+  scene->setBackgroundBrush(Qt::transparent);
+  m_videoItem = new QGraphicsVideoItem();
+  scene->addItem(m_videoItem);
+  videoContainer->setScene(scene);
+  videoContainer->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  videoContainer->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  videoContainer->viewport()->setAutoFillBackground(false);
+  m_player->setVideoOutput(m_videoItem);
+  m_videoRotation = 0;
+
+  connect(m_videoItem, &QGraphicsVideoItem::nativeSizeChanged,
+          this, &AardView::updateVideoGeometry);
+
   m_player->setAudioOutput(m_audioOutput);
   connect(m_player, &QMediaPlayer::mediaStatusChanged, this, [this](QMediaPlayer::MediaStatus status){
-    if (status == QMediaPlayer::EndOfMedia)
-      selectNext();
+    if (status == QMediaPlayer::EndOfMedia){
+      int action = SettingsDialog::instance()->value("viewer/videoEndAction", 0).toInt();
+      switch(action){
+        case 0: // Stop
+          m_player->stop();
+          break;
+        case 1: // Loop
+          m_player->setPosition(0);
+          m_player->play();
+          break;
+        case 2: // Jump next
+          selectNext();
+          break;
+      }
+    }
   });
   // Reset subtitle track whenever a new source is loaded — prevents stale
   // subtitle data from a previous file persisting onto the next video.
@@ -158,8 +185,16 @@ void AardView::load(const QString &path){
   setPath(path);
 
   AFileInfo info(path);
+  QString dirPath = info.isFile() ? info.absolutePath() : path;
 
-  dirView->setCurrentIndex(dirViewModel->index(info.absolutePath()));
+  // Expand tree so the selected directory is visible
+  QModelIndex idx = dirViewModel->index(dirPath);
+  QModelIndex parent = idx.parent();
+  while (parent.isValid()) {
+    dirView->expand(parent);
+    parent = parent.parent();
+  }
+  dirView->setCurrentIndex(idx);
 
   // TODO: proper switching between single image and directory mode
   if (info.isFile()){
@@ -201,15 +236,6 @@ void AardView::reconfigure(){
   tnView->setIconSize(QSize(tnSz, tnSz));
   if (settings->value("tnview/showOnlyFiles", true).toBool())
     tnViewModel->setFilter(QDir::Files);
-  if (settings->value("tnview/fileMask").toString() != "" &&
-      settings->value("tnview/filterFiles").toBool()){
-    qDebug() << "Setting filter: " << settings->value("tnview/fileMask").toString();
-    tnViewModelProxy->setFilterRegularExpression(settings->value("tnview/fileMask").toString());
-    if (settings->value("tnview/caseInsensitiveMatching").toBool())
-      tnViewModelProxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
-  } else {
-    tnViewModelProxy->setFilterRegularExpression("");
-  }
 }
 
 void AardView::closeEvent(QCloseEvent *event){
@@ -251,6 +277,11 @@ void AardView::loadPixmap(const QString &filename, const QSize viewSize){
     imageContainer->setVisible(false);
     videoContainer->setVisible(true);
     m_videoMode = true;
+    m_videoRotation = 0;
+    if (m_videoItem) {
+      m_videoItem->setRotation(0);
+      updateVideoGeometry();
+    }
     m_player->setSource(QUrl::fromLocalFile(filename));
     m_player->play();
   } else {
@@ -395,6 +426,51 @@ void AardView::toggleMenuBar(){
   }
 }
 
+// TODO, this is still breaking for portrait
+void AardView::updateVideoGeometry(){
+  if (!m_videoItem) return;
+  QSize viewSize = videoContainer->viewport()->size();
+  if (viewSize.isEmpty()) return;
+
+  videoContainer->resetTransform();
+
+  QSizeF nativeSize = m_videoItem->nativeSize();
+  if (nativeSize.isEmpty()) {
+    m_videoItem->setSize(QSizeF(viewSize));
+    m_videoItem->setPos(0, 0);
+    return;
+  }
+
+  // Keep item at native size with KeepAspectRatio so the video fills it
+  // exactly. Scaling and centering are done via the view transform.
+  // This avoids stretching when the item is rotated.
+  m_videoItem->setSize(nativeSize);
+  m_videoItem->setAspectRatioMode(Qt::KeepAspectRatio);
+  m_videoItem->setTransformOriginPoint(nativeSize.width() / 2.0, nativeSize.height() / 2.0);
+  m_videoItem->setPos(-nativeSize.width() / 2.0, -nativeSize.height() / 2.0);
+
+  QRectF bound = m_videoItem->sceneBoundingRect();
+  qreal sx = qreal(viewSize.width()) / bound.width();
+  qreal sy = qreal(viewSize.height()) / bound.height();
+  qreal s = qMin(sx, sy);
+
+  QTransform t = QTransform::fromScale(s, s);
+  t.translate(
+    (viewSize.width() / s / 2.0) - (bound.x() + bound.width() / 2.0),
+    (viewSize.height() / s / 2.0) - (bound.y() + bound.height() / 2.0));
+  videoContainer->setTransform(t);
+}
+
+void AardView::rotateVideo(){
+  if (!m_videoItem) return;
+  m_videoRotation = (m_videoRotation + 90) % 360;
+  QSizeF nativeSize = m_videoItem->nativeSize();
+  if (!nativeSize.isEmpty())
+    m_videoItem->setTransformOriginPoint(nativeSize.width() / 2.0, nativeSize.height() / 2.0);
+  m_videoItem->setRotation(m_videoRotation);
+  updateVideoGeometry();
+}
+
 bool AardView::event(QEvent *event){
   if (event->type() == QEvent::Gesture){
     return gestureEvent(static_cast<QGestureEvent*>(event));
@@ -402,8 +478,12 @@ bool AardView::event(QEvent *event){
   if (event->type() == QEvent::PolishRequest){
     load(path());
   }
-  if (event->type() == QEvent::Resize)
-    loader->repaint(centralwidget->size());
+  if (event->type() == QEvent::Resize){
+    if (m_videoMode && m_videoItem)
+      updateVideoGeometry();
+    else
+      loader->repaint(centralwidget->size());
+  }
 
   return QWidget::event(event);
 }
@@ -498,7 +578,10 @@ bool AardView::eventFilter(QObject *obj, QEvent *event){
             if (!m_videoMode) loader->process();
             break;
           case Qt::Key_R:
-            if (!m_videoMode) loader->rotate();
+            if (m_videoMode)
+              rotateVideo();
+            else
+              loader->rotate();
             break;
           case Qt::Key_Right:
             if (m_videoMode)

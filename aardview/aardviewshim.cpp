@@ -97,8 +97,25 @@ void AardviewShim::addWindow(const QStringList &argumentList){
     AFileInfo info(settings->value("viewer/lastImage").toString());
     if (info.exists())
       initialItem = settings->value("viewer/lastImage").toString();
-  } else
+  } else {
     initialItem = QDir::currentPath();
+  }
+
+  auto isSystemPath = [](const QString &path) {
+    return path == "/" ||
+           path.startsWith("/Applications/") ||
+           path.startsWith("/System/") ||
+           path.startsWith("/usr/") ||
+           path.startsWith("/bin") ||
+           path.startsWith("/sbin") ||
+           path.startsWith("/var/") ||
+           path.startsWith("/opt/") ||
+           path.startsWith("/Library/") ||
+           path.startsWith("/private/") ||
+           path.startsWith("/dev") ||
+           path.startsWith("/tmp") ||
+           path.startsWith("/etc");
+  };
 
   if (argumentList.count() == 1){
     QString argument=argumentList.at(0);
@@ -120,10 +137,17 @@ void AardviewShim::addWindow(const QStringList &argumentList){
 
     if (info.exists())
       initialItem = info.absoluteFilePath();
-  } else {
+  } else if (argumentList.count() > 1) {
     qWarning() << "Multiple arguments are currently not supported";
     return;
   }
+
+  if (isSystemPath(initialItem))
+    initialItem = QDir::homePath();
+
+  // Final fallback: if nothing usable was resolved, start from home
+  if (initialItem.isEmpty())
+    initialItem = QDir::homePath();
 
   win = new AardView(uid, initialItem);
 

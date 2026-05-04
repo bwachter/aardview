@@ -20,7 +20,15 @@ ThumbnailFileSystemModel::ThumbnailFileSystemModel(QObject *parent)
   m_thumbnailSize = QSize(sz, sz);
 }
 
+QHash<int, QByteArray> ThumbnailFileSystemModel::roleNames() const {
+  QHash<int, QByteArray> roles = QFileSystemModel::roleNames();
+  roles[IsDirRole] = "isDir";
+  return roles;
+}
+
 QVariant ThumbnailFileSystemModel::data(const QModelIndex &index, int role) const {
+  if (role == IsDirRole)
+    return isDir(index);
   if (role == Qt::DecorationRole && index.isValid() && !isDir(index)){
     QString path = filePath(index);
     if (m_thumbnails.contains(path))

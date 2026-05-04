@@ -81,7 +81,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QVideoWidget" name="videoContainer">
+             <widget class="QGraphicsView" name="videoContainer">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                 <horstretch>0</horstretch>
@@ -493,9 +493,9 @@
    <header>atreeview.h</header>
   </customwidget>
   <customwidget>
-   <class>QVideoWidget</class>
+   <class>QGraphicsView</class>
    <extends>QWidget</extends>
-   <header location="global">QVideoWidget</header>
+   <header location="global">QGraphicsView</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

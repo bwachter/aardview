@@ -95,12 +95,21 @@ SettingsDialog::SettingsDialog(): QDialog() {
   viewerShrinkOnly->setChecked(settings.value("shrinkOnly").toBool());
   viewerSmoothTransformation->setChecked(settings.value("smoothTransformation").toBool());
   viewerLoadAction->setCurrentIndex(settings.value("loadAction").toInt());
+  viewerVideoEndAction->setCurrentIndex(settings.value("videoEndAction", 0).toInt());
   settings.endGroup();
 
   settings.beginGroup("log");
   logLevel->setValue(settings.value("loglevel", LOG_INFO).toInt());
   logLevelConsole->setValue(settings.value("console", 0).toInt());
   settings.endGroup();
+
+  connect(tnResetDefaults, &QPushButton::clicked, this, &SettingsDialog::resetTnDefaults);
+}
+
+void SettingsDialog::resetTnDefaults(){
+  tnFilterFiles->setChecked(true);
+  tnCaseInsensitiveMatching->setChecked(true);
+  tnFileMask->setText(".*(ani|bmp|gif|ico|jpg|jpeg|mng|pcx|png|pbm|pgm|ppm|psd|svg|tif|tiff|xbm|xcf|xpm|avi|mp4|ogv|mov|mkv|wmv|webm)$");
 }
 
 void SettingsDialog::accept(){
@@ -139,6 +148,7 @@ void SettingsDialog::accept(){
   settings.setValue("shrinkOnly", viewerShrinkOnly->isChecked());
   settings.setValue("smoothTransformation", viewerSmoothTransformation->isChecked());
   settings.setValue("loadAction", viewerLoadAction->currentIndex());
+  settings.setValue("videoEndAction", viewerVideoEndAction->currentIndex());
   settings.endGroup();
 
   settings.beginGroup("log");
@@ -185,6 +195,7 @@ void SettingsDialog::defaults(){
     settings.setValue("shrinkOnly", true);
     settings.setValue("padding", 5);
     settings.setValue("loadAction", 0);
+    settings.setValue("videoEndAction", 0);
     settings.endGroup();
     settings.beginGroup("log");
     settings.setValue("loglevel", LOG_INFO);

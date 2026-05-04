@@ -367,6 +367,13 @@
              </layout>
             </item>
             <item>
+             <widget class="QPushButton" name="tnResetDefaults">
+              <property name="text">
+               <string>Reset to defaults</string>
+              </property>
+             </widget>
+            </item>
+            <item>
              <spacer name="verticalSpacer_2">
               <property name="orientation">
                <enum>Qt::Vertical</enum>
@@ -466,6 +473,55 @@
               </item>
               <item>
                <spacer name="horizontalSpacer">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_videoEnd">
+              <item>
+               <widget class="QLabel" name="labelVideoEnd">
+                <property name="text">
+                 <string>On video end: </string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="viewerVideoEndAction">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <item>
+                 <property name="text">
+                  <string>Stop</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Loop</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Jump next</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_videoEnd">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
                 </property>

@@ -33,6 +33,7 @@ class SettingsDialog: public QDialog, private Ui::SettingsDialog {
 
   private slots:
     void accept();
+    void resetTnDefaults();
 
   signals:
     void configurationChanged();

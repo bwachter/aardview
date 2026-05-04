@@ -19,8 +19,14 @@ class ThumbnailFileSystemModel: public QFileSystemModel {
     Q_OBJECT
 
   public:
+    enum CustomRoles {
+      IsDirRole = Qt::UserRole + 1
+    };
+    Q_ENUM(CustomRoles)
+
     explicit ThumbnailFileSystemModel(QObject *parent = nullptr);
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+    QHash<int, QByteArray> roleNames() const override;
 
   public slots:
     void reconfigure();

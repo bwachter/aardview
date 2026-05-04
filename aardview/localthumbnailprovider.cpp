@@ -10,6 +10,7 @@
 #include <QMediaPlayer>
 #include <QMimeDatabase>
 #include <QQueue>
+#include <QThread>
 #include <QTimer>
 #include <QVideoFrame>
 #include <QVideoSink>
@@ -55,6 +56,7 @@ class VideoThumbnailExtractor: public QObject {
               this, &VideoThumbnailExtractor::onTimeout);
     }
 
+  public slots:
     // key is the provider's cache key (path@width); path is the actual file.
     void requestThumbnail(const QString &key, const QString &path, const QSize &size){
       m_queue.enqueue({key, path, size});
@@ -148,7 +150,11 @@ class VideoThumbnailExtractor: public QObject {
 
 LocalThumbnailProvider::LocalThumbnailProvider(QObject *parent)
   : ThumbnailProvider(parent)
-  , m_videoExtractor(new VideoThumbnailExtractor(this)) {
+  , m_videoExtractor(new VideoThumbnailExtractor())
+  , m_videoThread(new QThread(this)) {
+  m_videoExtractor->moveToThread(m_videoThread);
+  m_videoThread->start();
+
   connect(m_videoExtractor, &VideoThumbnailExtractor::thumbnailReady,
           this, [this](const QString &key, const QPixmap &pixmap){
             m_pending.remove(key);
@@ -157,6 +163,16 @@ LocalThumbnailProvider::LocalThumbnailProvider(QObject *parent)
             // strip "@width" suffix to recover the original file path
             emit thumbnailReady(key.left(key.lastIndexOf(QChar('@'))), pixmap);
           });
+
+  connect(this, &LocalThumbnailProvider::videoThumbnailRequested,
+          m_videoExtractor, &VideoThumbnailExtractor::requestThumbnail,
+          Qt::QueuedConnection);
+}
+
+LocalThumbnailProvider::~LocalThumbnailProvider(){
+  m_videoThread->quit();
+  m_videoThread->wait();
+  delete m_videoExtractor;
 }
 
 void LocalThumbnailProvider::requestThumbnail(const QString &path, const QSize &size){
@@ -171,7 +187,7 @@ void LocalThumbnailProvider::requestThumbnail(const QString &path, const QSize &
   m_pending.insert(key);
 
   if (isVideoPath(path)){
-    m_videoExtractor->requestThumbnail(key, path, size);
+    emit videoThumbnailRequested(key, path, size);
     return;
   }
 

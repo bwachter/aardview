@@ -10,6 +10,7 @@
 
 #include <QHash>
 #include <QtGui>
+#include <QRegularExpression>
 
 class ThumbnailProvider;
 
@@ -17,6 +18,11 @@ class TnViewModel: public QAbstractListModel {
     Q_OBJECT
 
   public:
+    enum TnRoles {
+      FilePathRole = Qt::UserRole + 1
+    };
+    Q_ENUM(TnRoles)
+
     TnViewModel(QString directoryName="", QObject *parent = 0);
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     QVariant data(const QModelIndex &index, int role) const;
@@ -24,8 +30,11 @@ class TnViewModel: public QAbstractListModel {
                         int role = Qt::DisplayRole) const;
     void setDirectory(QString directoryName);
     void setFilter(QDir::Filters filters);
-    QString filePath(const QModelIndex &index) const;
-    bool isDir(const QModelIndex &index) const;
+    Q_INVOKABLE QString filePath(const QModelIndex &index) const;
+    Q_INVOKABLE QString filePath(int row) const;
+    Q_INVOKABLE bool isDir(const QModelIndex &index) const;
+    Q_INVOKABLE bool isDir(int row) const;
+    QHash<int, QByteArray> roleNames() const override;
 
   public slots:
     void reconfigure();
@@ -42,7 +51,13 @@ class TnViewModel: public QAbstractListModel {
     QHash<QString, QPixmap> m_thumbnails;
     ThumbnailProvider *m_provider;
 
+    bool m_filterFiles;
+    bool m_caseInsensitive;
+    QString m_fileMask;
+    QRegularExpression m_fileRegex;
+
     void rebuildIndex();
+    void applyFileMask();
 };
 
 #endif
