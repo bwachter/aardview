@@ -15,3 +15,13 @@ dox.target = doc
 dox.commands = doxygen Doxyfile
 
 QMAKE_EXTRA_UNIX_TARGETS += dox
+
+unix {
+    desktop.files = desktop/aardview.desktop desktop/aardview-qml.desktop desktop/aardview-default.desktop
+    desktop.path = /usr/share/applications
+    INSTALLS += desktop
+
+    icon.files = images/aardview.png
+    icon.path = /usr/share/pixmaps
+    INSTALLS += icon
+}

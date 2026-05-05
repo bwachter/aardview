@@ -10,6 +10,7 @@
 #include <QMediaPlayer>
 #include <QMimeDatabase>
 #include <QQueue>
+#include <QSemaphore>
 #include <QThread>
 #include <QTimer>
 #include <QVideoFrame>
@@ -29,10 +30,8 @@ static QString cacheKey(const QString &path, const QSize &size){
   return path + QChar('@') + QString::number(size.width());
 }
 
-// Processes video thumbnail requests sequentially on the main thread.
-//
-// A 10-second timeout guards against files that never produce a decodable
-// frame, ensuring the queue never stalls.
+// Extracts a single frame from a video file using QMediaPlayer + QVideoSink.
+// Processes requests sequentially via an internal queue.
 class VideoThumbnailExtractor: public QObject {
     Q_OBJECT
 
@@ -56,12 +55,21 @@ class VideoThumbnailExtractor: public QObject {
               this, &VideoThumbnailExtractor::onTimeout);
     }
 
-  public slots:
     // key is the provider's cache key (path@width); path is the actual file.
-    void requestThumbnail(const QString &key, const QString &path, const QSize &size){
+    Q_INVOKABLE void requestThumbnail(const QString &key, const QString &path, const QSize &size){
       m_queue.enqueue({key, path, size});
       if (m_state == Idle)
         processNext();
+    }
+
+    void shutdown(){
+      m_timeout.stop();
+      m_queue.clear();
+      if (m_state != Idle){
+        m_state = Idle;
+        m_player->stop();
+        m_player->setSource(QUrl());
+      }
     }
 
   signals:
@@ -146,16 +154,52 @@ class VideoThumbnailExtractor: public QObject {
     State           m_state;
 };
 
+// Worker thread that owns a VideoThumbnailExtractor created on the thread itself.
+// This avoids Qt Multimedia thread-affinity issues.
+class VideoThumbnailThread : public QThread {
+    Q_OBJECT
+
+  public:
+    explicit VideoThumbnailThread(QObject *parent = nullptr)
+      : QThread(parent) {}
+    ~VideoThumbnailThread(){
+      quit();
+      wait(5000);
+    }
+
+    void request(const QString &key, const QString &path, const QSize &size){
+      m_ready.acquire(1);
+      m_ready.release(1);
+      QMetaObject::invokeMethod(m_extractor, "requestThumbnail", Qt::QueuedConnection,
+                                Q_ARG(QString, key), Q_ARG(QString, path), Q_ARG(QSize, size));
+    }
+
+  signals:
+    void thumbnailReady(const QString &key, const QPixmap &pixmap);
+
+  protected:
+    void run() override{
+      m_extractor = new VideoThumbnailExtractor();
+      connect(m_extractor, &VideoThumbnailExtractor::thumbnailReady,
+              this, &VideoThumbnailThread::thumbnailReady);
+      m_ready.release(1);
+      exec();
+      m_extractor->shutdown();
+      QThread::msleep(300);
+      delete m_extractor;
+    }
+
+  private:
+    VideoThumbnailExtractor *m_extractor = nullptr;
+    QSemaphore m_ready;
+};
+
 // ── LocalThumbnailProvider ────────────────────────────────────────────────────
 
 LocalThumbnailProvider::LocalThumbnailProvider(QObject *parent)
   : ThumbnailProvider(parent)
-  , m_videoExtractor(new VideoThumbnailExtractor())
-  , m_videoThread(new QThread(this)) {
-  m_videoExtractor->moveToThread(m_videoThread);
-  m_videoThread->start();
-
-  connect(m_videoExtractor, &VideoThumbnailExtractor::thumbnailReady,
+  , m_videoThread(new VideoThumbnailThread(this)) {
+  connect(m_videoThread, &VideoThumbnailThread::thumbnailReady,
           this, [this](const QString &key, const QPixmap &pixmap){
             m_pending.remove(key);
             if (pixmap.isNull()) return;
@@ -163,16 +207,14 @@ LocalThumbnailProvider::LocalThumbnailProvider(QObject *parent)
             // strip "@width" suffix to recover the original file path
             emit thumbnailReady(key.left(key.lastIndexOf(QChar('@'))), pixmap);
           });
-
-  connect(this, &LocalThumbnailProvider::videoThumbnailRequested,
-          m_videoExtractor, &VideoThumbnailExtractor::requestThumbnail,
-          Qt::QueuedConnection);
+  m_videoThread->start();
 }
 
 LocalThumbnailProvider::~LocalThumbnailProvider(){
-  m_videoThread->quit();
-  m_videoThread->wait();
-  delete m_videoExtractor;
+  // Intentionally do not delete m_videoThread's extractor here.
+  // Qt Multimedia's internal demuxer threads may still be running
+  // when QMediaPlayer is destroyed, causing a fatal crash.
+  // The thread's run() method handles its own cleanup before returning.
 }
 
 void LocalThumbnailProvider::requestThumbnail(const QString &path, const QSize &size){
@@ -187,7 +229,7 @@ void LocalThumbnailProvider::requestThumbnail(const QString &path, const QSize &
   m_pending.insert(key);
 
   if (isVideoPath(path)){
-    emit videoThumbnailRequested(key, path, size);
+    m_videoThread->request(key, path, size);
     return;
   }
 
