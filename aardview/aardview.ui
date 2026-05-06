@@ -142,6 +142,7 @@
      <string>&amp;Edit</string>
     </property>
     <addaction name="actionEditCurrentImage"/>
+    <addaction name="actionCopyPath"/>
     <addaction name="separator"/>
     <addaction name="actionPreferences"/>
    </widget>
@@ -420,6 +421,17 @@
    </property>
    <property name="toolTip">
     <string>Show the Qt library's about box</string>
+   </property>
+  </action>
+  <action name="actionCopyPath">
+   <property name="text">
+    <string>&amp;Copy path</string>
+   </property>
+   <property name="toolTip">
+    <string>Copy absolute path of current item to clipboard</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+C</string>
    </property>
   </action>
   <action name="actionZoomIn">

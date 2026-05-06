@@ -106,6 +106,7 @@ class AardView: public QMainWindow, private Ui::AardView{
     void forwardPrint(){ emit showPrint(loader->currentPixmap()); };
     void forwardPrintPreview(){ emit showPrintPreview(loader->currentPixmap()); };
     void forwardQuit(){ emit requestDestroy(m_uid, true); };
+    void copyPath();
 
   protected:
     bool event(QEvent *event);

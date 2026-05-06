@@ -118,6 +118,7 @@ AardView::AardView(QUuid uid, QString initialPath){
   connect(actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
   connect(actionAbout, SIGNAL(triggered()), this, SIGNAL(showAbout()));
   connect(actionPreferences, SIGNAL(triggered()), this, SIGNAL(showSettings()));
+  connect(actionCopyPath, SIGNAL(triggered()), this, SLOT(copyPath()));
 
   connect(dirView->selectionModel(),
           SIGNAL(selectionChanged(const QItemSelection &,
@@ -400,6 +401,17 @@ void AardView::setLoadedPath(const QString &path){
   m_loadedPath = path;
 
   setWindowTitle(title());
+}
+
+void AardView::copyPath(){
+  QString p = loadedPath();
+  if (p.isEmpty())
+    p = path();
+  if (!p.isEmpty()){
+    QClipboard *clipboard = QApplication::clipboard();
+    clipboard->setText(p);
+    qDebug() << "Copied path to clipboard:" << p;
+  }
 }
 
 QString AardView::title(){
