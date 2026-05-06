@@ -20,6 +20,7 @@
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QGraphicsVideoItem>
+#include <QSlider>
 
 #include <QtGui>
 
@@ -76,8 +77,10 @@ class AardView: public QMainWindow, private Ui::AardView{
     QMediaPlayer *m_player;
     QAudioOutput *m_audioOutput;
     QGraphicsVideoItem *m_videoItem;
+    QSlider *m_videoSlider;
     int m_videoRotation;
     bool m_videoMode;
+    bool m_sliderSeeking;
 
     bool isVideoFile(const QString &path);
     void setPath(const QString &path);

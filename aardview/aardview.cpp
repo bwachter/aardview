@@ -25,6 +25,9 @@ AardView::AardView(QUuid uid, QString initialPath){
   this->setWindowIcon(QPixmap(":/images/aardview-icon.png"));
 
   videoContainer->setVisible(false);
+  videoContainer->setFrameStyle(QFrame::NoFrame);
+  videoContainer->setMinimumSize(1, 1);
+  imageContainer->setMinimumSize(1, 1);
   m_player = new QMediaPlayer(this);
   m_audioOutput = new QAudioOutput(this);
   m_audioOutput->setVolume(1.0f);
@@ -49,7 +52,7 @@ AardView::AardView(QUuid uid, QString initialPath){
       int action = SettingsDialog::instance()->value("viewer/videoEndAction", 0).toInt();
       switch(action){
         case 0: // Stop
-          m_player->stop();
+          m_player->pause();
           break;
         case 1: // Loop
           m_player->setPosition(0);
@@ -67,6 +70,30 @@ AardView::AardView(QUuid uid, QString initialPath){
     m_player->setActiveSubtitleTrack(-1);
   });
 
+  m_videoSlider = new QSlider(Qt::Horizontal, this);
+  m_videoSlider->setVisible(false);
+  m_sliderSeeking = false;
+  verticalLayout_8->addWidget(m_videoSlider);
+
+  connect(m_player, &QMediaPlayer::positionChanged, this, [this](qint64 pos){
+    if (!m_sliderSeeking && m_player->duration() > 0) {
+      m_videoSlider->setValue(static_cast<int>(pos * 1000 / m_player->duration()));
+    }
+  });
+  connect(m_player, &QMediaPlayer::durationChanged, this, [this](qint64 dur){
+    m_videoSlider->setRange(0, dur > 0 ? 1000 : 0);
+  });
+  connect(m_videoSlider, &QSlider::sliderPressed, this, [this](){
+    m_sliderSeeking = true;
+  });
+  connect(m_videoSlider, &QSlider::sliderReleased, this, [this](){
+    m_sliderSeeking = false;
+    if (m_player->duration() > 0) {
+      qint64 pos = static_cast<qint64>(m_videoSlider->value()) * m_player->duration() / 1000;
+      m_player->setPosition(pos);
+    }
+  });
+
 #ifdef QT_NO_PRINTER
   // disable printer items if qt comes without printing support
   actionPrint->setEnabled(false);
@@ -77,10 +104,23 @@ AardView::AardView(QUuid uid, QString initialPath){
 
   loader = new ImageLoader();
   centralwidget->installEventFilter(this);
+  videoContainer->viewport()->installEventFilter(this);
 
   // hide currently unused docks
   dockTaggedItems->hide();
   dockStatusInfo->hide();
+
+  // ensure docks are freely resizable and movable
+  setDockNestingEnabled(true);
+  dockDirectoryTree->setFeatures(QDockWidget::DockWidgetClosable |
+                                   QDockWidget::DockWidgetMovable |
+                                   QDockWidget::DockWidgetFloatable);
+  dockTreeView->setFeatures(QDockWidget::DockWidgetClosable |
+                            QDockWidget::DockWidgetMovable |
+                            QDockWidget::DockWidgetFloatable);
+  dockExifData->setFeatures(QDockWidget::DockWidgetClosable |
+                              QDockWidget::DockWidgetMovable |
+                              QDockWidget::DockWidgetFloatable);
 
   exifViewModel = new ExifViewModel();
   dirViewModel = new ThumbnailFileSystemModel();
@@ -263,6 +303,7 @@ void AardView::dirIndexChanged(){
 void AardView::displayPixmap(const QPixmap &pixmap){
   // TODO: divert this to alternate image containers
   imageContainer->setPixmap(pixmap);
+  imageContainer->setMinimumSize(1, 1);
   imageArea->verticalScrollBar()->setValue(0);
   imageArea->horizontalScrollBar()->setValue(0);
 }
@@ -277,6 +318,7 @@ void AardView::loadPixmap(const QString &filename, const QSize viewSize){
     m_player->stop();
     imageContainer->setVisible(false);
     videoContainer->setVisible(true);
+    m_videoSlider->setVisible(true);
     m_videoMode = true;
     m_videoRotation = 0;
     if (m_videoItem) {
@@ -289,7 +331,12 @@ void AardView::loadPixmap(const QString &filename, const QSize viewSize){
     m_player->stop();
     videoContainer->setVisible(false);
     imageContainer->setVisible(true);
+    m_videoSlider->setVisible(false);
     m_videoMode = false;
+    if (m_videoItem) {
+      m_videoItem->setSize(QSizeF(0, 0));
+      m_videoItem->setPos(0, 0);
+    }
     if (viewSize == QSize())
       emit requestPixmap(filename, centralwidget->size());
     else
@@ -543,6 +590,16 @@ bool AardView::eventFilter(QObject *obj, QEvent *event){
       default:
         return QWidget::eventFilter(obj, event);
     }
+  }
+
+  if (event->type() == QEvent::Wheel && m_videoMode && obj == videoContainer->viewport()){
+    QWheelEvent *wheelEvent = static_cast<QWheelEvent*>(event);
+    qint64 step = 5000; // 5 seconds per wheel step
+    qint64 newPos = m_player->position() + (wheelEvent->angleDelta().y() * step / 120);
+    if (m_player->duration() > 0)
+      newPos = qMin(newPos, m_player->duration());
+    m_player->setPosition(qMax(qint64(0), newPos));
+    return true;
   }
 
   // most likely we don't need the widget check anymore, though it might

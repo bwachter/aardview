@@ -88,6 +88,9 @@
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
+              <property name="frameShape">
+               <enum>QFrame::Shape::NoFrame</enum>
+              </property>
              </widget>
             </item>
             <item>
