@@ -20,7 +20,7 @@ class ThumbnailFileSystemModel: public QFileSystemModel {
 
   public:
     enum CustomRoles {
-      IsDirRole = Qt::UserRole + 1
+      IsDirRole = Qt::UserRole + 10
     };
     Q_ENUM(CustomRoles)
 

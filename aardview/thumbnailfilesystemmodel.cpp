@@ -10,6 +10,10 @@
 #include "thumbnailfilesystemmodel.h"
 #include "thumbnailprovider.h"
 
+#include <QApplication>
+#include <QFileIconProvider>
+#include <QStyle>
+
 ThumbnailFileSystemModel::ThumbnailFileSystemModel(QObject *parent)
   : QFileSystemModel(parent)
   , m_provider(new LocalThumbnailProvider(this)) {
@@ -26,6 +30,15 @@ QHash<int, QByteArray> ThumbnailFileSystemModel::roleNames() const {
   return roles;
 }
 
+static bool variantIconIsNull(const QVariant &v) {
+  if (!v.isValid()) return true;
+  if (v.canConvert<QIcon>())
+    return v.value<QIcon>().isNull();
+  if (v.canConvert<QPixmap>())
+    return v.value<QPixmap>().isNull();
+  return true;
+}
+
 QVariant ThumbnailFileSystemModel::data(const QModelIndex &index, int role) const {
   if (role == IsDirRole)
     return isDir(index);
@@ -34,7 +47,17 @@ QVariant ThumbnailFileSystemModel::data(const QModelIndex &index, int role) cons
     if (m_thumbnails.contains(path))
       return QIcon(m_thumbnails.value(path));
     m_provider->requestThumbnail(path, m_thumbnailSize);
-    return QFileSystemModel::data(index, role);
+
+    QVariant v = QFileSystemModel::data(index, role);
+    if (!variantIconIsNull(v))
+      return v;
+    return QApplication::style()->standardIcon(QStyle::SP_FileIcon);
+  }
+  if (role == Qt::DecorationRole && index.isValid() && isDir(index)){
+    QVariant v = QFileSystemModel::data(index, role);
+    if (!variantIconIsNull(v))
+      return v;
+    return QApplication::style()->standardIcon(QStyle::SP_DirIcon);
   }
   return QFileSystemModel::data(index, role);
 }
